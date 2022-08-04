@@ -30,8 +30,8 @@ private const val TAG = "MainActivity"
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-         StrictMode.setThreadPolicy(policy)
+        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+        StrictMode.setThreadPolicy(policy)
         setContent {
             ChatForAndroidTheme {
                 Surface(
@@ -125,6 +125,18 @@ fun LoginView() {
                 }) {
                     Text("登录")
                 }
+            }
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(0.dp, 0.dp, 0.dp, 32.dp),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            Row {
+                Text(text = "注册")
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(text = "忘记密码")
             }
         }
     }

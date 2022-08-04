@@ -1,6 +1,7 @@
 package com.imorning.common.action
 
 import android.util.Log
+import com.imorning.chat.App
 import com.imorning.common.BuildConfig
 import com.imorning.common.constant.Server
 import com.imorning.common.constant.StatusCode.ERROR
@@ -20,18 +21,16 @@ object Login {
         account: String,
         password: String
     ): Int {
-        val connection: AbstractXMPPConnection? = getConnection()
+        val connection: AbstractXMPPConnection = App.getConnection()
         try {
-            if (connection != null) {
-                return if (!connection.isAuthenticated) {
-                    connection.login(account, password)
-                    // 接受离线消息
-                    val presence = Presence(Presence.Type.unavailable)
-                    connection.sendStanza(presence)
-                    OK
-                } else {
-                    LOGIN_FAILED_CAUSE_ONLINE
-                }
+            return if (!connection.isAuthenticated) {
+                connection.login(account, password)
+                // 接受离线消息
+                val presence = Presence(Presence.Type.unavailable)
+                connection.sendStanza(presence)
+                OK
+            } else {
+                LOGIN_FAILED_CAUSE_ONLINE
             }
         } catch (e: Exception) {
             if (BuildConfig.DEBUG) {
@@ -39,25 +38,6 @@ object Login {
             }
             return ERROR
         }
-        return ERROR
-    }
-
-    private fun getConnection(): AbstractXMPPConnection? {
-        val configurationBuilder = XMPPTCPConnectionConfiguration.builder()
-        try {
-            configurationBuilder.setHost(Server.HOST_NAME)
-            configurationBuilder.setXmppDomain(Server.DOMAIN)
-            configurationBuilder.setPort(Server.LOGIN_PORT)
-            configurationBuilder.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled)
-            configurationBuilder.setSendPresence(false)
-            val connectionInstance = XMPPTCPConnection(configurationBuilder.build())
-            connectionInstance.connect()
-            Log.i(TAG, "server connect successfully")
-            return connectionInstance
-        } catch (e: Exception) {
-            Log.e(TAG, "server connect failed", e)
-        }
-        return null
     }
 
 }

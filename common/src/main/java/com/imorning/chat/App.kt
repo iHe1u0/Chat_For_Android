@@ -2,13 +2,14 @@ package com.imorning.chat
 
 import android.app.Application
 import android.content.Context
+import android.os.StrictMode
+import android.os.StrictMode.ThreadPolicy
 import android.util.Log
-import com.imorning.common.BuildConfig
 import com.imorning.common.constant.Server
-import org.jivesoftware.smack.AbstractXMPPConnection
 import org.jivesoftware.smack.ConnectionConfiguration
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration
+
 
 class App : Application() {
 
@@ -31,6 +32,9 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         application = this
+
+        val policy = ThreadPolicy.Builder().permitAll().build()
+        StrictMode.setThreadPolicy(policy)
 
         val configurationBuilder = XMPPTCPConnectionConfiguration.builder()
         try {
