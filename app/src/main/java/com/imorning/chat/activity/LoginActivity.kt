@@ -1,4 +1,4 @@
-package com.imorning.chat
+package com.imorning.chat.activity
 
 import android.os.Bundle
 import android.os.StrictMode
@@ -21,13 +21,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.imorning.chat.BuildConfig
 import com.imorning.chat.ui.theme.ChatForAndroidTheme
 import com.imorning.common.action.Login
 import com.imorning.common.constant.StatusCode.OK
 
-private const val TAG = "MainActivity"
+private const val TAG = "LoginActivity"
 
-class MainActivity : ComponentActivity() {
+class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
@@ -35,7 +36,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             ChatForAndroidTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     LoginView()
