@@ -44,12 +44,12 @@ class App : Application() {
             configurationBuilder.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled)
             configurationBuilder.setSendPresence(false)
             connectionInstance = XMPPTCPConnection(configurationBuilder.build())
-            connectionInstance!!.connect()
+            // connectionInstance!!.connect()
             Log.i(TAG, "server connect successfully")
         } catch (e: Exception) {
             Log.e(TAG, "server connect failed", e)
         }
-        Log.i(TAG, "onCreate: ...........................")
+
     }
 
 }
