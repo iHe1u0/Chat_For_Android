@@ -2,10 +2,12 @@ package com.imorning.chat
 
 import android.app.Application
 import android.content.Context
-import android.os.StrictMode
-import android.os.StrictMode.ThreadPolicy
-import android.util.Log
+import com.imorning.common.BuildConfig
 import com.imorning.common.constant.Server
+import com.imorning.common.utils.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import org.jivesoftware.smack.ConnectionConfiguration
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration
@@ -33,9 +35,6 @@ class App : Application() {
         super.onCreate()
         application = this
 
-        val policy = ThreadPolicy.Builder().permitAll().build()
-        StrictMode.setThreadPolicy(policy)
-
         val configurationBuilder = XMPPTCPConnectionConfiguration.builder()
         try {
             configurationBuilder.setHost(Server.HOST_NAME)
@@ -44,10 +43,14 @@ class App : Application() {
             configurationBuilder.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled)
             configurationBuilder.setSendPresence(false)
             connectionInstance = XMPPTCPConnection(configurationBuilder.build())
-            // connectionInstance!!.connect()
-            Log.i(TAG, "server connect successfully")
+            MainScope().launch(Dispatchers.IO) {
+                connectionInstance!!.connect()
+                Log.d(TAG, "server connected")
+            }
         } catch (e: Exception) {
-            Log.e(TAG, "server connect failed", e)
+            if (BuildConfig.DEBUG) {
+                Log.e(TAG, "server connect failed", e)
+            }
         }
 
     }
