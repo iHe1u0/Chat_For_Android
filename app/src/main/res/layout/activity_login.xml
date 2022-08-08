@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             app:counterEnabled="true"
             app:counterMaxLength="32"
-            app:startIconDrawable="@drawable/ic_baseline_account">
+            app:startIconDrawable="@drawable/ic_account">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_account_edit"
@@ -42,7 +42,7 @@
             app:counterEnabled="true"
             app:counterMaxLength="32"
             app:passwordToggleEnabled="true"
-            app:startIconDrawable="@drawable/ic_baseline_lock">
+            app:startIconDrawable="@drawable/ic_lock">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_password_edit"

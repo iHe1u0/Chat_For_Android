@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_message"
+        android:icon="@drawable/ic_message"
+        android:title="@string/title_message" />
+
+    <item
+        android:id="@+id/navigation_contact"
+        android:icon="@drawable/ic_contacts"
+        android:title="@string/title_contact" />
+
+    <item
+        android:id="@+id/navigation_profile"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/title_profile" />
+
+</menu>
