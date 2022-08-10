@@ -1,4 +1,4 @@
-package com.imorning.common.action
+package com.imorning.common.action.account
 
 import android.util.Log
 import com.imorning.chat.App
@@ -17,7 +17,7 @@ object Register {
         password: String
     ): Int {
         try {
-            val accountManager = AccountManager.getInstance(App.getConnection())
+            val accountManager = AccountManager.getInstance(App.getTCPConnection())
             accountManager.sensitiveOperationOverInsecureConnection(true)
             accountManager.createAccount(Localpart.from(userName), password)
             return OK

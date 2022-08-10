@@ -2,6 +2,7 @@ package com.imorning.chat.activity
 
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -11,6 +12,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.imorning.chat.R
 import com.imorning.chat.databinding.ActivityMainBinding
+import com.imorning.common.action.Contact
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        Contact.getContactList()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -33,7 +36,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_message, R.id.navigation_contact, R.id.navigation_profile
             )
         )
-        setupActionBarWithNavController(navController, appBarConfiguration)
+        // setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
     }
 }

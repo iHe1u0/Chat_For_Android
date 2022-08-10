@@ -8,6 +8,5 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="diver_color">@color/purple_200</color>
-
+    <color name="diver_color">@color/teal_200</color>
 </resources>

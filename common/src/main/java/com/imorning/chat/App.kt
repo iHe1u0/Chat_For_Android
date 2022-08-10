@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.jivesoftware.smack.ConnectionConfiguration
+import org.jivesoftware.smack.XMPPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration
 
@@ -18,15 +19,16 @@ class App : Application() {
     companion object {
         private const val TAG = "App"
 
-        var application: Application? = null
-        var connectionInstance: XMPPTCPConnection? = null
+        private var application: Application? = null
+        private var xmppTcpConnection: XMPPTCPConnection? = null
 
         fun getContext(): Context {
             return application!!
         }
 
-        fun getConnection(): XMPPTCPConnection {
-            return connectionInstance!!
+        @Synchronized
+        fun getTCPConnection(): XMPPTCPConnection {
+            return xmppTcpConnection!!
         }
 
     }
@@ -42,9 +44,9 @@ class App : Application() {
             configurationBuilder.setPort(Server.LOGIN_PORT)
             configurationBuilder.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled)
             configurationBuilder.setSendPresence(false)
-            connectionInstance = XMPPTCPConnection(configurationBuilder.build())
+            xmppTcpConnection = XMPPTCPConnection(configurationBuilder.build())
             MainScope().launch(Dispatchers.IO) {
-                connectionInstance!!.connect()
+                xmppTcpConnection!!.connect()
                 Log.d(TAG, "server connected")
             }
         } catch (e: Exception) {
