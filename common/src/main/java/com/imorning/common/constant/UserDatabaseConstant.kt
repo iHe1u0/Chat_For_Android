@@ -15,4 +15,8 @@ object UserDatabaseConstant {
      */
     const val TABLE_USER_INFO = "user_info"
 
+    /**
+     * message table
+     */
+    const val TABLE_MESSAGE = "message"
 }

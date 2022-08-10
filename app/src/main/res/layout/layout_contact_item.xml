@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:text="@string/app_name"
-        android:textAppearance="?attr/textAppearanceBody1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
         app:layout_constraintStart_toEndOf="@id/contact_item_avatar"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -33,10 +33,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:text="@string/add_contact"
-        android:textAppearance="?attr/textAppearanceBodySmall"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/contact_item_avatar"
         app:layout_constraintTop_toBottomOf="@id/contact_item_username" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,33 +4,20 @@ import android.app.Application
 import android.content.Context
 import com.imorning.common.BuildConfig
 import com.imorning.common.constant.Server
+import com.imorning.common.database.UserDatabase
 import com.imorning.common.utils.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.jivesoftware.smack.ConnectionConfiguration
-import org.jivesoftware.smack.XMPPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration
 
 
 class App : Application() {
 
-    companion object {
-        private const val TAG = "App"
-
-        private var application: Application? = null
-        private var xmppTcpConnection: XMPPTCPConnection? = null
-
-        fun getContext(): Context {
-            return application!!
-        }
-
-        @Synchronized
-        fun getTCPConnection(): XMPPTCPConnection {
-            return xmppTcpConnection!!
-        }
-
+    val userDatabase: UserDatabase by lazy {
+        UserDatabase.getInstance()
     }
 
     override fun onCreate() {
@@ -53,6 +40,23 @@ class App : Application() {
             if (BuildConfig.DEBUG) {
                 Log.e(TAG, "server connect failed", e)
             }
+        }
+
+    }
+
+    companion object {
+        private const val TAG = "App"
+
+        private var application: Application? = null
+        private var xmppTcpConnection: XMPPTCPConnection? = null
+
+        fun getContext(): Context {
+            return application!!
+        }
+
+        @Synchronized
+        fun getTCPConnection(): XMPPTCPConnection {
+            return xmppTcpConnection!!
         }
 
     }

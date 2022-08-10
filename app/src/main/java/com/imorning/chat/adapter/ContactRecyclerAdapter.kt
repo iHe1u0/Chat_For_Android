@@ -1,29 +1,67 @@
 package com.imorning.chat.adapter
 
+import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.imorning.chat.databinding.FragmentContactBinding
+import com.imorning.chat.databinding.LayoutContactItemBinding
+import com.imorning.common.database.table.UserInfoEntity
 import org.jivesoftware.smack.roster.RosterEntry
 
-class ContactRecyclerAdapter(private val contactList: HashMap<String, List<Any>>) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ContactRecyclerAdapter(private val onItemClicked: (UserInfoEntity) -> Unit) :
+    ListAdapter<UserInfoEntity, ContactRecyclerAdapter.ViewHolder>(DiffCallback) {
 
     private val rosterEntryList: List<RosterEntry>? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        TODO()
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val viewHolder: ViewHolder = ViewHolder(
+            LayoutContactItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
+
+        viewHolder.itemView.setOnClickListener {
+            val position = viewHolder.bindingAdapterPosition
+            if (position < 0) {
+                return@setOnClickListener
+            }
+            onItemClicked(getItem(position))
+        }
+        return viewHolder
     }
 
-    override fun getItemCount(): Int {
-        return contactList.size
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(getItem(position))
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {}
+    class ViewHolder(private var binding: LayoutContactItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(userInfoEntity: UserInfoEntity) {
+            binding.contactItemUsername.text = userInfoEntity.username
+            binding.contactItemId.text = userInfoEntity.jid
+        }
+    }
 
-    class ViewHolder(private var binding: FragmentContactBinding) :
-        RecyclerView.ViewHolder(binding.root){
-            fun bind(){
+    companion object {
 
+        private val DiffCallback = object : DiffUtil.ItemCallback<UserInfoEntity>() {
+            override fun areItemsTheSame(
+                oldItem: UserInfoEntity,
+                newItem: UserInfoEntity
+            ): Boolean {
+                return oldItem.jid == newItem.jid
+            }
+
+            override fun areContentsTheSame(
+                oldItem: UserInfoEntity,
+                newItem: UserInfoEntity
+            ): Boolean {
+                return oldItem == newItem
             }
         }
+    }
+
 }

@@ -3,7 +3,11 @@ package com.imorning.common.action
 import android.util.Log
 import com.imorning.chat.App
 import com.imorning.common.BuildConfig
+import com.imorning.common.database.UserDatabase
+import com.imorning.common.database.table.UserInfoEntity
 import com.imorning.common.exception.OfflineException
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import org.jivesoftware.smack.roster.Roster
 import org.jivesoftware.smack.roster.RosterEntry
 
@@ -13,6 +17,7 @@ private const val TAG = "Contact"
 object Contact {
 
     private val connection = App.getTCPConnection()
+    private val databaseDao = UserDatabase.getInstance().userInfoDao()
 
     /**
      * 获取好友列表

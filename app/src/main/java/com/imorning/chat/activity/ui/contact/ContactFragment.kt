@@ -4,10 +4,17 @@ import android.os.Bundle
 import android.view.*
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.imorning.chat.App
 import com.imorning.chat.R
+import com.imorning.chat.adapter.ContactRecyclerAdapter
 import com.imorning.chat.databinding.FragmentContactBinding
+import com.imorning.common.action.Contact
+import kotlinx.coroutines.launch
 
 
 class ContactFragment : Fragment() {
@@ -18,25 +25,26 @@ class ContactFragment : Fragment() {
 
     private var _binding: FragmentContactBinding? = null
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
+
+    private val viewModel: ContactViewModel by activityViewModels {
+        ContactViewModelFactory(
+            (activity?.application as App).userDatabase.userInfoDao()
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val contactViewModel =
-            ViewModelProvider(this)[ContactViewModel::class.java]
 
         _binding = FragmentContactBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val rvContactList: RecyclerView = binding.rvContactList
-        contactViewModel.text.observe(viewLifecycleOwner) { data ->
-            // textView.text = data
-        }
+//        contactViewModel.text.observe(viewLifecycleOwner) { data ->
+//            // textView.text = data
+//        }
 
         binding.toolbarContact.addMenuProvider(object : MenuProvider {
 
@@ -52,6 +60,29 @@ class ContactFragment : Fragment() {
             }
         })
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val recyclerView: RecyclerView = binding.rvContactList
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        val members = Contact.getContactList()
+        lifecycleScope.launch {
+            viewModel.insert(members)
+        }
+        val adapter = ContactRecyclerAdapter {
+            lifecycle.coroutineScope.launch {
+                viewModel.queryAll().collect {
+
+                }
+            }
+        }
+        recyclerView.adapter = adapter
+        lifecycle.coroutineScope.launch {
+            viewModel.queryAll().collect {
+                adapter.submitList(it)
+            }
+        }
     }
 
     override fun onDestroyView() {
