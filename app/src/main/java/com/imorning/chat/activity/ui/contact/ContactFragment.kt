@@ -2,11 +2,13 @@ package com.imorning.chat.activity.ui.contact
 
 import android.os.Bundle
 import android.view.*
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.imorning.chat.App
@@ -66,6 +68,18 @@ class ContactFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView: RecyclerView = binding.rvContactList
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        // Add divider for recyclerView
+        val divider = DividerItemDecoration(App.getContext(), DividerItemDecoration.VERTICAL)
+        divider.setDrawable(
+            ResourcesCompat.getDrawable(
+                resources,
+                R.drawable.recycler_view_divider,
+                null
+            )!!
+        )
+        recyclerView.addItemDecoration(divider)
+
         val members = Contact.getContactList()
         lifecycleScope.launch {
             viewModel.insert(members)
