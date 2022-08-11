@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/drawable/ic_account.xml" value="0.196" />
         <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/drawable/ic_baseline_account.xml" value="0.1315" />
         <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/drawable/ic_baseline_contacts.xml" value="0.179" />
         <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/drawable/ic_baseline_lock.xml" value="0.1315" />
@@ -12,7 +13,7 @@
         <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/drawable/ic_lock.xml" value="0.1475" />
         <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/drawable/ic_message.xml" value="0.1475" />
         <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/drawable/ic_settings.xml" value="0.1475" />
-        <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/layout/activity_login.xml" value="0.136" />
+        <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/layout/activity_login.xml" value="0.33" />
         <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/layout/activity_main.xml" value="0.18" />
         <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/layout/fragment_contact.xml" value="0.33" />
         <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/layout/fragment_dashboard.xml" value="0.24947916666666667" />

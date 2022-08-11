@@ -30,6 +30,7 @@
                 android:id="@+id/login_account_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="@string/account"
                 android:imeOptions="actionNext"
                 android:singleLine="true" />
 
@@ -48,10 +49,18 @@
                 android:id="@+id/login_password_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="@string/password"
                 android:imeOptions="actionGo"
+                android:inputType="textPassword"
                 android:singleLine="true" />
 
         </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/login_remember_token"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/remember_password" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
