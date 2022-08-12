@@ -2,14 +2,12 @@ package com.imorning.chat
 
 import android.app.Application
 import android.content.Context
-import android.os.Looper
-import android.widget.Toast
-import com.imorning.common.constant.Server
+import com.imorning.common.constant.ServerConfig
 import com.imorning.common.database.UserDatabase
-import com.imorning.common.utils.Log
-import kotlinx.coroutines.*
+import com.imorning.common.utils.NetworkUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import org.jivesoftware.smack.ConnectionConfiguration
-import org.jivesoftware.smack.SmackException
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration
 
@@ -25,9 +23,9 @@ class App : Application() {
         application = this
 
         val configurationBuilder = XMPPTCPConnectionConfiguration.builder()
-        configurationBuilder.setHost(Server.HOST_NAME)
-        configurationBuilder.setXmppDomain(Server.DOMAIN)
-        configurationBuilder.setPort(Server.LOGIN_PORT)
+        configurationBuilder.setHost(ServerConfig.HOST_NAME)
+        configurationBuilder.setXmppDomain(ServerConfig.DOMAIN)
+        configurationBuilder.setPort(ServerConfig.LOGIN_PORT)
         configurationBuilder.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled)
         configurationBuilder.setSendPresence(false)
         xmppTcpConnection = XMPPTCPConnection(configurationBuilder.build())
@@ -45,7 +43,14 @@ class App : Application() {
 
         @Synchronized
         fun getTCPConnection(): XMPPTCPConnection {
-            return xmppTcpConnection!!
+            xmppTcpConnection!!.apply {
+                if (!this.isConnected && NetworkUtils.isNetworkConnected(getContext())) {
+                    runBlocking(Dispatchers.IO) {
+                        this@apply.connect()
+                    }
+                }
+                return this
+            }
         }
 
     }

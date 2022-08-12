@@ -1,22 +1,22 @@
 package com.imorning.chat.activity
 
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.imorning.chat.R
 import com.imorning.chat.databinding.ActivityMainBinding
-import com.imorning.common.action.Contact
+import com.imorning.chat.service.NetworkService
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var networkService: Intent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,5 +37,13 @@ class MainActivity : AppCompatActivity() {
         )
         // setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        networkService = Intent(this, NetworkService::class.java)
+        startService(networkService)
+    }
+
+    override fun onDestroy() {
+        stopService(networkService)
+        super.onDestroy()
     }
 }

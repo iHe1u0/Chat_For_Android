@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">i聊天</string>
-    <string name="title_activity_main">MainActivity</string>
+
     <string name="title_message">消息</string>
     <string name="title_contact">联系人</string>
     <string name="title_profile">设置</string>
+
     <string name="login">登录</string>
     <string name="add_contact">添加联系人</string>
     <string name="contact_item_avatar_desc">用户头像</string>

@@ -1,6 +1,7 @@
 package com.imorning.chat.activity.ui.contact
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.MenuProvider
@@ -12,10 +13,12 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.imorning.chat.App
+import com.imorning.chat.BuildConfig
 import com.imorning.chat.R
 import com.imorning.chat.adapter.ContactRecyclerAdapter
 import com.imorning.chat.databinding.FragmentContactBinding
-import com.imorning.common.action.Contact
+import com.imorning.common.action.ContactAction
+import com.imorning.common.exception.OfflineException
 import kotlinx.coroutines.launch
 
 
@@ -78,18 +81,25 @@ class ContactFragment : Fragment() {
                 null
             )!!
         )
-        recyclerView.addItemDecoration(divider)
-
-        val members = Contact.getContactList()
-        lifecycleScope.launch {
-            viewModel.insert(members)
-        }
-        val adapter = ContactRecyclerAdapter {
-            lifecycle.coroutineScope.launch {
-                viewModel.queryAll().collect {
-
+        // recyclerView.addItemDecoration(divider)
+        try {
+            val members = ContactAction.getContactList()
+            lifecycleScope.launch {
+                if (members != null) {
+                    viewModel.insert(members)
                 }
             }
+        } catch (e: OfflineException) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "offline...")
+            }
+        }
+        val adapter = ContactRecyclerAdapter {
+//            lifecycle.coroutineScope.launch {
+//                viewModel.queryAll().collect {
+//
+//                }
+//            }
         }
         recyclerView.adapter = adapter
         lifecycle.coroutineScope.launch {

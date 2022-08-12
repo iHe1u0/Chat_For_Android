@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.imorning.chat.BuildConfig
+import com.imorning.common.action.ContactAction
 import com.imorning.common.database.dao.UserInfoDao
 import com.imorning.common.database.table.UserInfoEntity
 import kotlinx.coroutines.flow.Flow
@@ -17,10 +18,10 @@ class ContactViewModel(private val userInfoDao: UserInfoDao) : ViewModel() {
         private const val TAG = "ContactViewModel"
     }
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is contact Fragment"
+    private val _members = MutableLiveData<List<RosterEntry>>().apply {
+        value = ContactAction.getContactList()
     }
-    val text: LiveData<String> = _text
+    val text: LiveData<List<RosterEntry>> = _members
 
     fun queryAll(): Flow<List<UserInfoEntity>> {
         return userInfoDao.getAllContact()

@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import com.imorning.chat.databinding.ActivityLoginBinding
-import com.imorning.common.action.Login
+import com.imorning.common.action.LoginAction
 import com.imorning.common.constant.Config
 import com.imorning.common.constant.StatusCode
 import com.imorning.common.utils.SessionManager
@@ -35,7 +35,7 @@ class LoginActivity : AppCompatActivity() {
                 Snackbar.make(binding.root, "账号密码不能为空", Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            val result = Login.run(
+            val result = LoginAction.run(
                 account = account,
                 password = password
             )

@@ -16,9 +16,9 @@
     <color name="blue_500">#2196F3</color>
     <color name="blue_a200">#448AFF</color>
 
-    <color name="colorPrimary">#8338EC</color>
-    <color name="colorPrimaryVariant">#3A86FF</color>
-    <color name="colorSecondary">#FF006E</color>
+    <color name="colorPrimary">#6A00FF</color>
+    <color name="colorPrimaryVariant">#0095FF</color>
+    <color name="colorSecondary">#FF0040</color>
 
     <color name="diver_color">@color/purple_200</color>
 
