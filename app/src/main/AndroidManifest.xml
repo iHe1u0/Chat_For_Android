@@ -20,7 +20,7 @@
             android:theme="@style/Theme.Base.LoginTheme"
             android:windowSoftInputMode="adjustResize|stateAlwaysVisible">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN-" />
+                <action android:name="android.intent.action.MAINs" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -28,7 +28,8 @@
         <activity
             android:name=".activity.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.BaseTheme.MainTheme">
+            android:theme="@style/Theme.BaseTheme.MainTheme"
+            android:windowSoftInputMode="adjustResize|stateAlwaysVisible">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
