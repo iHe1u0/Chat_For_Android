@@ -73,7 +73,7 @@ class ContactFragment : Fragment() {
                 null
             )!!
         )
-        recyclerView.addItemDecoration(divider)
+        // recyclerView.addItemDecoration(divider)
     }
 
     override fun onDestroyView() {

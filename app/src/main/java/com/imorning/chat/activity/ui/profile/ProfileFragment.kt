@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.imorning.chat.R
+import com.imorning.chat.ui.theme.ProfileTheme
 
 class ProfileFragment : Fragment() {
 
@@ -42,11 +43,13 @@ class ProfileFragment : Fragment() {
             ViewModelProvider(this)[ProfileViewModel::class.java]
         return ComposeView(requireContext()).apply {
             setContent {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    ProfileScreen()
+                ProfileTheme {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        ProfileScreen()
+                    }
                 }
             }
         }
