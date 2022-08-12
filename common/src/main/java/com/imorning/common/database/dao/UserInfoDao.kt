@@ -1,5 +1,6 @@
 package com.imorning.common.database.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.imorning.common.constant.UserDatabaseConstant
 import com.imorning.common.database.table.UserInfoEntity
@@ -9,10 +10,10 @@ import kotlinx.coroutines.flow.Flow
 interface UserInfoDao {
 
     @Query("select * from ${UserDatabaseConstant.TABLE_USER_INFO}")
-    fun getAllContact(): Flow<List<UserInfoEntity>>
+    fun getAllContact(): LiveData<List<UserInfoEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertContact(userInfoEntity: UserInfoEntity)
+    fun insertContact(userInfoEntity: UserInfoEntity)
 
     @Delete
     fun deleteContact(userInfoEntity: UserInfoEntity)

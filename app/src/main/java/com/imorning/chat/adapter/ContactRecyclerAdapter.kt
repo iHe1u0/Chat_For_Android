@@ -13,12 +13,9 @@ import com.imorning.chat.databinding.LayoutContactItemBinding
 import com.imorning.common.database.table.UserInfoEntity
 import com.imorning.common.utils.AvatarUtils
 import com.imorning.common.utils.FileUtils
-import org.jivesoftware.smack.roster.RosterEntry
 
-class ContactRecyclerAdapter(private val onItemClicked: (UserInfoEntity) -> Unit) :
+class ContactRecyclerAdapter(private val contacts: List<UserInfoEntity>) :
     ListAdapter<UserInfoEntity, ContactRecyclerAdapter.ViewHolder>(DiffCallback) {
-
-    private val rosterEntryList: List<RosterEntry>? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val viewHolder: ViewHolder = ViewHolder(
@@ -34,39 +31,42 @@ class ContactRecyclerAdapter(private val onItemClicked: (UserInfoEntity) -> Unit
             if (position < 0) {
                 return@setOnClickListener
             }
-            onItemClicked(getItem(position))
         }
         return viewHolder
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+
+        val entity = contacts[position]
+        val localAvatarCache = FileUtils.instance.getAvatarCache(entity.jid)
+
+        holder.userName.text = entity.username
+        holder.jid.text = entity.jid
+        if (!localAvatarCache.exists()) {
+            AvatarUtils.instance.cacheAvatar(entity.jid)
+        }
+        Glide.with(App.getContext())
+            .load(localAvatarCache)
+            .error(
+                ResourcesCompat.getDrawable(
+                    App.getContext().resources,
+                    R.drawable.ic_default_avatar,
+                    null
+                )
+            )
+            .into(holder.avatar)
+
+    }
+
+    override fun getItemCount(): Int {
+        return contacts.size
     }
 
     class ViewHolder(private var binding: LayoutContactItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(userInfoEntity: UserInfoEntity) {
-            val jid = userInfoEntity.jid
-            val username = userInfoEntity.username
-            val localAvatarCache = FileUtils.instance.getAvatarCache(jid)
-
-            binding.contactItemUsername.text = username
-            binding.contactItemId.text = jid
-
-            if (!localAvatarCache.exists()) {
-                AvatarUtils.instance.cacheAvatar(jid)
-            }
-            Glide.with(App.getContext())
-                .load(localAvatarCache)
-                .error(
-                    ResourcesCompat.getDrawable(
-                        App.getContext().resources,
-                        R.drawable.ic_default_avatar,
-                        null
-                    )
-                )
-                .into(binding.contactItemAvatar)
-        }
+        val avatar = binding.contactItemAvatar
+        val userName = binding.contactItemUsername
+        val jid = binding.contactItemId
     }
 
     companion object {

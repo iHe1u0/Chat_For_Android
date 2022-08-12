@@ -1,48 +1,56 @@
 package com.imorning.chat.activity.ui.contact
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import com.imorning.chat.BuildConfig
 import com.imorning.common.action.ContactAction
+import com.imorning.common.database.UserDatabase
 import com.imorning.common.database.dao.UserInfoDao
 import com.imorning.common.database.table.UserInfoEntity
+import com.imorning.common.exception.OfflineException
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jivesoftware.smack.roster.RosterEntry
+import javax.inject.Inject
 
-class ContactViewModel(private val userInfoDao: UserInfoDao) : ViewModel() {
+@HiltViewModel
+class ContactViewModel @Inject constructor(private val userInfoDao: UserInfoDao) : ViewModel() {
 
     companion object {
         private const val TAG = "ContactViewModel"
     }
 
-    private val _members = MutableLiveData<List<RosterEntry>>().apply {
-        value = ContactAction.getContactList()
-    }
-    val text: LiveData<List<RosterEntry>> = _members
+    private val database = UserDatabase.getInstance()
+    internal val allContacts: LiveData<List<UserInfoEntity>> =
+        database.userInfoDao().getAllContact()
 
-    fun queryAll(): Flow<List<UserInfoEntity>> {
-        return userInfoDao.getAllContact()
-    }
-
-    suspend fun insert(members: List<RosterEntry>) {
-        if (members.isEmpty()) {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "insert size is null or zero")
+    init {
+        viewModelScope.launch {
+            try {
+                val members = ContactAction.getContactList()
+                if (members != null && members.isNotEmpty()) {
+                    for (member in members) {
+                        withContext(Dispatchers.IO) {
+                            userInfoDao.insertContact(
+                                UserInfoEntity(
+                                    jid = member.jid.asUnescapedString(),
+                                    username = member.name
+                                )
+                            )
+                        }
+                    }
+                }
+            } catch (e: OfflineException) {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "offline...")
+                }
             }
-            return
-        }
-        for (member in members) {
-            userInfoDao.insertContact(
-                UserInfoEntity(
-                    jid = member.jid.asUnescapedString(),
-                    username = member.name
-                )
-            )
         }
     }
+
 }
 
 

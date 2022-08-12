@@ -1,26 +1,20 @@
 package com.imorning.chat.activity.ui.contact
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.coroutineScope
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.imorning.chat.App
-import com.imorning.chat.BuildConfig
 import com.imorning.chat.R
+import com.imorning.chat.activity.ui.profile.ProfileViewModel
 import com.imorning.chat.adapter.ContactRecyclerAdapter
 import com.imorning.chat.databinding.FragmentContactBinding
-import com.imorning.common.action.ContactAction
-import com.imorning.common.exception.OfflineException
-import kotlinx.coroutines.launch
-
 
 class ContactFragment : Fragment() {
 
@@ -47,14 +41,12 @@ class ContactFragment : Fragment() {
         _binding = FragmentContactBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-//        contactViewModel.text.observe(viewLifecycleOwner) { data ->
-//            // textView.text = data
-//        }
+        viewModel.allContacts.observe(viewLifecycleOwner) { list ->
+            binding.rvContactList.adapter = ContactRecyclerAdapter(list)
+        }
 
         binding.toolbarContact.addMenuProvider(object : MenuProvider {
-
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {}
-
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.main_contact_menu_add -> {
@@ -81,32 +73,7 @@ class ContactFragment : Fragment() {
                 null
             )!!
         )
-        // recyclerView.addItemDecoration(divider)
-        try {
-            val members = ContactAction.getContactList()
-            lifecycleScope.launch {
-                if (members != null) {
-                    viewModel.insert(members)
-                }
-            }
-        } catch (e: OfflineException) {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "offline...")
-            }
-        }
-        val adapter = ContactRecyclerAdapter {
-//            lifecycle.coroutineScope.launch {
-//                viewModel.queryAll().collect {
-//
-//                }
-//            }
-        }
-        recyclerView.adapter = adapter
-        lifecycle.coroutineScope.launch {
-            viewModel.queryAll().collect {
-                adapter.submitList(it)
-            }
-        }
+        recyclerView.addItemDecoration(divider)
     }
 
     override fun onDestroyView() {

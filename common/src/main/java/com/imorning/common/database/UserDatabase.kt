@@ -12,7 +12,8 @@ import com.imorning.common.database.table.UserInfoEntity
 
 @Database(
     entities = [UserInfoEntity::class, MessageEntity::class],
-    version = 1
+    version = 1,
+    exportSchema = false
 )
 
 abstract class UserDatabase : RoomDatabase() {
@@ -29,7 +30,8 @@ abstract class UserDatabase : RoomDatabase() {
                     App.getContext(),
                     UserDatabase::class.java,
                     UserDatabaseConstant.DATABASE_NAME
-                ).build()
+                )
+                    .build()
             }
             return userDatabase
         }
