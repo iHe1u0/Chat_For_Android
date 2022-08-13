@@ -53,6 +53,11 @@ dependencies {
     api "androidx.room:room-rxjava3:$room_version"
     api "androidx.room:room-guava:$room_version"
     api "androidx.room:room-paging:2.5.0-alpha02"
+    // Glide
+    api "com.github.bumptech.glide:glide:4.13.2"
+    kapt "com.github.bumptech.glide:compiler:4.13.2"
+    // Logger
+    api "com.orhanobut:logger:2.2.0"
 
     implementation "androidx.core:core-ktx:1.8.0"
     implementation "androidx.appcompat:appcompat:1.4.2"

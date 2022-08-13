@@ -35,7 +35,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_message, R.id.navigation_contact, R.id.navigation_profile
             )
         )
-        // setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
         networkService = Intent(this, NetworkService::class.java)

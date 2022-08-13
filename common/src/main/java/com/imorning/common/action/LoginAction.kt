@@ -33,7 +33,11 @@ object LoginAction {
                 supervisorScope {
                     val job = async(Dispatchers.IO) {
                         if (!connection.isConnected) {
-                            connection.connect()
+                            try {
+                                connection.connect()
+                            } catch (assertError: AssertionError) {
+                                return@async
+                            }
                         }
                         if (!connection.isAuthenticated) {
                             connection.login(account, password)

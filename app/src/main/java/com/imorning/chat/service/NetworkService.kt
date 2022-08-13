@@ -14,6 +14,9 @@ import com.imorning.common.action.LoginAction
 import com.imorning.common.constant.Config
 import com.imorning.common.utils.NetworkUtils
 import com.imorning.common.utils.SessionManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 class NetworkService : Service() {
 
@@ -35,7 +38,9 @@ class NetworkService : Service() {
                     }
                     if (!connection.isAuthenticated) {
                         if (!connection.isConnected) {
-                            connection.connect()
+                            MainScope().launch(Dispatchers.IO) {
+                                connection.connect()
+                            }
                         }
                         if (sessionManager.fetchAccount() != null && sessionManager.fetchAuthToken() != null) {
                             LoginAction.run(

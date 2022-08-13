@@ -2,14 +2,21 @@ package com.imorning.chat
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
+import com.bumptech.glide.Glide
+import com.imorning.common.BuildConfig
 import com.imorning.common.constant.ServerConfig
 import com.imorning.common.database.UserDatabase
+import com.imorning.common.manager.ConnectionManager
 import com.imorning.common.utils.NetworkUtils
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import com.orhanobut.logger.AndroidLogAdapter
+import com.orhanobut.logger.Logger
+import kotlinx.coroutines.*
 import org.jivesoftware.smack.ConnectionConfiguration
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration
+import org.jivesoftware.smackx.vcardtemp.packet.VCard
+import kotlin.system.exitProcess
 
 
 class App : Application() {
@@ -21,6 +28,12 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         application = this
+
+        Logger.addLogAdapter(object : AndroidLogAdapter() {
+            override fun isLoggable(priority: Int, tag: String?): Boolean {
+                return BuildConfig.DEBUG
+            }
+        })
 
         val configurationBuilder = XMPPTCPConnectionConfiguration.builder()
         configurationBuilder.setHost(ServerConfig.HOST_NAME)
@@ -37,6 +50,8 @@ class App : Application() {
         private var application: Application? = null
         private var xmppTcpConnection: XMPPTCPConnection? = null
 
+        var vCard: VCard? = null
+
         fun getContext(): Context {
             return application!!
         }
@@ -45,11 +60,31 @@ class App : Application() {
         fun getTCPConnection(): XMPPTCPConnection {
             xmppTcpConnection!!.apply {
                 if (!this.isConnected && NetworkUtils.isNetworkConnected(getContext())) {
-                    runBlocking(Dispatchers.IO) {
-                        this@apply.connect()
+                    runBlocking {
+                        supervisorScope {
+                            val connectJob = async(Dispatchers.IO) {
+                                xmppTcpConnection!!.connect()
+                            }
+                            try {
+                                connectJob.await() //抛出异常
+                            } catch (assertionError: AssertionError) {
+                                Logger.e(TAG, "get TCP Connection failed", assertionError)
+                            }
+                        }
                     }
                 }
                 return this
+            }
+        }
+
+        fun exitApp() {
+            if (ConnectionManager.isConnectionAuthenticated(connection = xmppTcpConnection)) {
+                xmppTcpConnection?.disconnect()
+            }
+            Glide.get(App.getContext()).clearMemory()
+            MainScope().launch(Dispatchers.IO) {
+                App().userDatabase.userInfoDao().deleteAllContact()
+                exitProcess(0)
             }
         }
 

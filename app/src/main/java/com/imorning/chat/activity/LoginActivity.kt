@@ -4,11 +4,15 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
+import com.imorning.chat.App
 import com.imorning.chat.databinding.ActivityLoginBinding
 import com.imorning.common.action.LoginAction
 import com.imorning.common.constant.Config
 import com.imorning.common.constant.StatusCode
+import com.imorning.common.utils.AvatarUtils
 import com.imorning.common.utils.SessionManager
+import com.orhanobut.logger.Logger
+import org.jivesoftware.smackx.vcardtemp.VCardManager
 
 private const val TAG = "LoginActivity"
 
@@ -45,8 +49,13 @@ class LoginActivity : AppCompatActivity() {
                         sessionManager.saveAccount(account)
                         sessionManager.saveAuthToken(password)
                     }
+                    val selfVCard = VCardManager.getInstanceFor(App.getTCPConnection()).loadVCard()
+                    App.vCard = selfVCard
+                    AvatarUtils.instance.cacheAvatar(App.getTCPConnection().user.asEntityBareJidString())
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     startActivity(intent)
+                    Logger.xml(selfVCard.toXML().toString())
                     this.finish()
                 }
                 StatusCode.LOGIN_AUTH_FAILED -> {

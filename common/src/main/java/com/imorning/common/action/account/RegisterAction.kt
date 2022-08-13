@@ -5,6 +5,7 @@ import com.imorning.chat.App
 import com.imorning.common.BuildConfig
 import com.imorning.common.constant.StatusCode.ERROR
 import com.imorning.common.constant.StatusCode.OK
+import com.orhanobut.logger.Logger
 import org.jivesoftware.smackx.iqregister.AccountManager
 import org.jxmpp.jid.parts.Localpart
 
@@ -23,7 +24,7 @@ object Register {
             return OK
         } catch (e: Exception) {
             if (BuildConfig.DEBUG) {
-                Log.e(TAG, "register new user failed", e)
+                Logger.e(TAG, "register new user failed", e)
             }
             return ERROR
         }

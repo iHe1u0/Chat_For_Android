@@ -13,7 +13,9 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,12 +27,15 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import coil.compose.rememberAsyncImagePainter
+import com.imorning.chat.App
 import com.imorning.chat.R
 import com.imorning.chat.ui.theme.ProfileTheme
+
+private const val TAG = "ProfileFragment"
 
 class ProfileFragment : Fragment() {
 
@@ -48,7 +53,7 @@ class ProfileFragment : Fragment() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        ProfileScreen()
+                        ProfileScreen(profileViewModel)
                     }
                 }
             }
@@ -57,18 +62,18 @@ class ProfileFragment : Fragment() {
 
 }
 
-@Preview(showSystemUi = true)
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(profileViewModel: ProfileViewModel) {
     val context = LocalContext.current
     Column(
         modifier = Modifier
             .offset(y = 12.dp)
             .fillMaxSize()
     ) {
-        val nickName = "nickName"
-        val phoneNumber = "+86 123 1234 1234"
-        val userName = "userName"
+        val avatarPath = "${profileViewModel.avatarPath.observeAsState().value}"
+        val nickName = "${profileViewModel.nickname.observeAsState().value}"
+        val phoneNumber = "${profileViewModel.phoneNumber.observeAsState().value}"
+        val userName = "${profileViewModel.userName.observeAsState().value}"
         Text(
             text = context.getString(R.string.title_profile),
             modifier = Modifier.fillMaxWidth(),
@@ -82,7 +87,7 @@ fun ProfileScreen() {
                 .offset(y = 16.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_default_avatar),
+                painter = rememberAsyncImagePainter(model = avatarPath),
                 contentDescription = "avatar",
                 modifier = Modifier
                     .size(
@@ -115,7 +120,8 @@ fun ProfileScreen() {
                     style = MaterialTheme.typography.bodyLarge,
                     onClick = {
                         Toast.makeText(context, phoneNumber, Toast.LENGTH_SHORT).show()
-                    })
+                    }
+                )
                 ClickableText(
                     text = AnnotatedString(
                         text = userName,
@@ -126,7 +132,8 @@ fun ProfileScreen() {
                     style = MaterialTheme.typography.bodyLarge,
                     onClick = {
                         Toast.makeText(context, userName, Toast.LENGTH_SHORT).show()
-                    })
+                    }
+                )
             }
         }
         Text(
@@ -146,71 +153,92 @@ fun ProfileScreen() {
                 .height(2.dp)
                 .background(color = Color.Cyan)
         )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+        TextButton(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { /*TODO*/ },
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_code),
-                contentDescription = "关于",
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
                 modifier = Modifier
-                    .size(36.dp, 36.dp)
-                    .background(
-                        color = Color.Blue.copy(alpha = 0.12f),
-                        shape = RoundedCornerShape(36.dp)
-                    )
-            )
-            Text(
-                text = "关于",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(start = 12.dp),
-                style = MaterialTheme.typography.titleMedium
-            )
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, top = 8.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_code),
+                    contentDescription = "关于",
+                    modifier = Modifier
+                        .size(36.dp, 36.dp)
+                        .background(
+                            color = Color.Blue.copy(alpha = 0.12f),
+                            shape = RoundedCornerShape(36.dp)
+                        )
+                )
+                Text(
+                    text = "关于",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(start = 12.dp),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
         }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+        TextButton(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { /*TODO*/ },
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_bug_report),
-                contentDescription = "报告问题",
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
                 modifier = Modifier
-                    .size(36.dp, 36.dp)
-                    .background(
-                        color = Color.Blue.copy(alpha = 0.12f),
-                        shape = RoundedCornerShape(36.dp)
-                    )
-            )
-            Text(
-                text = "报告问题",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(start = 12.dp),
-                style = MaterialTheme.typography.titleMedium
-            )
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, top = 8.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_bug_report),
+                    contentDescription = "报告问题",
+                    modifier = Modifier
+                        .size(36.dp, 36.dp)
+                        .background(
+                            color = Color.Blue.copy(alpha = 0.12f),
+                            shape = RoundedCornerShape(36.dp)
+                        )
+                )
+                Text(
+                    text = "报告问题",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(start = 12.dp),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
         }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+        TextButton(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { App.exitApp() },
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_exit_to_app),
-                contentDescription = "退出",
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
                 modifier = Modifier
-                    .size(36.dp, 36.dp)
-                    .background(
-                        color = Color.Blue.copy(alpha = 0.12f),
-                        shape = RoundedCornerShape(36.dp)
-                    )
-            )
-            Text(
-                text = "退出",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(start = 12.dp),
-                style = MaterialTheme.typography.titleMedium
-            )
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, top = 8.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_exit_to_app),
+                    contentDescription = "退出",
+                    modifier = Modifier
+                        .size(36.dp, 36.dp)
+                        .background(
+                            color = Color.Blue.copy(alpha = 0.12f),
+                            shape = RoundedCornerShape(36.dp)
+                        )
+                )
+                Text(
+                    text = "退出",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(start = 12.dp),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
         }
     }
 }
