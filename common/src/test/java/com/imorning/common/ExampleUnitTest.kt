@@ -19,7 +19,7 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun debugP() {
+    fun debugPrint() {
         val jid = "admin@test.com"
         println(MD5Utils.digest(jid))
     }

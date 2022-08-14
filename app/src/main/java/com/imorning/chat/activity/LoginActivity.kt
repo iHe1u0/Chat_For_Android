@@ -2,6 +2,7 @@ package com.imorning.chat.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import com.imorning.chat.App
@@ -12,6 +13,10 @@ import com.imorning.common.constant.StatusCode
 import com.imorning.common.utils.AvatarUtils
 import com.imorning.common.utils.SessionManager
 import com.orhanobut.logger.Logger
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jivesoftware.smackx.vcardtemp.VCardManager
 
 private const val TAG = "LoginActivity"
@@ -33,39 +38,46 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.loginGoButton.setOnClickListener {
+            binding.loginProgress.visibility = View.VISIBLE
             val account = binding.loginAccountEdit.text.toString().trim()
             val password = binding.loginPasswordEdit.text.toString().trim()
             if (account.isEmpty() || password.isEmpty()) {
                 Snackbar.make(binding.root, "账号密码不能为空", Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            val result = LoginAction.run(
-                account = account,
-                password = password
-            )
-            when (result) {
-                StatusCode.OK -> {
-                    if (binding.loginRememberToken.isChecked) {
-                        sessionManager.saveAccount(account)
-                        sessionManager.saveAuthToken(password)
+            MainScope().launch(Dispatchers.IO) {
+                val result = LoginAction.run(
+                    account = account,
+                    password = password
+                )
+                when (result) {
+                    StatusCode.OK -> {
+                        if (binding.loginRememberToken.isChecked) {
+                            sessionManager.saveAccount(account)
+                            sessionManager.saveAuthToken(password)
+                        }
+                        val selfVCard =
+                            VCardManager.getInstanceFor(App.getTCPConnection()).loadVCard()
+                        App.vCard = selfVCard
+                        AvatarUtils.instance.cacheAvatar(App.getTCPConnection().user.asEntityBareJidString())
+                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        startActivity(intent)
+                        Logger.xml(selfVCard.toXML().toString())
+                        // this.finish()
                     }
-                    val selfVCard = VCardManager.getInstanceFor(App.getTCPConnection()).loadVCard()
-                    App.vCard = selfVCard
-                    AvatarUtils.instance.cacheAvatar(App.getTCPConnection().user.asEntityBareJidString())
-                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    startActivity(intent)
-                    Logger.xml(selfVCard.toXML().toString())
-                    this.finish()
+                    StatusCode.LOGIN_AUTH_FAILED -> {
+                        Snackbar.make(binding.root, "登陆失败: 账号或密码错误", Snackbar.LENGTH_SHORT).show()
+                    }
+                    StatusCode.NETWORK_ERROR -> {
+                        Snackbar.make(binding.root, "登陆失败: 网络无连接", Snackbar.LENGTH_SHORT).show()
+                    }
+                    else -> {
+                        Snackbar.make(binding.root, "登陆失败: $result", Snackbar.LENGTH_SHORT).show()
+                    }
                 }
-                StatusCode.LOGIN_AUTH_FAILED -> {
-                    Snackbar.make(binding.root, "登陆失败: 账号或密码错误", Snackbar.LENGTH_SHORT).show()
-                }
-                StatusCode.NETWORK_ERROR -> {
-                    Snackbar.make(binding.root, "登陆失败: 网络无连接", Snackbar.LENGTH_SHORT).show()
-                }
-                else -> {
-                    Snackbar.make(binding.root, "登陆失败: $result", Snackbar.LENGTH_SHORT).show()
+                withContext(Dispatchers.Main) {
+                    binding.loginProgress.visibility = View.GONE
                 }
             }
         }
