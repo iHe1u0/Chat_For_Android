@@ -7,21 +7,19 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.os.IBinder
-import android.util.Log
 import com.imorning.chat.App
 import com.imorning.chat.BuildConfig
 import com.imorning.common.action.LoginAction
 import com.imorning.common.constant.Config
 import com.imorning.common.utils.NetworkUtils
 import com.imorning.common.utils.SessionManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
+import com.orhanobut.logger.Logger
+import kotlinx.coroutines.*
 
 class NetworkService : Service() {
 
     private val networkReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
+        override fun onReceive(context: Context, intent: Intent?) {
             if (intent == null) {
                 return
             }
@@ -31,24 +29,34 @@ class NetworkService : Service() {
                     val connection = App.getTCPConnection()
                     val sessionManager = SessionManager(Config.LOGIN_INFO)
                     if (BuildConfig.DEBUG) {
-                        Log.d(
-                            TAG,
+                        Logger.d(
                             "server is connected:${connection.isConnected} isAuthed:${connection.isAuthenticated}"
                         )
                     }
-                    if (!connection.isAuthenticated) {
-                        if (!connection.isConnected) {
-                            MainScope().launch(Dispatchers.IO) {
-                                connection.connect()
+                    if (!connection.isAuthenticated &&
+                        !connection.isConnected &&
+                        NetworkUtils.isNetworkConnected(context)
+                    ) {
+                        MainScope().launch(Dispatchers.IO) {
+                            runBlocking {
+                                supervisorScope {
+                                    val connectJob = async(Dispatchers.IO) {
+                                        connection.connect()
+                                        if (sessionManager.fetchAccount() != null && sessionManager.fetchAuthToken() != null) {
+                                            LoginAction.run(
+                                                account = sessionManager.fetchAccount()!!,
+                                                password = sessionManager.fetchAuthToken()!!
+                                            )
+                                        }
+                                    }
+                                    try {
+                                        connectJob.await()
+                                    } catch (assertionError: AssertionError) {
+                                        Logger.e("get TCP Connection failed", assertionError)
+                                    }
+                                }
                             }
                         }
-                        if (sessionManager.fetchAccount() != null && sessionManager.fetchAuthToken() != null) {
-                            LoginAction.run(
-                                account = sessionManager.fetchAccount()!!,
-                                password = sessionManager.fetchAuthToken()!!
-                            )
-                        }
-
                     }
                 }
             }

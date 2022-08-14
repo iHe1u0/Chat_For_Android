@@ -65,15 +65,12 @@ class ContactFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         // Add divider for recyclerView
-        val divider = DividerItemDecoration(App.getContext(), DividerItemDecoration.VERTICAL)
-        divider.setDrawable(
-            ResourcesCompat.getDrawable(
-                resources,
-                R.drawable.recycler_view_divider,
-                null
-            )!!
-        )
-        // recyclerView.addItemDecoration(divider)
+        /**
+         * val divider = DividerItemDecoration(App.getContext(), DividerItemDecoration.VERTICAL)
+         * divider.setDrawable(
+         * ResourcesCompat.getDrawable(resources,R.drawable.recycler_view_divider,null)!!)
+         * recyclerView.addItemDecoration(divider
+         **/
     }
 
     override fun onDestroyView() {

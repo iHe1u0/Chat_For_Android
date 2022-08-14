@@ -45,7 +45,7 @@ class ContactViewModel @Inject constructor(private val userInfoDao: UserInfoDao)
                 }
             } catch (e: OfflineException) {
                 if (BuildConfig.DEBUG) {
-                    Log.d(TAG, "offline...")
+                    Log.d(TAG, "user offline")
                 }
             }
         }

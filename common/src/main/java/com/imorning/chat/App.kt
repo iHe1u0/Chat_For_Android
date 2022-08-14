@@ -2,7 +2,6 @@ package com.imorning.chat
 
 import android.app.Application
 import android.content.Context
-import android.util.Log
 import com.bumptech.glide.Glide
 import com.imorning.common.BuildConfig
 import com.imorning.common.constant.ServerConfig
@@ -11,6 +10,7 @@ import com.imorning.common.manager.ConnectionManager
 import com.imorning.common.utils.NetworkUtils
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
+import com.orhanobut.logger.PrettyFormatStrategy
 import kotlinx.coroutines.*
 import org.jivesoftware.smack.ConnectionConfiguration
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
@@ -29,7 +29,12 @@ class App : Application() {
         super.onCreate()
         application = this
 
-        Logger.addLogAdapter(object : AndroidLogAdapter() {
+        val formatStrategy = PrettyFormatStrategy.newBuilder()
+            .showThreadInfo(true)
+            .methodCount(2)
+            .tag(TAG)
+            .build()
+        Logger.addLogAdapter(object : AndroidLogAdapter(formatStrategy) {
             override fun isLoggable(priority: Int, tag: String?): Boolean {
                 return BuildConfig.DEBUG
             }
@@ -45,7 +50,7 @@ class App : Application() {
     }
 
     companion object {
-        private const val TAG = "App"
+        private const val TAG = "ChatApp_LOG"
 
         private var application: Application? = null
         private var xmppTcpConnection: XMPPTCPConnection? = null
@@ -66,9 +71,9 @@ class App : Application() {
                                 xmppTcpConnection!!.connect()
                             }
                             try {
-                                connectJob.await() //抛出异常
+                                connectJob.await()
                             } catch (assertionError: AssertionError) {
-                                Logger.e(TAG, "get TCP Connection failed", assertionError)
+                                Logger.e("get TCP Connection failed", assertionError)
                             }
                         }
                     }

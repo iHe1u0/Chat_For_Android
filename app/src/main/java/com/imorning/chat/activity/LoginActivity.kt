@@ -10,6 +10,7 @@ import com.imorning.chat.databinding.ActivityLoginBinding
 import com.imorning.common.action.LoginAction
 import com.imorning.common.constant.Config
 import com.imorning.common.constant.StatusCode
+import com.imorning.common.manager.ConnectionManager
 import com.imorning.common.utils.AvatarUtils
 import com.imorning.common.utils.SessionManager
 import com.orhanobut.logger.Logger
@@ -56,15 +57,16 @@ class LoginActivity : AppCompatActivity() {
                             sessionManager.saveAccount(account)
                             sessionManager.saveAuthToken(password)
                         }
-                        val selfVCard =
-                            VCardManager.getInstanceFor(App.getTCPConnection()).loadVCard()
-                        App.vCard = selfVCard
-                        AvatarUtils.instance.cacheAvatar(App.getTCPConnection().user.asEntityBareJidString())
+                        if (ConnectionManager.isConnectionAuthenticated(App.getTCPConnection())) {
+                            val selfVCard =
+                                VCardManager.getInstanceFor(App.getTCPConnection()).loadVCard()
+                            App.vCard = selfVCard
+                            AvatarUtils.instance.cacheAvatar(App.getTCPConnection().user.asEntityBareJidString())
+                            Logger.xml(selfVCard.toXML().toString())
+                        }
                         val intent = Intent(this@LoginActivity, MainActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                         startActivity(intent)
-                        Logger.xml(selfVCard.toXML().toString())
-                        // this.finish()
                     }
                     StatusCode.LOGIN_AUTH_FAILED -> {
                         Snackbar.make(binding.root, "登陆失败: 账号或密码错误", Snackbar.LENGTH_SHORT).show()

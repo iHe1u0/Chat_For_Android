@@ -2,8 +2,8 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mobile_navigation2"
-    app:startDestination="@+id/navigation_profile">
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_message">
 
     <fragment
         android:id="@+id/navigation_message"
@@ -22,4 +22,5 @@
         android:name="com.imorning.chat.activity.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
         tools:layout="@layout/fragment_profile" />
+
 </navigation>

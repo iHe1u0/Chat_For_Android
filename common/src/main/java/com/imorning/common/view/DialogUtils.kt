@@ -9,21 +9,16 @@ object DialogUtils {
         context: Context,
         title: String,
         message: String,
-        positiveButtonString: String? = context.getString(android.R.string.ok)
+        cancelable: Boolean = false,
+        positiveButtonString: String = context.getString(android.R.string.ok)
     ) {
         MaterialAlertDialogBuilder(context)
             .setTitle(title)
             .setMessage(message)
+            .setCancelable(cancelable)
             .setPositiveButton(positiveButtonString) { _, _ ->
             }
             .show()
     }
 
-    fun wait(
-        context: Context,
-        message: String,
-        cancelString: String? = ""
-    ) {
-
-    }
 }

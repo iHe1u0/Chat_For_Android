@@ -2,11 +2,11 @@ package com.imorning.common.action
 
 import android.util.Log
 import com.imorning.chat.App
-import com.imorning.common.BuildConfig
 import com.imorning.common.constant.StatusCode
 import com.imorning.common.constant.StatusCode.LOGIN_FAILED_CAUSE_ONLINE
 import com.imorning.common.constant.StatusCode.OK
 import com.imorning.common.utils.NetworkUtils
+import com.orhanobut.logger.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
@@ -40,6 +40,7 @@ object LoginAction {
                             }
                         }
                         if (!connection.isAuthenticated) {
+                            Logger.d("login as $account")
                             connection.login(account, password)
                             val presence =
                                 connection.stanzaFactory.buildPresenceStanza()
@@ -48,22 +49,16 @@ object LoginAction {
                             connection.sendStanza(presence)
                             retCode = OK
                         } else {
-                            if (BuildConfig.DEBUG) {
-                                Log.d(TAG, "user has been online")
-                            }
+                            Logger.d("user has been online")
                             retCode = LOGIN_FAILED_CAUSE_ONLINE
                         }
                     }
                     try {
                         job.await()
                         retCode = OK
-                        if (BuildConfig.DEBUG) {
-                            Log.d(TAG, "login success")
-                        }
+                        Logger.d("login success")
                     } catch (e: SmackException) {
-                        if (BuildConfig.DEBUG) {
-                            Log.d(TAG, "network exception", e)
-                        }
+                        Logger.d("network exception", e)
                         retCode = StatusCode.NETWORK_ERROR
                     } catch (e: SASLErrorException) {
                         retCode = StatusCode.LOGIN_AUTH_FAILED

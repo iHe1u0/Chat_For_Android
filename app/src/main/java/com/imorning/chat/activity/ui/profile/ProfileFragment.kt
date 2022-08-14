@@ -10,10 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -22,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -33,7 +31,7 @@ import androidx.lifecycle.ViewModelProvider
 import coil.compose.rememberAsyncImagePainter
 import com.imorning.chat.App
 import com.imorning.chat.R
-import com.imorning.chat.ui.theme.ProfileTheme
+import com.imorning.chat.ui.theme.MainTheme
 
 private const val TAG = "ProfileFragment"
 
@@ -48,7 +46,7 @@ class ProfileFragment : Fragment() {
             ViewModelProvider(this)[ProfileViewModel::class.java]
         return ComposeView(requireContext()).apply {
             setContent {
-                ProfileTheme {
+                MainTheme {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
@@ -71,15 +69,19 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
             .fillMaxSize()
     ) {
         val avatarPath = "${profileViewModel.avatarPath.observeAsState().value}"
-        val nickName = "${profileViewModel.nickname.observeAsState().value}"
-        val phoneNumber = "${profileViewModel.phoneNumber.observeAsState().value}"
-        val userName = "${profileViewModel.userName.observeAsState().value}"
+        val nickName = profileViewModel.nickname.observeAsState()
+        val phoneNumber = profileViewModel.phoneNumber.observeAsState()
+        val userName = profileViewModel.userName.observeAsState()
         Text(
             text = context.getString(R.string.title_profile),
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
+            style = MaterialTheme.typography.titleLarge,
+        )
+        Divider(
+            modifier = Modifier
+                .padding(top = 12.dp)
+                .background(color = colorResource(R.color.diver_color))
         )
         Row(
             modifier = Modifier
@@ -106,47 +108,47 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                 modifier = Modifier.offset(x = 20.dp)
             ) {
                 Text(
-                    text = nickName,
+                    text = "${nickName.value}",
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.titleMedium
                 )
                 ClickableText(
                     text = AnnotatedString(
-                        text = phoneNumber,
+                        text = "${phoneNumber.value}",
                         spanStyle = SpanStyle(
                             color = Color.Blue,
                         )
                     ),
                     style = MaterialTheme.typography.bodyLarge,
                     onClick = {
-                        Toast.makeText(context, phoneNumber, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, phoneNumber.value, Toast.LENGTH_SHORT).show()
                     }
                 )
                 ClickableText(
                     text = AnnotatedString(
-                        text = userName,
+                        text = "@${userName.value}",
                         spanStyle = SpanStyle(
                             color = Color.Blue,
                         )
                     ),
                     style = MaterialTheme.typography.bodyLarge,
                     onClick = {
-                        Toast.makeText(context, userName, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "${userName.value}", Toast.LENGTH_SHORT).show()
                     }
                 )
             }
         }
         Text(
-            text = "温带的风，温柔栖息\n" +
-                    "这样来信的才读得认真\n" +
-                    "随风摇曳的单薄纸张\n" +
-                    "不小心就多了泪痕",
-            modifier = Modifier.padding(start = 16.dp, top = 28.dp),
+            text = "温带的风 温柔栖息 这样来信的才读得认真 随风摇曳的单薄纸张 不小心就多了泪痕",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, top = 28.dp),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Medium,
-            maxLines = 12
+            maxLines = 3,
+            softWrap = true
         )
-        Spacer(
+        Divider(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp)
@@ -184,7 +186,8 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
         }
         TextButton(
             modifier = Modifier.fillMaxWidth(),
-            onClick = { /*TODO*/ },
+            onClick = {
+            },
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
