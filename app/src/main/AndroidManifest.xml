@@ -17,11 +17,11 @@
         <activity
             android:name=".activity.LoginActivity"
             android:exported="true"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.Base.LoginTheme"
             android:windowSoftInputMode="adjustResize|stateAlwaysVisible">
             <intent-filter>
-                <action android:name="android.intent.action.MAIeN" />
+                <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -32,17 +32,21 @@
             android:theme="@style/Theme.BaseTheme.MainTheme"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAINs" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activity.ChatActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize|stateAlwaysVisible"  />
 
         <service
             android:name=".service.NetworkService"
             android:enabled="true"
-            android:exported="false" />
-
+            android:exported="false"/>
     </application>
 
 </manifest>

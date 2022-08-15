@@ -20,9 +20,10 @@
         <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/drawable/ic_settings.xml" value="0.1475" />
         <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/drawable/ic_star.xml" value="0.251" />
         <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/drawable/recycler_view_divider.xml" value="0.195" />
+        <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/layout/activity_chat.xml" value="0.1453125" />
         <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/layout/activity_login.xml" value="0.33" />
-        <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/layout/activity_main.xml" value="0.18" />
-        <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/layout/fragment_contact.xml" value="0.22" />
+        <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/layout/fragment_contact.xml" value="0.18" />
         <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/layout/fragment_dashboard.xml" value="0.24947916666666667" />
         <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/layout/fragment_message.xml" value="0.25" />
         <entry key="..\:/Workspace/AndroidStudioProjects/ChatForAndroid/app/src/main/res/layout/fragment_profile.xml" value="0.3619791666666667" />

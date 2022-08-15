@@ -25,8 +25,8 @@ object MessageManager {
 
         //将用户状态设为离线
         val presence = Presence(Presence.Type.unavailable)
-        val offlinePresence =
-            PresenceBuilder.buildPresence(Presence.Type.unavailable.toString())
+        // val offlinePresence =
+        //     PresenceBuilder.buildPresence(Presence.Type.unavailable.toString())
         connection.sendStanza(presence)
 
         val offlineMessageManager = OfflineMessageManager.getInstanceFor(connection)

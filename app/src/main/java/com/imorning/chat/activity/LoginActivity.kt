@@ -22,7 +22,7 @@ import org.jivesoftware.smackx.vcardtemp.VCardManager
 
 private const val TAG = "LoginActivity"
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : BaseActivity() {
 
     private lateinit var binding: ActivityLoginBinding
 
@@ -65,8 +65,9 @@ class LoginActivity : AppCompatActivity() {
                             Logger.xml(selfVCard.toXML().toString())
                         }
                         val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP;
                         startActivity(intent)
+                        this@LoginActivity.finish()
                     }
                     StatusCode.LOGIN_AUTH_FAILED -> {
                         Snackbar.make(binding.root, "登陆失败: 账号或密码错误", Snackbar.LENGTH_SHORT).show()
