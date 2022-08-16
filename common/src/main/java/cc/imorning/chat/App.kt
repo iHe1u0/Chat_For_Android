@@ -2,12 +2,12 @@ package cc.imorning.chat
 
 import android.app.Application
 import android.content.Context
-import com.bumptech.glide.Glide
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.constant.ServerConfig
 import cc.imorning.common.database.UserDatabase
 import cc.imorning.common.manager.ConnectionManager
 import cc.imorning.common.utils.NetworkUtils
+import com.bumptech.glide.Glide
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
@@ -30,8 +30,8 @@ class App : Application() {
         application = this
 
         val formatStrategy = PrettyFormatStrategy.newBuilder()
-            // .showThreadInfo(true)
-             .methodCount(10)
+            .showThreadInfo(true)
+            .methodCount(10)
             .tag(TAG)
             .build()
         Logger.addLogAdapter(object : AndroidLogAdapter(formatStrategy) {
@@ -47,6 +47,9 @@ class App : Application() {
         configurationBuilder.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled)
         configurationBuilder.setSendPresence(false)
         xmppTcpConnection = XMPPTCPConnection(configurationBuilder.build())
+        if (!ConnectionManager.isConnectionAuthenticated(getTCPConnection())) {
+            MainScope().launch(Dispatchers.IO) { getTCPConnection() }
+        }
     }
 
     companion object {
