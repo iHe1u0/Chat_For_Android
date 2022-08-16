@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "120599311056",
+    "project_id": "imorning-chat",
+    "storage_bucket": "imorning-chat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:120599311056:android:82b34e5e5097ae01d224d5",
+        "android_client_info": {
+          "package_name": "cc.imorning.chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "120599311056-0i59e4ovq539mr240st09mq0mqrspdsj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByWj7LJSjmyl1ILp-jwG2ALmsY5LvUCa8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "120599311056-0i59e4ovq539mr240st09mq0mqrspdsj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
