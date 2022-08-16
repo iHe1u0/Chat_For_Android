@@ -9,7 +9,6 @@ import cc.imorning.common.manager.ConnectionManager
 import cc.imorning.common.utils.NetworkUtils
 import com.bumptech.glide.Glide
 import com.orhanobut.logger.AndroidLogAdapter
-import com.orhanobut.logger.BuildConfig
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
 import kotlinx.coroutines.*

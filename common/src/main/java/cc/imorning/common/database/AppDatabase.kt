@@ -3,8 +3,10 @@ package cc.imorning.common.database
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import cc.imorning.chat.App
 import cc.imorning.common.constant.DatabaseConstant
+import cc.imorning.common.database.converters.DateTimeConverter
 import cc.imorning.common.database.dao.AppDatabaseDao
 import cc.imorning.common.database.table.RecentMessageEntity
 import cc.imorning.common.database.table.UserInfoEntity
@@ -14,7 +16,7 @@ import cc.imorning.common.database.table.UserInfoEntity
     version = 2,
     exportSchema = false
 )
-
+@TypeConverters(DateTimeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun userInfoDao(): AppDatabaseDao
