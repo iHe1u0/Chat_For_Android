@@ -30,8 +30,8 @@ class App : Application() {
         application = this
 
         val formatStrategy = PrettyFormatStrategy.newBuilder()
-            .showThreadInfo(true)
-            .methodCount(2)
+            // .showThreadInfo(true)
+             .methodCount(10)
             .tag(TAG)
             .build()
         Logger.addLogAdapter(object : AndroidLogAdapter(formatStrategy) {

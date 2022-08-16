@@ -27,12 +27,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import cc.imorning.chat.App
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import cc.imorning.chat.R
 import cc.imorning.chat.activity.ChatActivity
-import cc.imorning.chat.ui.theme.MainTheme
+import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.common.constant.Config
 
 private const val TAG = "MessageFragment"
@@ -50,7 +51,7 @@ class MessageFragment : Fragment() {
             ViewModelProvider(this)[MessageViewModel::class.java]
         return ComposeView(requireContext()).apply {
             setContent {
-                MainTheme {
+                ChatTheme {
                     Scaffold(
                         topBar = {
                             TopBar()

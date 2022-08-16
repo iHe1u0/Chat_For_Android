@@ -2,17 +2,14 @@ package cc.imorning.chat.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import cc.imorning.chat.App
-import cc.imorning.chat.R
 import cc.imorning.chat.databinding.LayoutContactItemBinding
 import cc.imorning.common.database.table.UserInfoEntity
 import cc.imorning.common.utils.AvatarUtils
 import cc.imorning.common.utils.FileUtils
+import com.bumptech.glide.Glide
 
 class ContactRecyclerAdapter(private val contacts: List<UserInfoEntity>) :
     ListAdapter<UserInfoEntity, ContactRecyclerAdapter.ViewHolder>(DiffCallback) {
@@ -38,24 +35,22 @@ class ContactRecyclerAdapter(private val contacts: List<UserInfoEntity>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         val entity = contacts[position]
-        val localAvatarCache = FileUtils.instance.getAvatarCache(entity.jid)
+        val localAvatarCache = FileUtils.instance.getAvatarCachePath(entity.jid)
+        val defaultAvatar = AvatarUtils.instance.getDefaultAvatar()
 
         holder.userName.text = entity.username
         holder.jid.text = entity.jid
         if (!localAvatarCache.exists()) {
-            AvatarUtils.instance.cacheAvatar(entity.jid)
+            if (AvatarUtils.instance.cacheAvatar(entity.jid) == null) {
+                Glide.with(holder.avatar.context)
+                    .load(defaultAvatar)
+                    .into(holder.avatar)
+                return
+            }
         }
-        Glide.with(App.getContext())
+        Glide.with(holder.avatar.context)
             .load(localAvatarCache)
-            .error(
-                ResourcesCompat.getDrawable(
-                    App.getContext().resources,
-                    R.drawable.ic_default_avatar,
-                    null
-                )
-            )
             .into(holder.avatar)
-
     }
 
     override fun getItemCount(): Int {
@@ -70,6 +65,8 @@ class ContactRecyclerAdapter(private val contacts: List<UserInfoEntity>) :
     }
 
     companion object {
+
+        private const val TAG = "ContactRecyclerAdapter"
 
         private val DiffCallback = object : DiffUtil.ItemCallback<UserInfoEntity>() {
             override fun areItemsTheSame(

@@ -31,7 +31,7 @@ import androidx.lifecycle.ViewModelProvider
 import coil.compose.rememberAsyncImagePainter
 import cc.imorning.chat.App
 import cc.imorning.chat.R
-import cc.imorning.chat.ui.theme.MainTheme
+import cc.imorning.chat.ui.theme.ChatTheme
 
 private const val TAG = "ProfileFragment"
 
@@ -46,7 +46,7 @@ class ProfileFragment : Fragment() {
             ViewModelProvider(this)[ProfileViewModel::class.java]
         return ComposeView(requireContext()).apply {
             setContent {
-                MainTheme {
+                ChatTheme {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background

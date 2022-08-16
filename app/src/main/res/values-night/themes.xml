@@ -1,11 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Base application theme. -->
-    <style name="Theme.BaseTheme" parent="Theme.Material3.DayNight">
-    </style>
-
-    <style name="Theme.BaseTheme.MainTheme" parent="Theme.BaseTheme">
-        <item name="windowNoTitle">true</item>
+    <!-- Dark theme. -->
+    <style name="Theme.Chat" parent="Platform.Theme.Chat">
     </style>
 
 </resources>

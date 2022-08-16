@@ -6,11 +6,9 @@ import cc.imorning.common.constant.StatusCode
 import cc.imorning.common.constant.StatusCode.LOGIN_FAILED_CAUSE_ONLINE
 import cc.imorning.common.constant.StatusCode.OK
 import cc.imorning.common.utils.NetworkUtils
+import com.orhanobut.logger.BuildConfig
 import com.orhanobut.logger.Logger
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.*
 import org.jivesoftware.smack.AbstractXMPPConnection
 import org.jivesoftware.smack.SmackException
 import org.jivesoftware.smack.packet.Presence
@@ -40,7 +38,6 @@ object LoginAction {
                             }
                         }
                         if (!connection.isAuthenticated) {
-                            Logger.d("login as $account")
                             connection.login(account, password)
                             val presence =
                                 connection.stanzaFactory.buildPresenceStanza()
@@ -56,7 +53,9 @@ object LoginAction {
                     try {
                         job.await()
                         retCode = OK
-                        Logger.d("login success")
+                        if (BuildConfig.DEBUG) {
+                            Log.d(TAG, "login success")
+                        }
                     } catch (e: SmackException) {
                         Logger.d("network exception", e)
                         retCode = StatusCode.NETWORK_ERROR

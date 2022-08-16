@@ -11,14 +11,13 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.BaseTheme"
+        android:theme="@style/Theme.Chat.NoActionBar"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
             android:name=".activity.LoginActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.Base.LoginTheme"
             android:windowSoftInputMode="adjustResize|stateAlwaysVisible">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,7 +28,6 @@
         <activity
             android:name=".activity.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.BaseTheme.MainTheme"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAINs" />

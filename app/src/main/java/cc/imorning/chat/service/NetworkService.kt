@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.os.IBinder
+import android.util.Log
 import cc.imorning.chat.App
 import cc.imorning.chat.BuildConfig
 import cc.imorning.common.action.LoginAction
@@ -14,7 +15,9 @@ import cc.imorning.common.constant.Config
 import cc.imorning.common.utils.NetworkUtils
 import cc.imorning.common.utils.SessionManager
 import com.orhanobut.logger.Logger
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 class NetworkService : Service() {
 
@@ -28,33 +31,21 @@ class NetworkService : Service() {
                 if (NetworkUtils.isNetworkConnected(App.getContext())) {
                     val connection = App.getTCPConnection()
                     val sessionManager = SessionManager(Config.LOGIN_INFO)
-                    if (BuildConfig.DEBUG) {
-                        Logger.d(
-                            "server is connected:${connection.isConnected} isAuthed:${connection.isAuthenticated}"
+                    if ((!connection.isAuthenticated || !connection.isConnected) && NetworkUtils.isNetworkConnected(
+                            context
                         )
-                    }
-                    if (!connection.isAuthenticated &&
-                        !connection.isConnected &&
-                        NetworkUtils.isNetworkConnected(context)
                     ) {
                         MainScope().launch(Dispatchers.IO) {
-                            runBlocking {
-                                supervisorScope {
-                                    val connectJob = async(Dispatchers.IO) {
-                                        connection.connect()
-                                        if (sessionManager.fetchAccount() != null && sessionManager.fetchAuthToken() != null) {
-                                            LoginAction.run(
-                                                account = sessionManager.fetchAccount()!!,
-                                                password = sessionManager.fetchAuthToken()!!
-                                            )
-                                        }
-                                    }
-                                    try {
-                                        connectJob.await()
-                                    } catch (assertionError: AssertionError) {
-                                        Logger.e("get TCP Connection failed", assertionError)
-                                    }
+                            try {
+                                connection.connect()
+                                if (sessionManager.fetchAccount() != null && sessionManager.fetchAuthToken() != null) {
+                                    LoginAction.run(
+                                        account = sessionManager.fetchAccount()!!,
+                                        password = sessionManager.fetchAuthToken()!!
+                                    )
                                 }
+                            } catch (throwable: Throwable) {
+                                Log.e(TAG, "connect failed", throwable)
                             }
                         }
                     }

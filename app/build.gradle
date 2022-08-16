@@ -56,6 +56,30 @@ dependencies {
     // Hilt
     implementation "com.google.dagger:hilt-android:2.43.2"
     kapt 'com.google.dagger:hilt-android-compiler:2.43.2'
+    // Compose
+    implementation "androidx.compose.ui:ui:$compose_version"
+    // UI工具包
+    implementation "androidx.compose.ui:ui-tooling:$compose_version"
+    // 基础（边框、背景、框、图片、滚动、形状、动画等）
+    implementation "androidx.compose.foundation:foundation:$compose_version"
+    // Material Design
+    // api "androidx.compose.material:material:$compose_version"
+    // Material3 Design
+    implementation "androidx.compose.material3:material3:1.0.0-alpha15"
+    // Material Design 的图标
+    implementation "androidx.compose.material:material-icons-core:$compose_version"
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+    // Google字体
+    implementation "androidx.compose.ui:ui-text-google-fonts:$compose_version"
+    // 与Activity结合使用
+    implementation 'androidx.activity:activity-compose:1.5.1'
+    // 与ViewModel结合使用
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
+    // 与livedata 结合使用
+    implementation "androidx.compose.runtime:runtime-livedata:1.2.1"
+    // 额外的一些组件
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.25.1"
+    implementation "com.google.accompanist:accompanist-swiperefresh:0.25.1"
 
     implementation "io.coil-kt:coil-compose:2.1.0"
     implementation "androidx.appcompat:appcompat:1.4.2"

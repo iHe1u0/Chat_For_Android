@@ -1,6 +1,8 @@
 package cc.imorning.common.utils
 
+import android.util.Log
 import cc.imorning.chat.App
+import com.orhanobut.logger.BuildConfig
 import java.io.File
 
 class FileUtils {
@@ -15,7 +17,12 @@ class FileUtils {
         return context.getExternalFilesDir(null)!!
     }
 
-    fun getAvatarCache(jid: String) = File(getAvatarImagesDir(), MD5Utils.digest(jid)!!)
+    fun getAvatarCachePath(jid: String): File {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "getAvatarCache: $jid")
+        }
+        return File(getAvatarImagesDir(), MD5Utils.digest(jid)!!)
+    }
 
     /**
      * get avatar dir
