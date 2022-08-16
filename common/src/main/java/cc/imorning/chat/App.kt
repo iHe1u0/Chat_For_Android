@@ -4,11 +4,12 @@ import android.app.Application
 import android.content.Context
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.constant.ServerConfig
-import cc.imorning.common.database.UserDatabase
+import cc.imorning.common.database.AppDatabase
 import cc.imorning.common.manager.ConnectionManager
 import cc.imorning.common.utils.NetworkUtils
 import com.bumptech.glide.Glide
 import com.orhanobut.logger.AndroidLogAdapter
+import com.orhanobut.logger.BuildConfig
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
 import kotlinx.coroutines.*
@@ -21,8 +22,8 @@ import kotlin.system.exitProcess
 
 class App : Application() {
 
-    val userDatabase: UserDatabase by lazy {
-        UserDatabase.getInstance()
+    val appDatabase: AppDatabase by lazy {
+        AppDatabase.getInstance()
     }
 
     override fun onCreate() {
@@ -75,8 +76,8 @@ class App : Application() {
                             }
                             try {
                                 connectJob.await()
-                            } catch (assertionError: AssertionError) {
-                                Logger.e("get TCP Connection failed", assertionError)
+                            } catch (throwable: Throwable) {
+                                Logger.e("get TCP Connection failed", throwable)
                             }
                         }
                     }
@@ -91,7 +92,7 @@ class App : Application() {
             }
             Glide.get(App.getContext()).clearMemory()
             MainScope().launch(Dispatchers.IO) {
-                App().userDatabase.userInfoDao().deleteAllContact()
+                App().appDatabase.userInfoDao().deleteAllContact()
                 exitProcess(0)
             }
         }

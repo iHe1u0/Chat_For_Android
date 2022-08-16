@@ -3,7 +3,7 @@ package cc.imorning.common.constant
 /**
  * 用户数据库常亮
  */
-object UserDatabaseConstant {
+object DatabaseConstant {
 
     /**
      * database name
@@ -11,12 +11,12 @@ object UserDatabaseConstant {
     const val DATABASE_NAME = "data.db"
 
     /**
-     * user info table name
+     * contact info table name
      */
-    const val TABLE_USER_INFO = "user_info"
+    const val TABLE_CONTACT_INFO = "contact_info"
 
     /**
      * message table
      */
-    const val TABLE_MESSAGE = "message"
+    const val TABLE_RECENT_MESSAGE = "recent_message"
 }

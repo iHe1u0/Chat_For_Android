@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,15 +19,18 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import cc.imorning.chat.R
 import cc.imorning.chat.activity.ChatActivity
+import cc.imorning.chat.network.ConnectionLiveData
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.view.ui.ComposeDialogUtils
 import cc.imorning.common.constant.Config
@@ -79,20 +83,31 @@ class MessageFragment : Fragment() {
 fun MessageScreen(viewModel: MessageViewModel) {
 
     val context = LocalContext.current
+
     val messages = viewModel.messages.observeAsState()
     val isRefreshing = viewModel.isRefreshing.collectAsState()
 
+    val connectionStatus = ConnectionLiveData(context).observeAsState().value
+
     Column {
+        if ((connectionStatus != null) && (!connectionStatus)) {
+            Text(
+                text = "网络无连接",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color.Red),
+                textAlign = TextAlign.Center,
+                color = Color.White
+            )
+        }
         SwipeRefresh(
             state = rememberSwipeRefreshState(isRefreshing = isRefreshing.value),
             indicator = { state, trigger ->
                 SwipeRefreshIndicator(
-                    // Pass the SwipeRefreshState + trigger through
                     state = state,
                     refreshTriggerDistance = trigger,
-                    // Enable the scale animation
                     scale = true,
-                    shape = MaterialTheme.shapes.small,
+                    shape = MaterialTheme.shapes.extraLarge,
                 )
             },
             onRefresh = {

@@ -24,7 +24,7 @@ class ContactFragment : Fragment() {
 
     private val viewModel: ContactViewModel by activityViewModels {
         ContactViewModelFactory(
-            (activity?.application as App).userDatabase.userInfoDao()
+            (activity?.application as App).appDatabase.userInfoDao()
         )
     }
 

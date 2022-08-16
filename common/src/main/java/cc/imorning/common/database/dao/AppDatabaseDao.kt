@@ -2,13 +2,13 @@ package cc.imorning.common.database.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import cc.imorning.common.constant.UserDatabaseConstant
+import cc.imorning.common.constant.DatabaseConstant
 import cc.imorning.common.database.table.UserInfoEntity
 
 @Dao
-interface UserInfoDao {
+interface AppDatabaseDao {
 
-    @Query("select * from ${UserDatabaseConstant.TABLE_USER_INFO}")
+    @Query("select * from ${DatabaseConstant.TABLE_CONTACT_INFO}")
     fun getAllContact(): LiveData<List<UserInfoEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -20,7 +20,7 @@ interface UserInfoDao {
     @Update
     fun updateContact(userInfoEntity: UserInfoEntity)
 
-    @Query("delete from ${UserDatabaseConstant.TABLE_USER_INFO}")
+    @Query("delete from ${DatabaseConstant.TABLE_CONTACT_INFO}")
     fun deleteAllContact()
 
 }

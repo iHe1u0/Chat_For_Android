@@ -4,7 +4,7 @@ import android.util.Log
 import cc.imorning.chat.App
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.constant.Config
-import cc.imorning.common.database.UserDatabase
+import cc.imorning.common.database.AppDatabase
 import cc.imorning.common.exception.OfflineException
 import cc.imorning.common.manager.ConnectionManager
 import cc.imorning.common.utils.NetworkUtils
@@ -24,7 +24,7 @@ private const val TAG = "ContactAction"
 object ContactAction {
 
     private val connection = App.getTCPConnection()
-    private val databaseDao = UserDatabase.getInstance().userInfoDao()
+    private val databaseDao = AppDatabase.getInstance().userInfoDao()
 
     /**
      * 获取好友列表
