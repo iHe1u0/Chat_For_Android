@@ -12,7 +12,6 @@ android {
         targetSdk 32
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles "consumer-rules.pro"
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -27,7 +26,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -42,10 +41,10 @@ android {
 
 configurations {
     all*.exclude group: 'xpp3', module: 'xpp3'
+    all*.exclude group: 'xmlpull', module: 'xmlpull'
 }
 
 dependencies {
-
     //ViewModel
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$viewmodel_version"
     //Room
@@ -63,14 +62,15 @@ dependencies {
     kapt "com.github.bumptech.glide:compiler:4.13.2"
     // Logger
     api "com.orhanobut:logger:2.2.0"
-
-    implementation "androidx.core:core-ktx:1.8.0"
-    implementation "androidx.appcompat:appcompat:1.4.2"
-    implementation "com.google.android.material:material:1.6.1"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
+    // Smack
     api "org.igniterealtime.smack:smack-android-extensions:$smack_version"
     api "org.igniterealtime.smack:smack-experimental:$smack_version"
     api "org.igniterealtime.smack:smack-tcp:$smack_version"
+
+    implementation "androidx.core:core-ktx:1.8.0"
+    implementation "androidx.appcompat:appcompat:1.5.0"
+    implementation "com.google.android.material:material:1.6.1"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation "androidx.room:room-testing:$room_version"

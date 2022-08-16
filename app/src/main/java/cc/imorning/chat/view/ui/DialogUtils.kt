@@ -1,9 +1,14 @@
-package cc.imorning.common.view
+package cc.imorning.chat.view.ui
 
 import android.content.Context
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-object DialogUtils {
+object DialogUtils{
 
     fun info(
         context: Context,
@@ -22,3 +27,4 @@ object DialogUtils {
     }
 
 }
+

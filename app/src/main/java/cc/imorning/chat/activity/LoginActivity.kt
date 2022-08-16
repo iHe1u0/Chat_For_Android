@@ -3,9 +3,14 @@ package cc.imorning.chat.activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.google.android.material.snackbar.Snackbar
 import cc.imorning.chat.App
 import cc.imorning.chat.databinding.ActivityLoginBinding
+import cc.imorning.chat.view.ui.ComposeDialogUtils
 import cc.imorning.common.action.LoginAction
 import cc.imorning.common.constant.Config
 import cc.imorning.common.constant.StatusCode

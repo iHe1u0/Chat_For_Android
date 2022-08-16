@@ -23,7 +23,13 @@ class ProfileViewModel : ViewModel() {
 
     private val _nickName = MutableLiveData<String>().apply {
         if (vCard != null) {
-            value = vCard!!.nickName
+            vCard!!.let { vcard ->
+                if (vcard.nickName.isNullOrBlank()) {
+                    value = connection.user.asEntityBareJidString().split("@")[0]
+                } else {
+                    value = vcard.nickName
+                }
+            }
         }
     }
     val nickname: LiveData<String> = _nickName
@@ -35,7 +41,7 @@ class ProfileViewModel : ViewModel() {
         ) {
             value = vCard!!.getPhoneWork(phoneType)
         } else {
-            value = "暂未填写手机号"
+            value = "暂未设置手机号"
         }
     }
     val phoneNumber: LiveData<String> = _phoneNumber

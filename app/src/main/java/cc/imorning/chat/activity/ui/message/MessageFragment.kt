@@ -1,6 +1,5 @@
 package cc.imorning.chat.activity.ui.message
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,8 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,21 +25,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import cc.imorning.chat.App
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import cc.imorning.chat.R
 import cc.imorning.chat.activity.ChatActivity
 import cc.imorning.chat.ui.theme.ChatTheme
+import cc.imorning.chat.view.ui.ComposeDialogUtils
 import cc.imorning.common.constant.Config
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 private const val TAG = "MessageFragment"
 
+@OptIn(ExperimentalMaterial3Api::class)
 class MessageFragment : Fragment() {
 
-    @OptIn(ExperimentalMaterial3Api::class)
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -162,10 +159,14 @@ fun MessageItem(message: String) {
 )
 @Composable
 fun TopBar() {
+    var showBuildingDialog by remember { mutableStateOf(false) }
+    if (showBuildingDialog) {
+        ComposeDialogUtils.FunctionalityNotAvailablePopup { showBuildingDialog = false }
+    }
     CenterAlignedTopAppBar(
         title = {
             TextButton(
-                onClick = { /*TODO 切换状态*/ },
+                onClick = { showBuildingDialog = true },
                 shape = RoundedCornerShape(24.dp)
             ) {
                 Column {
@@ -183,8 +184,14 @@ fun TopBar() {
 
 @Composable
 fun FloatingActionButton() {
+    var showBuildingDialog by remember { mutableStateOf(false) }
+    if (showBuildingDialog) {
+        ComposeDialogUtils.FunctionalityNotAvailablePopup { showBuildingDialog = false }
+    }
     FloatingActionButton(
-        onClick = { /*TODO*/ },
+        onClick = {
+            showBuildingDialog = true
+        },
         modifier = Modifier.padding(8.dp)
     ) {
         Icon(
@@ -193,3 +200,4 @@ fun FloatingActionButton() {
         )
     }
 }
+

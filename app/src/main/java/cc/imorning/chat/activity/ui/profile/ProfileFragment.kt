@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,10 +28,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import coil.compose.rememberAsyncImagePainter
 import cc.imorning.chat.App
 import cc.imorning.chat.R
 import cc.imorning.chat.ui.theme.ChatTheme
+import cc.imorning.chat.view.ui.ComposeDialogUtils
+import coil.compose.rememberAsyncImagePainter
 
 private const val TAG = "ProfileFragment"
 
@@ -72,6 +73,16 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
         val nickName = profileViewModel.nickname.observeAsState()
         val phoneNumber = profileViewModel.phoneNumber.observeAsState()
         val userName = profileViewModel.userName.observeAsState()
+
+        var showBuildingDialog by remember { mutableStateOf(false) }
+        if (showBuildingDialog) {
+            ComposeDialogUtils.FunctionalityNotAvailablePopup { showBuildingDialog = false }
+        }
+
+        var showAboutDialog by remember { mutableStateOf(false) }
+        if (showAboutDialog) {
+            ComposeDialogUtils.ShowAbout { showAboutDialog = false }
+        }
         Text(
             text = context.getString(R.string.title_profile),
             modifier = Modifier.fillMaxWidth(),
@@ -157,7 +168,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
         )
         TextButton(
             modifier = Modifier.fillMaxWidth(),
-            onClick = { /*TODO*/ },
+            onClick = { showAboutDialog = true },
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -186,8 +197,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
         }
         TextButton(
             modifier = Modifier.fillMaxWidth(),
-            onClick = {
-            },
+            onClick = { showBuildingDialog = true },
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
