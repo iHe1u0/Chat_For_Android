@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/navigation_message"
-        android:name="com.imorning.chat.activity.ui.message.MessageFragment"
+        android:name="cc.imorning.chat.activity.ui.message.MessageFragment"
         android:label="@string/title_message"
         tools:layout="@layout/fragment_message" />
 
     <fragment
         android:id="@+id/navigation_contact"
-        android:name="com.imorning.chat.activity.ui.contact.ContactFragment"
+        android:name="cc.imorning.chat.activity.ui.contact.ContactFragment"
         android:label="@string/title_contact"
         tools:layout="@layout/fragment_contact" />
 
     <fragment
         android:id="@+id/navigation_profile"
-        android:name="com.imorning.chat.activity.ui.profile.ProfileFragment"
+        android:name="cc.imorning.chat.activity.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
         tools:layout="@layout/fragment_profile" />
 
