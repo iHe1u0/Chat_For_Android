@@ -2,7 +2,6 @@ package cc.imorning.chat.activity.ui.profile
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,10 +22,12 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -38,6 +39,7 @@ import coil.compose.rememberAsyncImagePainter
 
 private const val TAG = "ProfileFragment"
 
+@OptIn(ExperimentalMaterial3Api::class)
 class ProfileFragment : Fragment() {
 
     private val viewModel: ProfileViewModel by viewModels()
@@ -56,16 +58,39 @@ class ProfileFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 ChatTheme {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
-                    ) {
-                        ProfileScreen(viewModel)
-                    }
+                    Scaffold(
+                        topBar = { TopBar() },
+                        content = {
+                            Surface(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(it),
+                                color = MaterialTheme.colorScheme.background
+                            ) {
+                                ProfileScreen(viewModel)
+                            }
+                        }
+                    )
                 }
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(
+    showBackground = true
+)
+@Composable
+fun TopBar() {
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                text = stringResource(id = R.string.title_profile),
+                style = MaterialTheme.typography.headlineSmall
+            )
+        }
+    )
 }
 
 @Composable
@@ -91,17 +116,6 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
         if (showAboutDialog) {
             ComposeDialogUtils.ShowAbout { showAboutDialog = false }
         }
-        Text(
-            text = context.getString(R.string.title_profile),
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleLarge,
-        )
-        Divider(
-            modifier = Modifier
-                .padding(top = 12.dp)
-                .background(color = colorResource(R.color.diver_color))
-        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
