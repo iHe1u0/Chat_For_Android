@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.core.os.bundleOf
 import com.google.android.material.snackbar.Snackbar
 import cc.imorning.chat.App
 import cc.imorning.chat.databinding.ActivityLoginBinding
@@ -66,10 +67,9 @@ class LoginActivity : BaseActivity() {
                                 VCardManager.getInstanceFor(App.getTCPConnection()).loadVCard()
                             App.vCard = selfVCard
                             AvatarUtils.instance.cacheAvatar(App.getTCPConnection().user.asEntityBareJidString())
-                            // Logger.xml(selfVCard.toXML().toString())
                         }
                         val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP;
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                         startActivity(intent)
                         this@LoginActivity.finish()
                     }

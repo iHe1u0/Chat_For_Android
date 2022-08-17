@@ -4,6 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.Text
 import cc.imorning.chat.App
 import cc.imorning.chat.BuildConfig
 import cc.imorning.common.constant.Config
@@ -19,7 +23,17 @@ class ChatActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (null != intent && null != intent.action) {
+        processIntent(intent)
+        setContent {
+            Column {
+                Text(text = "${connection.user.resourcepart}")
+                Text(text = "$chatJid")
+            }
+        }
+    }
+
+    private fun processIntent(intent: Intent?) {
+        if ((null != intent) && (null != intent.action)) {
             val action = intent.action
             if (action == Intent.ACTION_VIEW) {
                 if (!ConnectionManager.isConnectionAuthenticated(this.connection)) {

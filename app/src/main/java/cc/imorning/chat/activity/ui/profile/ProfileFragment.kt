@@ -1,6 +1,8 @@
 package cc.imorning.chat.activity.ui.profile
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,7 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import cc.imorning.chat.App
 import cc.imorning.chat.R
 import cc.imorning.chat.ui.theme.ChatTheme
@@ -38,13 +40,19 @@ private const val TAG = "ProfileFragment"
 
 class ProfileFragment : Fragment() {
 
+    private val viewModel: ProfileViewModel by viewModels()
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        // val userId = arguments?.getString("userId")
+        viewModel.getUserInfo()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val profileViewModel =
-            ViewModelProvider(this)[ProfileViewModel::class.java]
         return ComposeView(requireContext()).apply {
             setContent {
                 ChatTheme {
@@ -52,13 +60,12 @@ class ProfileFragment : Fragment() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        ProfileScreen(profileViewModel)
+                        ProfileScreen(viewModel)
                     }
                 }
             }
         }
     }
-
 }
 
 @Composable
@@ -73,6 +80,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
         val nickName = profileViewModel.nickname.observeAsState()
         val phoneNumber = profileViewModel.phoneNumber.observeAsState()
         val userName = profileViewModel.userName.observeAsState()
+        val status = profileViewModel.status.observeAsState()
 
         var showBuildingDialog by remember { mutableStateOf(false) }
         if (showBuildingDialog) {
@@ -150,7 +158,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
             }
         }
         Text(
-            text = "温带的风 温柔栖息 这样来信的才读得认真 随风摇曳的单薄纸张 不小心就多了泪痕",
+            text = "${status.value}",
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp, top = 28.dp),

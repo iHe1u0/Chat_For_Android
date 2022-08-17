@@ -1,5 +1,7 @@
 package cc.imorning.chat
 
+import android.app.Activity
+import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
 import cc.imorning.common.BuildConfig
@@ -16,6 +18,7 @@ import org.jivesoftware.smack.ConnectionConfiguration
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration
 import org.jivesoftware.smackx.vcardtemp.packet.VCard
+import java.util.*
 import kotlin.system.exitProcess
 
 
@@ -44,8 +47,12 @@ class App : Application() {
         configurationBuilder.setHost(ServerConfig.HOST_NAME)
         configurationBuilder.setXmppDomain(ServerConfig.DOMAIN)
         configurationBuilder.setPort(ServerConfig.LOGIN_PORT)
+        configurationBuilder.setResource(ServerConfig.RESOURCE)
         configurationBuilder.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled)
         configurationBuilder.setSendPresence(false)
+        // if (BuildConfig.DEBUG){
+        //     configurationBuilder.enableDefaultDebugger()
+        // }
         xmppTcpConnection = XMPPTCPConnection(configurationBuilder.build())
         if (!ConnectionManager.isConnectionAuthenticated(getTCPConnection())) {
             MainScope().launch(Dispatchers.IO) { getTCPConnection() }
@@ -86,16 +93,38 @@ class App : Application() {
         }
 
         fun exitApp() {
+            ActivityCollector.finishAll()
             if (ConnectionManager.isConnectionAuthenticated(connection = xmppTcpConnection)) {
                 xmppTcpConnection?.disconnect()
             }
-            Glide.get(App.getContext()).clearMemory()
+            Glide.get(getContext()).clearMemory()
             MainScope().launch(Dispatchers.IO) {
                 App().appDatabase.userInfoDao().deleteAllContact()
+                val activityManager =
+                    getContext().getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+                activityManager.killBackgroundProcesses(getContext().packageName)
                 exitProcess(0)
             }
         }
+    }
+}
 
+object ActivityCollector {
+
+    var activities = LinkedList<Activity>()
+    fun addActivity(activity: Activity) {
+        activities.add(activity)
     }
 
+    fun removeActivity(activity: Activity) {
+        activities.remove(activity)
+    }
+
+    fun finishAll() {
+        for (activity in activities) {
+            if (!activity.isFinishing) {
+                activity.finish()
+            }
+        }
+    }
 }
