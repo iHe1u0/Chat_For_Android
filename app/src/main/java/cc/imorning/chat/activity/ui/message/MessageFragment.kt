@@ -140,7 +140,8 @@ fun MessageItem(message: String) {
             .fillMaxWidth()
             .clickable {
                 val chatActivity = Intent(context, ChatActivity::class.java)
-                chatActivity.putExtra(Config.Action.START_CHAT_JID, message)
+                chatActivity.action = Config.Intent.Action.START_CHAT_FROM_APP
+                chatActivity.putExtra(Config.Intent.Key.START_CHAT_JID, message)
                 context.startActivity(chatActivity)
             },
         horizontalArrangement = Arrangement.Start,

@@ -26,7 +26,18 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
+    splits {
+//        density {
+//            enable true
+//            reset()
+//            include "hdpi", "mdpi", "xhdpi", "xxhdpi", "xxxhdpi"
+//        }
+//        abi {
+//            enable true
+//            reset()
+//            include "x86", "x86_64", "arm64-v8a"
+//        }
+    }
     buildTypes {
         release {
             minifyEnabled true

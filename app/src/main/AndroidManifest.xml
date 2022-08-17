@@ -37,14 +37,27 @@
         </activity>
         <activity
             android:name=".activity.ChatActivity"
-            android:exported="false"
+            android:exported="true"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize|stateAlwaysVisible"  />
+            android:windowSoftInputMode="adjustResize|stateAlwaysVisible">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="app"
+                    android:path="/chat"
+                    android:port="1124"
+                    android:scheme="imorningchat" />
+            </intent-filter>
+        </activity>
 
         <service
             android:name=".service.NetworkService"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false" />
     </application>
 
 </manifest>
