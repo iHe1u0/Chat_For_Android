@@ -1,6 +1,7 @@
 package cc.imorning.common.manager
 
 import android.util.Log
+import cc.imorning.chat.ActivityCollector
 import cc.imorning.chat.App
 import cc.imorning.common.action.LoginAction
 import cc.imorning.common.constant.Config
@@ -33,7 +34,8 @@ object ConnectionManager {
                     val sessionManager = SessionManager(Config.LOGIN_INFO)
                     if (!connection.isAuthenticated &&
                         sessionManager.fetchAccount() != null &&
-                        sessionManager.fetchAuthToken() != null
+                        sessionManager.fetchAuthToken() != null &&
+                        !ActivityCollector.activities.last.localClassName.contains("LoginActivity")
                     ) {
                         LoginAction.run(
                             account = sessionManager.fetchAccount()!!,

@@ -86,7 +86,7 @@ fun TopBar() {
                 }) {
                 Icon(
                     imageVector = Icons.Filled.PersonAdd,
-                    contentDescription = ""
+                    contentDescription = stringResource(id = R.string.desc_add_contact),
                 )
             }
         },

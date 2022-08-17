@@ -1,17 +1,14 @@
 package cc.imorning.chat.activity.ui.contact
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.model.Contact
 import cc.imorning.common.action.ContactAction
 import cc.imorning.common.database.AppDatabase
 import cc.imorning.common.database.dao.AppDatabaseDao
 import cc.imorning.common.database.table.UserInfoEntity
-import cc.imorning.common.exception.OfflineException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

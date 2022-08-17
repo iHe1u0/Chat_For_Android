@@ -2,13 +2,16 @@ package cc.imorning.common.action
 
 import android.util.Log
 import cc.imorning.chat.App
+import cc.imorning.common.BuildConfig
 import cc.imorning.common.constant.StatusCode
 import cc.imorning.common.constant.StatusCode.LOGIN_FAILED_CAUSE_ONLINE
 import cc.imorning.common.constant.StatusCode.OK
 import cc.imorning.common.utils.NetworkUtils
-import com.orhanobut.logger.BuildConfig
 import com.orhanobut.logger.Logger
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.supervisorScope
 import org.jivesoftware.smack.AbstractXMPPConnection
 import org.jivesoftware.smack.SmackException
 import org.jivesoftware.smack.packet.Presence
@@ -18,6 +21,7 @@ object LoginAction {
 
     private const val TAG = "LoginAction"
 
+    @Synchronized
     fun run(
         account: String,
         password: String

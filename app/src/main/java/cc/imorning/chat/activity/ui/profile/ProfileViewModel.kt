@@ -59,7 +59,7 @@ class ProfileViewModel : ViewModel() {
     private val _status = MutableLiveData<String>().apply {
         if (connection.isConnected && connection.isAuthenticated) {
             val presenceBuilder = connection.stanzaFactory.buildPresenceStanza()
-            value = presenceBuilder.build().status
+            value = presenceBuilder?.toString()
             Log.i(TAG, presenceBuilder.toString())
         }
     }

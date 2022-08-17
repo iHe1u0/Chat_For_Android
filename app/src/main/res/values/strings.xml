@@ -10,10 +10,11 @@
     <string name="title_profile">设置</string>
 
     <string name="login">登录</string>
-    <string name="add_contact">添加联系人</string>
-    <string name="contact_item_avatar_desc">用户头像</string>
     <string name="remember_password">记住密码</string>
     <string name="account">账号</string>
     <string name="password">密码</string>
     <string name="search_contact">搜索联系人</string>
+
+    <string name="desc_contact_item_avatar">用户头像</string>
+    <string name="desc_add_contact">添加联系人</string>
 </resources>

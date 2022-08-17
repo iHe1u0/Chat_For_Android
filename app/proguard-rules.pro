@@ -10,9 +10,22 @@
   *** rewind();
 }
 
+-keep class org.xmlpull.** { *; }
+-keep class org.jivesoftware.** { *; }
+-keep class org.joda.** { *; }
+-keep class org.jxmpp.** { *; }
+
+-keepnames class org.jxmpp.** { *; }
+-keepnames class org.joda.** { *; }
+-keepnames class org.jivesoftware.** { *; }
+-keepnames class org.xmlpull.** { *; }
 # keep everything in this package
--keep class org.** { *; }
--keepnames class org.** { *; }
+# -keep class org.** { *; }
+# -keepnames class org.** { *; }
+# -keep interface org.joda.time.** { *;}
+# -dontwarn org.joda.convert.**
+# -dontwarn org.joda.time.**
+# -keep class org.joda.time.** { *; }
 # This is generated automatically by the Android Gradle plugin.
 -dontwarn javax.naming.NamingEnumeration
 -dontwarn javax.naming.NamingException

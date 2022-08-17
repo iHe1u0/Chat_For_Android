@@ -22,7 +22,6 @@ android {
         }
 
         resConfigs "zh-rCN"
-        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
