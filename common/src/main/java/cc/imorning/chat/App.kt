@@ -13,7 +13,9 @@ import com.bumptech.glide.Glide
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import org.jivesoftware.smack.ConnectionConfiguration
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration
@@ -75,18 +77,19 @@ class App : Application() {
         fun getTCPConnection(): XMPPTCPConnection {
             xmppTcpConnection!!.apply {
                 if (!this.isConnected && NetworkUtils.isNetworkConnected(getContext())) {
-                    runBlocking {
-                        supervisorScope {
-                            val connectJob = async(Dispatchers.IO) {
-                                xmppTcpConnection!!.connect()
-                            }
-                            try {
-                                connectJob.await()
-                            } catch (throwable: Throwable) {
-                                Logger.e("get TCP Connection failed", throwable)
-                            }
-                        }
-                    }
+//                    runBlocking(Dispatchers.IO) {
+//                        supervisorScope {
+//                            val connectJob = async(Dispatchers.IO) {
+//                                xmppTcpConnection!!.connect()
+//                            }
+//                            try {
+//                                connectJob.await()
+//                            } catch (throwable: Throwable) {
+//                                Logger.e("get TCP Connection failed", throwable)
+//                            }
+//                        }
+//                    }
+                    ConnectionManager.connect(xmppTcpConnection!!)
                 }
                 return this
             }
@@ -99,7 +102,7 @@ class App : Application() {
             }
             Glide.get(getContext()).clearMemory()
             MainScope().launch(Dispatchers.IO) {
-                App().appDatabase.userInfoDao().deleteAllContact()
+                App().appDatabase.appDatabaseDao().deleteAllContact()
                 val activityManager =
                     getContext().getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
                 activityManager.killBackgroundProcesses(getContext().packageName)

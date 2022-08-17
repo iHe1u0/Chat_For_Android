@@ -24,7 +24,7 @@ private const val TAG = "ContactAction"
 object ContactAction {
 
     private val connection = App.getTCPConnection()
-    private val databaseDao = AppDatabase.getInstance().userInfoDao()
+    private val databaseDao = AppDatabase.getInstance().appDatabaseDao()
 
     /**
      * 获取好友列表
@@ -87,7 +87,11 @@ object ContactAction {
             }
         }
         if (!connection.isAuthenticated) {
-            throw OfflineException(msg = "登录过期")
+            // throw OfflineException(msg = "登录过期")
+            if (BuildConfig.DEBUG){
+                Log.d(TAG, "connection is not authenticated")
+            }
+            return null
         }
         val roster: Roster = Roster.getInstanceFor(connection)
         // 刷新列表

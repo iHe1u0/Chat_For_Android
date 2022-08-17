@@ -3,8 +3,6 @@ package cc.imorning.chat.activity.ui.message
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cc.imorning.chat.App
-import cc.imorning.chat.network.ConnectionLiveData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,7 +29,10 @@ class MessageViewModel : ViewModel() {
     val messages: MutableLiveData<MutableList<String>> = _messages
 
     fun refresh() {
-        // This doesn't handle multiple 'refreshing' tasks, don't use this
+        // return if isRefreshing
+        if (_isRefreshing.value) {
+            return
+        }
         viewModelScope.launch {
             _isRefreshing.emit(true)
             _messages.value = mutableListOf("${System.currentTimeMillis()}")

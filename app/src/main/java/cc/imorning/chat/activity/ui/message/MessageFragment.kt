@@ -75,8 +75,6 @@ class MessageFragment : Fragment() {
             }
         }
     }
-
-    companion object
 }
 
 @Composable

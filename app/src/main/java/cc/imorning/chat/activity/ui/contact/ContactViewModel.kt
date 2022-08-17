@@ -1,8 +1,12 @@
 package cc.imorning.chat.activity.ui.contact
 
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import cc.imorning.chat.BuildConfig
+import cc.imorning.chat.model.Contact
 import cc.imorning.common.action.ContactAction
 import cc.imorning.common.database.AppDatabase
 import cc.imorning.common.database.dao.AppDatabaseDao
@@ -10,42 +14,70 @@ import cc.imorning.common.database.table.UserInfoEntity
 import cc.imorning.common.exception.OfflineException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class ContactViewModel @Inject constructor(private val appDatabaseDao: AppDatabaseDao) : ViewModel() {
+class ContactViewModel @Inject constructor(private val appDatabaseDao: AppDatabaseDao) :
+    ViewModel() {
 
     companion object {
         private const val TAG = "ContactViewModel"
     }
 
     private val database = AppDatabase.getInstance()
+
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean>
+        get() = _isRefreshing.asStateFlow()
+
+    private val _contacts = MutableStateFlow<List<Contact>>(emptyList())
+    val contacts: StateFlow<List<Contact>>
+        get() = _contacts.asStateFlow()
+
     internal val allContacts: LiveData<List<UserInfoEntity>> =
-        database.userInfoDao().getAllContact()
+        database.appDatabaseDao().getAllContact()
 
     init {
-        viewModelScope.launch {
-            try {
-                val members = ContactAction.getContactList()
-                if (members != null && members.isNotEmpty()) {
-                    for (member in members) {
-                        withContext(Dispatchers.IO) {
-                            appDatabaseDao.insertContact(
-                                UserInfoEntity(
-                                    jid = member.jid.asUnescapedString(),
-                                    username = member.name
-                                )
+        refresh()
+    }
+
+    @Synchronized
+    fun refresh() {
+        // return if isRefreshing
+        if (_isRefreshing.value) {
+            return
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            _isRefreshing.emit(true)
+            val members = ContactAction.getContactList()
+            val contactList = ArrayList<Contact>()
+            if (members != null && members.isNotEmpty()) {
+                for (member in members) {
+                    withContext(Dispatchers.IO) {
+                        appDatabaseDao.insertContact(
+                            UserInfoEntity(
+                                jid = member.jid.asUnescapedString(),
+                                username = member.name
                             )
-                        }
+                        )
+                        contactList.add(
+                            Contact(
+                                jid = member.jid.asUnescapedString(),
+                                avatarPath = null,
+                                nickName = member.name,
+                                status = 0
+                            )
+                        )
                     }
                 }
-            } catch (e: OfflineException) {
-                if (BuildConfig.DEBUG) {
-                    Log.d(TAG, "user offline")
-                }
             }
+            _contacts.emit(contactList)
+            _isRefreshing.emit(false)
         }
     }
 

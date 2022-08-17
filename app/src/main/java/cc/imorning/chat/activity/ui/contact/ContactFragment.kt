@@ -1,30 +1,39 @@
 package cc.imorning.chat.activity.ui.contact
 
 import android.os.Bundle
-import android.view.*
-import androidx.core.view.MenuProvider
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import cc.imorning.chat.App
 import cc.imorning.chat.R
-import cc.imorning.chat.adapter.ContactRecyclerAdapter
-import cc.imorning.chat.databinding.FragmentContactBinding
+import cc.imorning.chat.activity.ui.message.TopBar
+import cc.imorning.chat.ui.theme.ChatTheme
+import cc.imorning.chat.view.ui.ComposeDialogUtils
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
+private const val TAG = "ContactFragment"
+
+@OptIn(ExperimentalMaterial3Api::class)
 class ContactFragment : Fragment() {
-
-    companion object {
-        private const val TAG = "ContactFragment"
-    }
-
-    private var _binding: FragmentContactBinding? = null
-
-    private val binding get() = _binding!!
 
     private val viewModel: ContactViewModel by activityViewModels {
         ContactViewModelFactory(
-            (activity?.application as App).appDatabase.userInfoDao()
+            (activity?.application as App).appDatabase.appDatabaseDao()
         )
     }
 
@@ -33,44 +42,91 @@ class ContactFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-        _binding = FragmentContactBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-        viewModel.allContacts.observe(viewLifecycleOwner) { list ->
-            binding.rvContactList.adapter = ContactRecyclerAdapter(list)
-        }
-
-        binding.toolbarContact.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {}
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.main_contact_menu_add -> {
-                        true
-                    }
-                    else -> false
+        return ComposeView(requireContext()).apply {
+            setContent {
+                ChatTheme {
+                    Scaffold(
+                        topBar = { TopBar()},
+                        content = {
+                            Surface(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(it),
+                                color = MaterialTheme.colorScheme.background
+                            ) {
+                                ContactScreen(viewModel = viewModel)
+                            }
+                        })
                 }
             }
-        })
-        return root
+        }
     }
+}
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val recyclerView: RecyclerView = binding.rvContactList
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-        // Add divider for recyclerView
-        /**
-         * val divider = DividerItemDecoration(App.getContext(), DividerItemDecoration.VERTICAL)
-         * divider.setDrawable(
-         * ResourcesCompat.getDrawable(resources,R.drawable.recycler_view_divider,null)!!)
-         * recyclerView.addItemDecoration(divider
-         **/
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(
+    showBackground = true
+)
+@Composable
+fun TopBar() {
+    var showBuildingDialog by remember { mutableStateOf(false) }
+    if (showBuildingDialog) {
+        ComposeDialogUtils.FunctionalityNotAvailablePopup { showBuildingDialog = false }
     }
+    CenterAlignedTopAppBar(
+        title = {
+            TextButton(
+                onClick = { showBuildingDialog = true },
+                shape = RoundedCornerShape(24.dp)
+            ) {
+                Column {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_default_avatar),
+                        contentDescription = "",
+                        modifier = Modifier.size(24.dp),
+                    )
+                    Text(text = "在线")
+                }
+            }
+        }
+    )
+}
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+@Composable
+fun ContactScreen(viewModel: ContactViewModel) {
+
+    val isRefreshing = viewModel.isRefreshing.collectAsState()
+    val contacts = viewModel.contacts.collectAsState()
+
+    Column {
+        SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = isRefreshing.value),
+            indicator = { state, trigger ->
+                SwipeRefreshIndicator(
+                    state = state,
+                    refreshTriggerDistance = trigger,
+                    scale = true,
+                    shape = MaterialTheme.shapes.extraLarge,
+                )
+            },
+            onRefresh = { viewModel.refresh() }) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    start = 8.dp,
+                    end = 8.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                if (contacts.value.isNotEmpty()) {
+                    item {
+                        Column {
+                            contacts.value.forEach { contact ->
+                                ContactItem(contact = contact)
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

@@ -19,7 +19,7 @@ import cc.imorning.common.database.table.UserInfoEntity
 @TypeConverters(DateTimeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun userInfoDao(): AppDatabaseDao
+    abstract fun appDatabaseDao(): AppDatabaseDao
 
     companion object {
         private lateinit var appDatabase: AppDatabase

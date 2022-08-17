@@ -7,17 +7,9 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.os.IBinder
-import android.util.Log
 import cc.imorning.chat.App
-import cc.imorning.chat.BuildConfig
-import cc.imorning.common.action.LoginAction
-import cc.imorning.common.constant.Config
+import cc.imorning.common.manager.ConnectionManager
 import cc.imorning.common.utils.NetworkUtils
-import cc.imorning.common.utils.SessionManager
-import com.orhanobut.logger.Logger
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 
 class NetworkService : Service() {
 
@@ -30,24 +22,11 @@ class NetworkService : Service() {
             if (action.equals(CONNECTIVITY_ACTION)) {
                 if (NetworkUtils.isNetworkConnected(App.getContext())) {
                     val connection = App.getTCPConnection()
-                    val sessionManager = SessionManager(Config.LOGIN_INFO)
                     if ((!connection.isAuthenticated || !connection.isConnected) && NetworkUtils.isNetworkConnected(
                             context
                         )
                     ) {
-                        MainScope().launch(Dispatchers.IO) {
-                            try {
-                                connection.connect()
-                                if (sessionManager.fetchAccount() != null && sessionManager.fetchAuthToken() != null) {
-                                    LoginAction.run(
-                                        account = sessionManager.fetchAccount()!!,
-                                        password = sessionManager.fetchAuthToken()!!
-                                    )
-                                }
-                            } catch (throwable: Throwable) {
-                                Log.e(TAG, "connect failed", throwable)
-                            }
-                        }
+                        ConnectionManager.connect(connection)
                     }
                 }
             }
