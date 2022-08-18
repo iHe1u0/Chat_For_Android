@@ -1,6 +1,8 @@
 package cc.imorning.chat.activity.ui.contact
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +13,7 @@ import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,6 +22,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import cc.imorning.chat.App
 import cc.imorning.chat.R
+import cc.imorning.chat.compontens.ContactItem
+import cc.imorning.chat.compontens.SearchBar
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.view.ui.ComposeDialogUtils
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -34,6 +39,11 @@ class ContactFragment : Fragment() {
         ContactViewModelFactory(
             (activity?.application as App).appDatabase.appDatabaseDao()
         )
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        viewModel.refresh()
     }
 
     override fun onCreateView(
@@ -100,6 +110,7 @@ fun ContactScreen(viewModel: ContactViewModel) {
     val contacts = viewModel.contacts.collectAsState()
 
     Column {
+        SearchBar(modifier = Modifier.fillMaxWidth())
         SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = isRefreshing.value),
             indicator = { state, trigger ->
                 SwipeRefreshIndicator(

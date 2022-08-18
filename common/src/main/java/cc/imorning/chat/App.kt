@@ -9,7 +9,6 @@ import cc.imorning.common.constant.ServerConfig
 import cc.imorning.common.database.AppDatabase
 import cc.imorning.common.manager.ConnectionManager
 import cc.imorning.common.utils.NetworkUtils
-import com.bumptech.glide.Glide
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
@@ -100,7 +99,6 @@ class App : Application() {
             if (ConnectionManager.isConnectionAuthenticated(connection = xmppTcpConnection)) {
                 xmppTcpConnection?.disconnect()
             }
-            Glide.get(getContext()).clearMemory()
             MainScope().launch(Dispatchers.IO) {
                 App().appDatabase.appDatabaseDao().deleteAllContact()
                 val activityManager =

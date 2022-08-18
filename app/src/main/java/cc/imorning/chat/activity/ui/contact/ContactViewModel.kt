@@ -1,5 +1,6 @@
 package cc.imorning.chat.activity.ui.contact
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -19,13 +20,17 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class ContactViewModel @Inject constructor(private val appDatabaseDao: AppDatabaseDao) :
-    ViewModel() {
+class ContactViewModel @Inject constructor(
+    private val appDatabaseDao: AppDatabaseDao
+) : ViewModel() {
 
     companion object {
         private const val TAG = "ContactViewModel"
     }
 
+    init {
+        Log.d(TAG, "init $this")
+    }
     private val database = AppDatabase.getInstance()
 
     private val _isRefreshing = MutableStateFlow(false)
@@ -38,10 +43,6 @@ class ContactViewModel @Inject constructor(private val appDatabaseDao: AppDataba
 
     internal val allContacts: LiveData<List<UserInfoEntity>> =
         database.appDatabaseDao().getAllContact()
-
-    init {
-        refresh()
-    }
 
     @Synchronized
     fun refresh() {

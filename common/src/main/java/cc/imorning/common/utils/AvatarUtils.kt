@@ -2,6 +2,11 @@ package cc.imorning.common.utils
 
 import android.graphics.drawable.Drawable
 import android.util.Log
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
 import androidx.core.content.res.ResourcesCompat
 import cc.imorning.chat.App
 import cc.imorning.common.BuildConfig
@@ -17,7 +22,7 @@ class AvatarUtils {
 
     fun cacheAvatar(jid: String): String? {
         if (!ConnectionManager.isConnectionAuthenticated(connection)) {
-            if (BuildConfig.DEBUG){
+            if (BuildConfig.DEBUG) {
                 Log.d(TAG, "connection is not authenticated")
             }
             return null
@@ -29,7 +34,7 @@ class AvatarUtils {
                 return saveContactAvatar(jid = jid, avatarByte = avatarByte)
             }
         }
-        if (BuildConfig.DEBUG){
+        if (BuildConfig.DEBUG) {
             Log.d(TAG, "$jid didn't have avatar")
         }
         return null
@@ -80,7 +85,6 @@ class AvatarUtils {
             App.getContext().resources, R.drawable.ic_default_avatar, null
         )
     }
-
 
     companion object {
         private const val TAG = "AvatarUtils"

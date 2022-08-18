@@ -5,6 +5,7 @@ import cc.imorning.chat.ActivityCollector
 import cc.imorning.chat.App
 import cc.imorning.common.action.LoginAction
 import cc.imorning.common.constant.Config
+import cc.imorning.common.utils.NetworkUtils
 import cc.imorning.common.utils.SessionManager
 import kotlinx.coroutines.*
 import org.jivesoftware.smack.SmackException
@@ -44,8 +45,10 @@ object ConnectionManager {
                     }
                 }
                 try {
-                    if (!connection.isConnected) {
+                    if (!connection.isConnected && NetworkUtils.isNetworkConnected(App.getContext())) {
                         connectJob.await()
+                    } else {
+                        connectJob.cancel(message = "No network")
                     }
                 } catch (e: SmackException.AlreadyConnectedException) {
                     Log.d(TAG, "${e.message}")

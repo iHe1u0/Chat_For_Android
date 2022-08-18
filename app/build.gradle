@@ -8,20 +8,20 @@ plugins {
 }
 
 android {
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId 'cc.imorning.chat'
         minSdk 21
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
         vectorDrawables {
             useSupportLibrary true
         }
+        resourceConfigurations += ['zh-rCN']
 
-        resConfigs "zh-rCN"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -93,7 +93,7 @@ dependencies {
     // Material Design
     // api "androidx.compose.material:material:$compose_version"
     // Material3 Design
-    implementation "androidx.compose.material3:material3:1.0.0-alpha15"
+    implementation "androidx.compose.material3:material3:1.0.0-alpha16"
     // Material Design 的图标
     implementation "androidx.compose.material:material-icons-core:$compose_version"
     implementation "androidx.compose.material:material-icons-extended:$compose_version"

@@ -3,22 +3,16 @@ package cc.imorning.chat.activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.core.os.bundleOf
-import com.google.android.material.snackbar.Snackbar
 import cc.imorning.chat.App
 import cc.imorning.chat.databinding.ActivityLoginBinding
-import cc.imorning.chat.view.ui.ComposeDialogUtils
 import cc.imorning.common.action.LoginAction
 import cc.imorning.common.constant.Config
 import cc.imorning.common.constant.StatusCode
 import cc.imorning.common.manager.ConnectionManager
 import cc.imorning.common.utils.AvatarUtils
+import cc.imorning.common.utils.NetworkUtils
 import cc.imorning.common.utils.SessionManager
-import com.orhanobut.logger.Logger
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -74,13 +68,15 @@ class LoginActivity : BaseActivity() {
                         this@LoginActivity.finish()
                     }
                     StatusCode.LOGIN_AUTH_FAILED -> {
-                        Snackbar.make(binding.root, "登陆失败: 账号或密码错误", Snackbar.LENGTH_SHORT).show()
+                        Snackbar.make(binding.root, "登陆失败: 账号或密码错误", Snackbar.LENGTH_SHORT)
+                            .show()
                     }
                     StatusCode.NETWORK_ERROR -> {
                         Snackbar.make(binding.root, "登陆失败: 网络无连接", Snackbar.LENGTH_SHORT).show()
                     }
                     else -> {
-                        Snackbar.make(binding.root, "登陆失败: $result", Snackbar.LENGTH_SHORT).show()
+                        Snackbar.make(binding.root, "登陆失败: $result", Snackbar.LENGTH_SHORT)
+                            .show()
                     }
                 }
                 withContext(Dispatchers.Main) {

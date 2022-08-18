@@ -1,13 +1,11 @@
 package cc.imorning.chat.activity.ui.message
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,7 +15,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
@@ -29,11 +26,10 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import cc.imorning.chat.R
-import cc.imorning.chat.activity.ChatActivity
+import cc.imorning.chat.compontens.RecentMessageItem
 import cc.imorning.chat.network.ConnectionLiveData
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.view.ui.ComposeDialogUtils
-import cc.imorning.common.constant.Config
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -122,50 +118,13 @@ fun MessageScreen(viewModel: MessageViewModel) {
             ) {
                 if (!messages.value.isNullOrEmpty()) {
                     items(messages.value!!) { message ->
-                        MessageItem(message)
+                        RecentMessageItem(message)
                     }
                 }
             }
         }
     }
 }
-
-@Composable
-fun MessageItem(message: String) {
-    val context = LocalContext.current
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                val chatActivity = Intent(context, ChatActivity::class.java)
-                chatActivity.action = Config.Intent.Action.START_CHAT_FROM_APP
-                chatActivity.putExtra(Config.Intent.Key.START_CHAT_JID, message)
-                context.startActivity(chatActivity)
-            },
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            modifier = Modifier
-                .fillMaxHeight()
-                .size(24.dp),
-            painter = painterResource(id = R.drawable.ic_default_avatar),
-            contentDescription = message,
-            alignment = Alignment.Center
-        )
-        Column(modifier = Modifier.padding(start = 8.dp)) {
-            Text(
-                text = message,
-                style = MaterialTheme.typography.titleLarge
-            )
-            Text(
-                text = message,
-                style = MaterialTheme.typography.titleSmall
-            )
-        }
-    }
-}
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(
@@ -181,7 +140,8 @@ fun TopBar() {
         title = {
             TextButton(
                 onClick = { showBuildingDialog = true },
-                shape = RoundedCornerShape(24.dp)
+                shape = RoundedCornerShape(24.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Column {
                     Image(

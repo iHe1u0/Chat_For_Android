@@ -22,3 +22,20 @@ plugins {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        // Treat all Kotlin warnings as errors (disabled by default)
+        allWarningsAsErrors = project.hasProperty("warningsAsErrors") ? project.warningsAsErrors : false
+
+        freeCompilerArgs += '-opt-in=kotlin.RequiresOptIn'
+
+        // Enable experimental coroutines APIs, including Flow
+        freeCompilerArgs += '-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi'
+        freeCompilerArgs += '-opt-in=kotlinx.coroutines.FlowPreview'
+        freeCompilerArgs += '-opt-in=kotlin.Experimental'
+
+        // Set JVM target to 1.8
+        jvmTarget = JavaVersion.VERSION_11.toString()
+    }
+}
