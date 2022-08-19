@@ -60,8 +60,10 @@ object LoginAction {
                         if (BuildConfig.DEBUG) {
                             Log.d(TAG, "login success")
                         }
+                    } catch (e: SmackException.AlreadyConnectedException) {
+                        retCode = OK
                     } catch (e: SmackException) {
-                        Logger.d("network exception", e)
+                        Log.e(TAG, "network exception", e)
                         retCode = StatusCode.NETWORK_ERROR
                     } catch (e: SASLErrorException) {
                         retCode = StatusCode.LOGIN_AUTH_FAILED

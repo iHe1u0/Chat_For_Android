@@ -15,6 +15,7 @@ import com.orhanobut.logger.PrettyFormatStrategy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jivesoftware.smack.ConnectionConfiguration
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration
@@ -95,16 +96,14 @@ class App : Application() {
         }
 
         fun exitApp() {
-            ActivityCollector.finishAll()
             if (ConnectionManager.isConnectionAuthenticated(connection = xmppTcpConnection)) {
                 xmppTcpConnection?.disconnect()
             }
             MainScope().launch(Dispatchers.IO) {
                 App().appDatabase.appDatabaseDao().deleteAllContact()
-                val activityManager =
-                    getContext().getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-                activityManager.killBackgroundProcesses(getContext().packageName)
-                exitProcess(0)
+                withContext(Dispatchers.Main){
+                    ActivityCollector.finishAll()
+                }
             }
         }
     }

@@ -1,22 +1,41 @@
 package cc.imorning.chat.activity
 
 
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import cc.imorning.chat.R
 import cc.imorning.chat.databinding.ActivityMainBinding
 import cc.imorning.chat.service.NetworkService
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var networkService: Intent
+
+    private lateinit var networkService: NetworkService
+    private var isNetworkServiceRunning = false
+
+    private val networkServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as NetworkService.NetworkServiceBinder
+            networkService = binder.getService()
+            isNetworkServiceRunning = true
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            isNetworkServiceRunning = false
+        }
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,12 +58,17 @@ class MainActivity : BaseActivity() {
         )
         navView.setupWithNavController(navController)
 
-        networkService = Intent(this, NetworkService::class.java)
-        startService(networkService)
+        // Bind Network Service
+        Intent(this, NetworkService::class.java).also { intent: Intent ->
+            bindService(intent, networkServiceConnection, Context.BIND_AUTO_CREATE)
+        }
     }
 
     override fun onDestroy() {
-        stopService(networkService)
+        if (isNetworkServiceRunning) {
+            unbindService(networkServiceConnection)
+            isNetworkServiceRunning = false
+        }
         super.onDestroy()
     }
 }
