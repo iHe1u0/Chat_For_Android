@@ -6,6 +6,7 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import cc.imorning.chat.utils.RingUtils
+import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
 import cc.imorning.common.action.message.MessageManager
 import cc.imorning.common.manager.ConnectionManager
@@ -26,9 +27,11 @@ class MessageMonitorService : Service() {
         if (ConnectionManager.isConnectionAuthenticated(connection = connection)) {
             RingUtils.playNewMessage(CommonApp.getContext())
             offlineMessages = MessageManager.getOfflineMessage(connection)
-            Log.i(TAG, "message count: ${offlineMessages.size}")
-            for (message in offlineMessages) {
-                Log.i(TAG, message.body)
+            if (BuildConfig.DEBUG) {
+                Log.i(TAG, "message count: ${offlineMessages.size}")
+                for (message in offlineMessages) {
+                    Log.i(TAG, "message: ${message.body}")
+                }
             }
         } else {
             Log.w(TAG, "not connect or authenticated")
