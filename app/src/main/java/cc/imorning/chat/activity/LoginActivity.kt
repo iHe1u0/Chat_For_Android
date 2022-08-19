@@ -3,14 +3,13 @@ package cc.imorning.chat.activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import cc.imorning.chat.App
 import cc.imorning.chat.databinding.ActivityLoginBinding
+import cc.imorning.common.CommonApp
 import cc.imorning.common.action.LoginAction
 import cc.imorning.common.constant.Config
 import cc.imorning.common.constant.StatusCode
 import cc.imorning.common.manager.ConnectionManager
 import cc.imorning.common.utils.AvatarUtils
-import cc.imorning.common.utils.NetworkUtils
 import cc.imorning.common.utils.SessionManager
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
@@ -38,13 +37,13 @@ class LoginActivity : BaseActivity() {
         }
 
         binding.loginGoButton.setOnClickListener {
-            binding.loginProgress.visibility = View.VISIBLE
             val account = binding.loginAccountEdit.text.toString().trim()
             val password = binding.loginPasswordEdit.text.toString().trim()
             if (account.isEmpty() || password.isEmpty()) {
                 Snackbar.make(binding.root, "账号密码不能为空", Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            binding.loginProgress.visibility = View.VISIBLE
             MainScope().launch(Dispatchers.IO) {
                 val result = LoginAction.run(
                     account = account,
@@ -56,16 +55,20 @@ class LoginActivity : BaseActivity() {
                             sessionManager.saveAccount(account)
                             sessionManager.saveAuthToken(password)
                         }
-                        if (ConnectionManager.isConnectionAuthenticated(App.getTCPConnection())) {
+                        if (ConnectionManager.isConnectionAuthenticated(CommonApp.getTCPConnection())) {
                             val selfVCard =
-                                VCardManager.getInstanceFor(App.getTCPConnection()).loadVCard()
-                            App.vCard = selfVCard
-                            AvatarUtils.instance.cacheAvatar(App.getTCPConnection().user.asEntityBareJidString())
+                                VCardManager.getInstanceFor(CommonApp.getTCPConnection())
+                                    .loadVCard()
+                            CommonApp.vCard = selfVCard
+                            AvatarUtils.instance.saveAvatar(CommonApp.getTCPConnection().user.asEntityBareJidString())
+                            val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            startActivity(intent)
+                            this@LoginActivity.finish()
+                        } else {
+                            Snackbar.make(binding.root, "登陆失败: 服务器未响应", Snackbar.LENGTH_SHORT)
+                                .show()
                         }
-                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        startActivity(intent)
-                        this@LoginActivity.finish()
                     }
                     StatusCode.LOGIN_AUTH_FAILED -> {
                         Snackbar.make(binding.root, "登陆失败: 账号或密码错误", Snackbar.LENGTH_SHORT)

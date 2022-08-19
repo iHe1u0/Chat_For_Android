@@ -2,14 +2,14 @@ package cc.imorning.common.utils
 
 import android.content.Context
 import android.content.SharedPreferences
-import cc.imorning.chat.App
+import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.Config
 
 class SessionManager(
     sessionType: String? = Config.DEFAULT_CONFIG
 ) {
 
-    private var preferences: SharedPreferences = App.getContext().getSharedPreferences(
+    private var preferences: SharedPreferences = CommonApp.getContext().getSharedPreferences(
         sessionType, Context.MODE_PRIVATE
     )
 

@@ -6,25 +6,18 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import cc.imorning.chat.App
 import cc.imorning.chat.R
-import cc.imorning.common.manager.ConnectionManager
+import cc.imorning.common.CommonApp
 import cc.imorning.common.utils.AvatarUtils
 
 class ProfileViewModel : ViewModel() {
 
-    private var connection = App.getTCPConnection()
-    private var vCard = App.vCard
+    private var connection = CommonApp.getTCPConnection()
+    private var vCard = CommonApp.vCard
 
     private val _avatarPath = MutableLiveData<String>().apply {
-        value = if (ConnectionManager.isConnectionAuthenticated(connection)) {
-            AvatarUtils.instance.getAvatarPath(null)
-        } else {
-            null
-        }
+        value = AvatarUtils.instance.getAvatarPath(connection.user.asEntityBareJidString())
     }
-
-
     private val _nickName = MutableLiveData<String>().apply {
         if (vCard != null) {
             vCard!!.let { vcard ->

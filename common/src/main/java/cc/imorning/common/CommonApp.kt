@@ -1,10 +1,8 @@
-package cc.imorning.chat
+package cc.imorning.common
 
 import android.app.Activity
-import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
-import cc.imorning.common.BuildConfig
 import cc.imorning.common.constant.ServerConfig
 import cc.imorning.common.database.AppDatabase
 import cc.imorning.common.manager.ConnectionManager
@@ -21,12 +19,11 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration
 import org.jivesoftware.smackx.vcardtemp.packet.VCard
 import java.util.*
-import kotlin.system.exitProcess
 
 
-class App : Application() {
+open class CommonApp : Application() {
 
-    val appDatabase: AppDatabase by lazy {
+    final val appDatabase: AppDatabase by lazy {
         AppDatabase.getInstance()
     }
 
@@ -100,7 +97,7 @@ class App : Application() {
                 xmppTcpConnection?.disconnect()
             }
             MainScope().launch(Dispatchers.IO) {
-                App().appDatabase.appDatabaseDao().deleteAllContact()
+                CommonApp().appDatabase.appDatabaseDao().deleteAllContact()
                 withContext(Dispatchers.Main){
                     ActivityCollector.finishAll()
                 }

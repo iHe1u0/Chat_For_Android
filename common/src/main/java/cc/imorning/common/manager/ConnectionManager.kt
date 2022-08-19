@@ -1,8 +1,8 @@
 package cc.imorning.common.manager
 
 import android.util.Log
-import cc.imorning.chat.ActivityCollector
-import cc.imorning.chat.App
+import cc.imorning.common.ActivityCollector
+import cc.imorning.common.CommonApp
 import cc.imorning.common.action.LoginAction
 import cc.imorning.common.constant.Config
 import cc.imorning.common.utils.NetworkUtils
@@ -16,7 +16,7 @@ object ConnectionManager {
 
     private const val TAG = "ConnectionManager"
 
-    fun isConnectionAuthenticated(connection: XMPPConnection? = App.getTCPConnection()): Boolean {
+    fun isConnectionAuthenticated(connection: XMPPConnection? = CommonApp.getTCPConnection()): Boolean {
 
         if (connection == null || !connection.isConnected || !connection.isAuthenticated) {
             return false
@@ -45,7 +45,7 @@ object ConnectionManager {
                     }
                 }
                 try {
-                    if (!connection.isConnected && NetworkUtils.isNetworkConnected(App.getContext())) {
+                    if (!connection.isConnected && NetworkUtils.isNetworkConnected(CommonApp.getContext())) {
                         connectJob.await()
                     } else {
                         connectJob.cancel(message = "No network")
@@ -55,7 +55,7 @@ object ConnectionManager {
                 } catch (e: SmackException.AlreadyLoggedInException) {
                     Log.d(TAG, "${e.message}")
                 } catch (throwable: Throwable) {
-                    Log.e(TAG, "TCP connection failed", throwable)
+                    Log.e(TAG, "TCP connect failed")
                 }
             }
 

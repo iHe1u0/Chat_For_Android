@@ -1,8 +1,8 @@
 package cc.imorning.common.action
 
 import android.util.Log
-import cc.imorning.chat.App
 import cc.imorning.common.BuildConfig
+import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.Config
 import cc.imorning.common.database.AppDatabase
 import cc.imorning.common.exception.OfflineException
@@ -23,7 +23,7 @@ private const val TAG = "ContactAction"
 
 object ContactAction {
 
-    private val connection = App.getTCPConnection()
+    private val connection = CommonApp.getTCPConnection()
     private val databaseDao = AppDatabase.getInstance().appDatabaseDao()
 
     /**
@@ -74,7 +74,7 @@ object ContactAction {
      */
     @Synchronized
     fun getContactList(): List<RosterEntry>? {
-        if (NetworkUtils.isNetworkNotConnected(App.getContext())) {
+        if (NetworkUtils.isNetworkNotConnected(CommonApp.getContext())) {
             return null
         }
         if (!connection.isConnected) {

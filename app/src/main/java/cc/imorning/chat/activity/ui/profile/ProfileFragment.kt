@@ -30,10 +30,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import cc.imorning.chat.App
 import cc.imorning.chat.R
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.view.ui.ComposeDialogUtils
+import cc.imorning.common.CommonApp
 import coil.compose.rememberAsyncImagePainter
 
 private const val TAG = "ProfileFragment"
@@ -247,7 +247,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
         }
         TextButton(
             modifier = Modifier.fillMaxWidth(),
-            onClick = { App.exitApp() },
+            onClick = { CommonApp.exitApp() },
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,

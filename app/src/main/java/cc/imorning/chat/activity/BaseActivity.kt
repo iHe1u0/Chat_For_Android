@@ -2,7 +2,7 @@ package cc.imorning.chat.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import cc.imorning.chat.ActivityCollector
+import cc.imorning.common.ActivityCollector
 
 open class BaseActivity : AppCompatActivity() {
 

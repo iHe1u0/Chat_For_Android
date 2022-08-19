@@ -16,9 +16,12 @@ import androidx.compose.ui.unit.dp
 import cc.imorning.chat.R
 import cc.imorning.chat.model.Contact
 import cc.imorning.chat.view.ui.ComposeDialogUtils
+import cc.imorning.common.utils.AvatarUtils
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
+
+private const val TAG = "ContactItem"
 
 @Composable
 fun ContactItem(
@@ -28,19 +31,17 @@ fun ContactItem(
     if (showBuildingDialog) {
         ComposeDialogUtils.FunctionalityNotAvailablePopup { showBuildingDialog = false }
     }
-    var avatarPath = contact.avatarPath
-    val jid = contact.jid
+    val jidString = contact.jid
     val nickname = contact.nickName
-    if (avatarPath == null) {
-        avatarPath = "https://ui-avatars.com/api/?name=$jid"
+    var avatarPath = AvatarUtils.instance.getAvatarPath(jidString)
+    if (avatarPath == null || !AvatarUtils.instance.hasAvatar(jidString)) {
+        avatarPath = "https://ui-avatars.com/api/?name=$jidString"
     }
     TextButton(
         onClick = {
             showBuildingDialog = true
         },
-        modifier = Modifier.fillMaxWidth(),
-        //horizontalArrangement = Arrangement.Center,
-        //verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
     ) {
         SubcomposeAsyncImage(
             model = avatarPath,
@@ -55,7 +56,9 @@ fun ContactItem(
                     CircularProgressIndicator()
                 }
                 is AsyncImagePainter.State.Error -> {
-                    CircularProgressIndicator()
+                    Log.w(TAG, "on error for get avatar: $avatarPath")
+                    // CircularProgressIndicator()
+                    Icon(imageVector = Icons.Filled.Person, contentDescription = null)
                 }
                 is AsyncImagePainter.State.Empty -> {
                     Icon(imageVector = Icons.Filled.Person, contentDescription = null)
@@ -75,7 +78,7 @@ fun ContactItem(
                 maxLines = 1
             )
             Text(
-                text = jid,
+                text = jidString,
                 style = MaterialTheme.typography.titleSmall,
                 maxLines = 1
             )

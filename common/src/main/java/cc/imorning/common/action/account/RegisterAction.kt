@@ -1,7 +1,7 @@
 package cc.imorning.common.action.account
 
-import cc.imorning.chat.App
 import cc.imorning.common.BuildConfig
+import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.StatusCode.ERROR
 import cc.imorning.common.constant.StatusCode.OK
 import com.orhanobut.logger.Logger
@@ -17,7 +17,7 @@ object Register {
         password: String
     ): Int {
         try {
-            val accountManager = AccountManager.getInstance(App.getTCPConnection())
+            val accountManager = AccountManager.getInstance(CommonApp.getTCPConnection())
             accountManager.sensitiveOperationOverInsecureConnection(true)
             accountManager.createAccount(Localpart.from(userName), password)
             return OK

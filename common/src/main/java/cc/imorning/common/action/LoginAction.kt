@@ -1,8 +1,8 @@
 package cc.imorning.common.action
 
 import android.util.Log
-import cc.imorning.chat.App
 import cc.imorning.common.BuildConfig
+import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.StatusCode
 import cc.imorning.common.constant.StatusCode.LOGIN_FAILED_CAUSE_ONLINE
 import cc.imorning.common.constant.StatusCode.OK
@@ -27,8 +27,8 @@ object LoginAction {
         password: String
     ): Int {
         var retCode: Int
-        val connection: AbstractXMPPConnection = App.getTCPConnection()
-        if (NetworkUtils.isNetworkNotConnected(App.getContext())) {
+        val connection: AbstractXMPPConnection = CommonApp.getTCPConnection()
+        if (NetworkUtils.isNetworkNotConnected(CommonApp.getContext())) {
             retCode = StatusCode.NETWORK_ERROR
         } else {
             runBlocking(Dispatchers.IO) {

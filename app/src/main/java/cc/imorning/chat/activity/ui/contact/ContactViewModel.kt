@@ -10,6 +10,7 @@ import cc.imorning.common.action.ContactAction
 import cc.imorning.common.database.AppDatabase
 import cc.imorning.common.database.dao.AppDatabaseDao
 import cc.imorning.common.database.table.UserInfoEntity
+import cc.imorning.common.utils.AvatarUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,9 +29,6 @@ class ContactViewModel @Inject constructor(
         private const val TAG = "ContactViewModel"
     }
 
-    init {
-        Log.d(TAG, "init $this")
-    }
     private val database = AppDatabase.getInstance()
 
     private val _isRefreshing = MutableStateFlow(false)
@@ -43,6 +41,10 @@ class ContactViewModel @Inject constructor(
 
     internal val allContacts: LiveData<List<UserInfoEntity>> =
         database.appDatabaseDao().getAllContact()
+
+    init {
+        refresh()
+    }
 
     @Synchronized
     fun refresh() {
@@ -57,17 +59,22 @@ class ContactViewModel @Inject constructor(
             if (members != null && members.isNotEmpty()) {
                 for (member in members) {
                     withContext(Dispatchers.IO) {
+                        val jidString = member.jid.asUnescapedString()
+                        val nickName = member.name
+                        // insert contact into database
                         appDatabaseDao.insertContact(
                             UserInfoEntity(
-                                jid = member.jid.asUnescapedString(),
-                                username = member.name
+                                jid = jidString,
+                                username = nickName
                             )
                         )
+                        // save contact's avatar
+                        AvatarUtils.instance.saveAvatar(jidString)
+                        // show for ui
                         contactList.add(
                             Contact(
-                                jid = member.jid.asUnescapedString(),
-                                avatarPath = null,
-                                nickName = member.name,
+                                nickName = nickName,
+                                jid = jidString,
                                 status = 0
                             )
                         )

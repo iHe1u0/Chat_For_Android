@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import cc.imorning.chat.App
+import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.DatabaseConstant
 import cc.imorning.common.database.converters.DateTimeConverter
 import cc.imorning.common.database.dao.AppDatabaseDao
@@ -28,7 +28,7 @@ abstract class AppDatabase : RoomDatabase() {
             if (!this::appDatabase.isInitialized) {
                 //创建的数据库的实例
                 appDatabase = Room.databaseBuilder(
-                    App.getContext(),
+                    CommonApp.getContext(),
                     AppDatabase::class.java,
                     DatabaseConstant.DATABASE_NAME
                 )

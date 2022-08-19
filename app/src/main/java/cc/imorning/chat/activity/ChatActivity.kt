@@ -22,11 +22,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import cc.imorning.chat.App
 import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.R
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.view.ui.ComposeDialogUtils
+import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.Config
 import cc.imorning.common.manager.ConnectionManager
 
@@ -36,7 +36,7 @@ private const val TAG = "ChatActivity"
 class ChatActivity : BaseActivity() {
 
     private var chatJid: String? = null
-    private val connection = App.getTCPConnection()
+    private val connection = CommonApp.getTCPConnection()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
