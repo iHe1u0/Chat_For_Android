@@ -1,5 +1,6 @@
 package cc.imorning.chat.compontens
 
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
@@ -11,11 +12,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import cc.imorning.chat.R
+import cc.imorning.chat.activity.ChatActivity
 import cc.imorning.chat.model.Contact
 import cc.imorning.chat.view.ui.ComposeDialogUtils
+import cc.imorning.common.constant.Config
 import cc.imorning.common.utils.AvatarUtils
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
@@ -27,10 +31,7 @@ private const val TAG = "ContactItem"
 fun ContactItem(
     contact: Contact
 ) {
-    var showBuildingDialog by remember { mutableStateOf(false) }
-    if (showBuildingDialog) {
-        ComposeDialogUtils.FunctionalityNotAvailablePopup { showBuildingDialog = false }
-    }
+    val context = LocalContext.current
     val jidString = contact.jid
     val nickname = contact.nickName
     var avatarPath = AvatarUtils.instance.getAvatarPath(jidString)
@@ -39,7 +40,11 @@ fun ContactItem(
     }
     TextButton(
         onClick = {
-            showBuildingDialog = true
+            val chatActivity = Intent(context, ChatActivity::class.java)
+            chatActivity.action = Config.Intent.Action.START_CHAT_FROM_APP
+            chatActivity.putExtra(Config.Intent.Key.START_CHAT_JID, jidString)
+            chatActivity.putExtra(Config.Intent.Key.START_CHAT_TYPE, Config.ChatType.Single)
+            context.startActivity(chatActivity)
         },
         modifier = Modifier.fillMaxWidth()
     ) {

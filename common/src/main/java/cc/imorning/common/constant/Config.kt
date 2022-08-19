@@ -10,7 +10,12 @@ object Config {
 
         object Key {
             const val START_CHAT_JID: String = "chatJid"
+            const val START_CHAT_TYPE: String = "chatType"
         }
+    }
+
+    enum class ChatType {
+        Single, Group, Unknown
     }
 
     const val DEFAULT_CONFIG = "default_info"

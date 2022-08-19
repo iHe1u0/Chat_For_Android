@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import cc.imorning.chat.databinding.ActivityLoginBinding
+import cc.imorning.chat.utils.RingUtils
 import cc.imorning.common.CommonApp
 import cc.imorning.common.action.LoginAction
 import cc.imorning.common.constant.Config

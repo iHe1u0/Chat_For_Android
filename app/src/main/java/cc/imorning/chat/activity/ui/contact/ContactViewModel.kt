@@ -1,6 +1,5 @@
 package cc.imorning.chat.activity.ui.contact
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -13,6 +12,7 @@ import cc.imorning.common.database.table.UserInfoEntity
 import cc.imorning.common.utils.AvatarUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -82,6 +82,7 @@ class ContactViewModel @Inject constructor(
                 }
             }
             _contacts.emit(contactList)
+            delay(1000)
             _isRefreshing.emit(false)
         }
     }

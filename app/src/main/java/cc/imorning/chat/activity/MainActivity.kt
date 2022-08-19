@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import android.view.KeyEvent
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -14,6 +15,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import cc.imorning.chat.R
 import cc.imorning.chat.databinding.ActivityMainBinding
+import cc.imorning.chat.service.MessageMonitorService
 import cc.imorning.chat.service.NetworkService
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -23,16 +25,20 @@ class MainActivity : BaseActivity() {
 
     private lateinit var networkService: NetworkService
     private var isNetworkServiceRunning = false
-
+    private var messageMonitor = Intent()
     private val networkServiceConnection = object : ServiceConnection {
+
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as NetworkService.NetworkServiceBinder
             networkService = binder.getService()
+            messageMonitor = Intent(this@MainActivity, MessageMonitorService::class.java)
+            startService(messageMonitor)
             isNetworkServiceRunning = true
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
             isNetworkServiceRunning = false
+            stopService(messageMonitor)
         }
 
     }
@@ -70,5 +76,16 @@ class MainActivity : BaseActivity() {
             isNetworkServiceRunning = false
         }
         super.onDestroy()
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            val home = Intent(Intent.ACTION_MAIN)
+            home.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            home.addCategory(Intent.CATEGORY_HOME)
+            startActivity(home)
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
     }
 }

@@ -26,6 +26,7 @@ fun RecentMessageItem(message: String) {
                 val chatActivity = Intent(context, ChatActivity::class.java)
                 chatActivity.action = Config.Intent.Action.START_CHAT_FROM_APP
                 chatActivity.putExtra(Config.Intent.Key.START_CHAT_JID, message)
+                chatActivity.putExtra(Config.Intent.Key.START_CHAT_TYPE, Config.ChatType.Single)
                 context.startActivity(chatActivity)
             },
         horizontalArrangement = Arrangement.Start,
