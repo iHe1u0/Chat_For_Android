@@ -6,6 +6,7 @@ import android.net.Uri
 import cc.imorning.common.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jivesoftware.smack.packet.Message
 
@@ -35,6 +36,7 @@ object RingUtils {
             _soundPool.play(loadId, 1.0f, 1.0f, 1, 0, 1.0f)
         }
         MainScope().launch(Dispatchers.IO) {
+            delay(2500)
             soundPool.unload(loadId)
             soundPool.release()
             soundPool = null

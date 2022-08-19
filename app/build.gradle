@@ -6,7 +6,6 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
 }
-
 android {
     compileSdk 33
 
@@ -15,13 +14,12 @@ android {
         minSdk 21
         targetSdk 33
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.${releaseTime()}"
 
         vectorDrawables {
             useSupportLibrary true
         }
         resourceConfigurations += ['zh-rCN']
-
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

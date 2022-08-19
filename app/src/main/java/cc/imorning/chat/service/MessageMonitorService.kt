@@ -71,7 +71,7 @@ class MessageMonitorService : Service() {
                 context = CommonApp.getContext(),
                 smallIcon = R.mipmap.ic_launcher,
                 id = getString(R.string.new_message),
-                title = jidString.split("@")[0],
+                title = jidString,
                 content = message.body
             )
 

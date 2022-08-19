@@ -5,7 +5,9 @@ import android.app.RemoteInput
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import cc.imorning.chat.service.NotificationHelper
+import cc.imorning.common.BuildConfig
 import cc.imorning.common.action.message.MessageManager
 import cc.imorning.common.constant.Config
 
