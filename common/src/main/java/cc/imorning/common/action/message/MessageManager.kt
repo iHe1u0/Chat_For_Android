@@ -2,10 +2,13 @@ package cc.imorning.common.action.message
 
 import android.util.Log
 import cc.imorning.common.BuildConfig
-import org.jivesoftware.smack.AbstractXMPPConnection
+import cc.imorning.common.CommonApp
+import cc.imorning.common.manager.ConnectionManager
+import org.jivesoftware.smack.chat2.ChatManager
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smackx.offline.OfflineMessageManager
+import org.jxmpp.jid.impl.JidCreate
 
 private const val TAG = "MessageManager"
 
@@ -17,10 +20,14 @@ private const val TAG = "MessageManager"
  */
 object MessageManager {
 
+    private val connection = CommonApp.getTCPConnection()
+
+    private val chatManager = ChatManager.getInstanceFor(connection)
+
     /**
-     * 获取用户的离线消息
+     * get offline message
      */
-    fun getOfflineMessage(connection: AbstractXMPPConnection): List<Message> {
+    fun getOfflineMessage(): List<Message> {
 
         //将用户状态设为离线
         val presence = Presence(Presence.Type.unavailable)
@@ -46,5 +53,33 @@ object MessageManager {
 
         return messages
 
+    }
+
+    /**
+     * send message to contact
+     *
+     * @param jidString jid like 'admin@chat.catcompany.cn'
+     * @param message message text
+     *
+     * @return true if send success
+     */
+    fun sendMessage(
+        jidString: String,
+        message: String
+    ): Boolean {
+        if (!ConnectionManager.isConnectionAuthenticated(connection)) {
+            return false
+        }
+        val newChat = chatManager.chatWith(JidCreate.entityBareFrom(jidString))
+        try {
+            newChat.send(message)
+            Log.i(TAG, "sendMessage success.")
+            return true
+        } catch (exception: Exception) {
+            if (BuildConfig.DEBUG) {
+                Log.e(TAG, "send message failed", exception)
+            }
+        }
+        return false
     }
 }

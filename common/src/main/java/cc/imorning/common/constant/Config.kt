@@ -4,8 +4,11 @@ object Config {
 
     object Intent {
         object Action {
-            const val START_CHAT_FROM_APP: String = "app"
             const val START_CHAT_FROM_WEB: String = android.content.Intent.ACTION_VIEW
+            const val START_CHAT_FROM_APP: String = "app"
+
+            const val QUICK_REPLY: String = "quick_reply"
+            const val QUICK_REPLY_TO: String = "quick_reply_to"
         }
 
         object Key {

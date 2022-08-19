@@ -56,7 +56,7 @@ class ContactViewModel @Inject constructor(
             _isRefreshing.emit(true)
             val members = ContactAction.getContactList()
             val contactList = ArrayList<Contact>()
-            if (members != null && members.isNotEmpty()) {
+            if ((members != null) && members.isNotEmpty()) {
                 for (member in members) {
                     withContext(Dispatchers.IO) {
                         val jidString = member.jid.asUnescapedString()
