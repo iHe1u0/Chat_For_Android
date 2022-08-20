@@ -41,6 +41,8 @@ dependencies {
     api "androidx.room:room-rxjava3:$room_version"
     api "androidx.room:room-guava:$room_version"
     api "androidx.room:room-paging:2.5.0-alpha02"
+    // WorkManager
+    api "androidx.work:work-runtime-ktx:$work_version"
     // Logger
     api "com.orhanobut:logger:2.2.0"
     // Smack

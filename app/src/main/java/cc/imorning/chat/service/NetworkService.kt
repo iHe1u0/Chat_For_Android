@@ -9,8 +9,8 @@ import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
+import cc.imorning.chat.monitor.ChatConnectionListener
 import cc.imorning.common.CommonApp
-import cc.imorning.common.manager.ConnectionManager
 import cc.imorning.common.utils.NetworkUtils
 
 class NetworkService : Service() {
@@ -29,7 +29,8 @@ class NetworkService : Service() {
                     if ((!connection.isAuthenticated || !connection.isConnected) &&
                         NetworkUtils.isNetworkConnected(context)
                     ) {
-                        ConnectionManager.connect(connection)
+                        // ConnectionManager.connect(connection)
+                        Log.d(TAG, "We use WorkManager to reconnect now.")
                     }
                 }
             }

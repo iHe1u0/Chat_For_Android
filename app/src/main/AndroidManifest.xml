@@ -43,7 +43,14 @@
                 <data
                     android:host="app"
                     android:path="/chat"
-                    android:port="1124"
+                    android:scheme="imorningchat" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="android.example.com"
+                    android:pathPattern="/chat/*"
                     android:scheme="imorningchat" />
             </intent-filter>
         </activity>

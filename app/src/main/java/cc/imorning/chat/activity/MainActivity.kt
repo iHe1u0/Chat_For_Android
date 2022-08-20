@@ -25,20 +25,16 @@ class MainActivity : BaseActivity() {
 
     private lateinit var networkService: NetworkService
     private var isNetworkServiceRunning = false
-    private var messageMonitor = Intent()
     private val networkServiceConnection = object : ServiceConnection {
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as NetworkService.NetworkServiceBinder
             networkService = binder.getService()
-            messageMonitor = Intent(this@MainActivity, MessageMonitorService::class.java)
-            startService(messageMonitor)
             isNetworkServiceRunning = true
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
             isNetworkServiceRunning = false
-            stopService(messageMonitor)
         }
 
     }

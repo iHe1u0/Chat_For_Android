@@ -78,16 +78,9 @@ object ContactAction {
             return null
         }
         if (!connection.isConnected) {
-            val sessionManager = SessionManager(Config.LOGIN_INFO)
-            runBlocking(Dispatchers.IO) {
-                LoginAction.run(
-                    account = sessionManager.fetchAccount()!!,
-                    password = sessionManager.fetchAuthToken()!!
-                )
-            }
+            ConnectionManager.connect(connection)
         }
         if (!connection.isAuthenticated) {
-            // throw OfflineException(msg = "登录过期")
             if (BuildConfig.DEBUG){
                 Log.d(TAG, "connection is not authenticated")
             }

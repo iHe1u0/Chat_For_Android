@@ -5,9 +5,7 @@ import android.app.RemoteInput
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import cc.imorning.chat.service.NotificationHelper
-import cc.imorning.common.BuildConfig
+import cc.imorning.chat.utils.ChatNotificationManager
 import cc.imorning.common.action.message.MessageManager
 import cc.imorning.common.constant.Config
 
@@ -27,7 +25,7 @@ class ReplyReceiver : BroadcastReceiver() {
         }
         notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.cancel(NotificationHelper.ID.NEW_MESSAGE)
+        notificationManager.cancel(ChatNotificationManager.CHANNEL_NEW_MESSAGES_ID)
     }
 
     private fun getMessageText(intent: Intent): CharSequence? {

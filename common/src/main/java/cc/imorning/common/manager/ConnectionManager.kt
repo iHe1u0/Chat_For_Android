@@ -2,6 +2,7 @@ package cc.imorning.common.manager
 
 import android.util.Log
 import cc.imorning.common.ActivityCollector
+import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
 import cc.imorning.common.action.LoginAction
 import cc.imorning.common.constant.Config
@@ -11,6 +12,7 @@ import kotlinx.coroutines.*
 import org.jivesoftware.smack.SmackException
 import org.jivesoftware.smack.XMPPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
+import org.joda.time.DateTime
 
 object ConnectionManager {
 
@@ -25,24 +27,28 @@ object ConnectionManager {
     }
 
     @Synchronized
-    fun connect(connection: XMPPTCPConnection) {
+    fun connect(
+        connection: XMPPTCPConnection
+    ) {
         MainScope().launch(Dispatchers.IO) {
             supervisorScope {
                 val connectJob = async(Dispatchers.IO) {
                     if (!connection.isConnected) {
                         connection.connect()
+                        if (BuildConfig.DEBUG) {
+                            Log.d(TAG, "connect success @ ${DateTime.now()}")
+                        }
+                    }
+                    val isLoginActivity =
+                        ActivityCollector.currentActivity.contains("LoginActivity")
+                    if (isLoginActivity) {
+                        return@async
                     }
                     val sessionManager = SessionManager(Config.LOGIN_INFO)
-                    if (!connection.isAuthenticated &&
-                        sessionManager.fetchAccount() != null &&
-                        sessionManager.fetchAuthToken() != null &&
-                        !ActivityCollector.activities.last.localClassName.contains("LoginActivity")
-                    ) {
-                        LoginAction.run(
-                            account = sessionManager.fetchAccount()!!,
-                            password = sessionManager.fetchAuthToken()!!
-                        )
-                    }
+                    LoginAction.run(
+                        account = sessionManager.fetchAccount()!!,
+                        password = sessionManager.fetchAuthToken()!!
+                    )
                 }
                 try {
                     if (!connection.isConnected && NetworkUtils.isNetworkConnected(CommonApp.getContext())) {
@@ -55,7 +61,7 @@ object ConnectionManager {
                 } catch (e: SmackException.AlreadyLoggedInException) {
                     Log.d(TAG, "${e.message}")
                 } catch (throwable: Throwable) {
-                    Log.e(TAG, "TCP connect failed")
+                    Log.e(TAG, "TCP connect failed", throwable)
                 }
             }
 

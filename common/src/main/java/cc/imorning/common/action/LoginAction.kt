@@ -4,10 +4,8 @@ import android.util.Log
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.StatusCode
-import cc.imorning.common.constant.StatusCode.LOGIN_FAILED_CAUSE_ONLINE
 import cc.imorning.common.constant.StatusCode.OK
 import cc.imorning.common.utils.NetworkUtils
-import com.orhanobut.logger.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
@@ -16,6 +14,7 @@ import org.jivesoftware.smack.AbstractXMPPConnection
 import org.jivesoftware.smack.SmackException
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.sasl.SASLErrorException
+import org.joda.time.DateTime
 
 object LoginAction {
 
@@ -35,31 +34,23 @@ object LoginAction {
                 supervisorScope {
                     val job = async(Dispatchers.IO) {
                         if (!connection.isConnected) {
-                            try {
-                                connection.connect()
-                            } catch (assertError: AssertionError) {
-                                return@async
-                            }
+                            connection.connect()
                         }
-                        if (!connection.isAuthenticated) {
-                            connection.login(account, password)
-                            val presence =
-                                connection.stanzaFactory.buildPresenceStanza()
-                                    .ofType(Presence.Type.unavailable)
-                                    .build()
-                            connection.sendStanza(presence)
-                            retCode = OK
-                        } else {
-                            Logger.d("user has been online")
-                            retCode = LOGIN_FAILED_CAUSE_ONLINE
-                        }
+                        connection.login(account, password)
+                        val presence =
+                            connection.stanzaFactory.buildPresenceStanza()
+                                .ofType(Presence.Type.unavailable)
+                                .build()
+                        connection.sendStanza(presence)
                     }
                     try {
-                        job.await()
-                        retCode = OK
-                        if (BuildConfig.DEBUG) {
-                            Log.d(TAG, "login success")
+                        if (!connection.isAuthenticated) {
+                            job.await()
+                            if (BuildConfig.DEBUG) {
+                                Log.d(TAG, "login success @ ${DateTime.now()}")
+                            }
                         }
+                        retCode = OK
                     } catch (e: SmackException.AlreadyConnectedException) {
                         retCode = OK
                     } catch (e: SmackException) {

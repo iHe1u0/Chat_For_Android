@@ -1,10 +1,10 @@
 package cc.imorning.chat.model
 
-import org.joda.time.field.OffsetDateTimeField
+import org.joda.time.DateTime
 
-data class Message(
+data class OnlineMessage(
     val from: String,
     val receiver: String,
     val message: String? = "",
-    val time: OffsetDateTimeField,
+    val time: DateTime = DateTime.now(),
 )

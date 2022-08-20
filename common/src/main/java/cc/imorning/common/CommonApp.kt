@@ -23,7 +23,7 @@ import java.util.*
 
 open class CommonApp : Application() {
 
-    final val appDatabase: AppDatabase by lazy {
+    val appDatabase: AppDatabase by lazy {
         AppDatabase.getInstance()
     }
 
@@ -98,7 +98,7 @@ open class CommonApp : Application() {
             }
             MainScope().launch(Dispatchers.IO) {
                 CommonApp().appDatabase.appDatabaseDao().deleteAllContact()
-                withContext(Dispatchers.Main){
+                withContext(Dispatchers.Main) {
                     ActivityCollector.finishAll()
                 }
             }
@@ -108,9 +108,12 @@ open class CommonApp : Application() {
 
 object ActivityCollector {
 
+    lateinit var currentActivity: String
+
     var activities = LinkedList<Activity>()
     fun addActivity(activity: Activity) {
         activities.add(activity)
+        currentActivity = activity.localClassName
     }
 
     fun removeActivity(activity: Activity) {
