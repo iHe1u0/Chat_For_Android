@@ -73,7 +73,8 @@ class ChatNotificationManager private constructor(val context: Context) {
                 .build()
         val icon = IconCompat.createWithResource(context, R.drawable.ic_default_avatar)
         val person = Person.Builder().setName(from).setIcon(icon).build()
-        val contentUrl = "imorningchat://app/chat/$from".toUri()
+        // imorningchat://app/chat?chatJid=iMorning
+        val contentUrl = "imorningchat://app/chat?chatJid=$from".toUri()
 
         val pendingIntent = PendingIntent.getActivity(
             context,

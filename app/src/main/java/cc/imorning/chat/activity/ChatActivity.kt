@@ -38,9 +38,13 @@ class ChatActivity : BaseActivity() {
     private var chatJid: String? = null
     private val connection = CommonApp.getTCPConnection()
 
+//    private val viewModel: ChatViewModel by lazy {
+//        ViewModelProvider(this)[ChatViewModel::class.java]
+//    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        processIntent()
+        handleIntent(intent)
         setContent {
             ChatTheme {
                 ChatScreen()
@@ -48,14 +52,14 @@ class ChatActivity : BaseActivity() {
         }
     }
 
-    private fun processIntent() {
-        if ((null != intent) && (null != intent.action)) {
+    private fun handleIntent(intent: Intent) {
+        if (null != intent.action) {
             when (val action = intent.action) {
                 Intent.ACTION_VIEW -> {
                     if (!ConnectionManager.isConnectionAuthenticated(this.connection)) {
                         Toast.makeText(this, "请先登录", Toast.LENGTH_LONG).show()
-                        val intent = Intent(this, LoginActivity::class.java)
-                        startActivity(intent)
+                        val loginActivity = Intent(this, LoginActivity::class.java)
+                        startActivity(loginActivity)
                         this.finish()
                     }
                     chatJid = intent.data?.getQueryParameter(Config.Intent.Key.START_CHAT_JID)
@@ -80,6 +84,9 @@ class ChatActivity : BaseActivity() {
             Toast.makeText(this, "发起消息失败，目标用户: $chatJid", Toast.LENGTH_LONG).show()
             this.finish()
             return
+        }
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "start with jid: $chatJid")
         }
     }
 
