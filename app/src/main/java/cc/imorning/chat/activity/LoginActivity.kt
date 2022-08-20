@@ -3,6 +3,8 @@ package cc.imorning.chat.activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.compose.setContent
+import cc.imorning.chat.activity.ui.login.ContentScreen
 import cc.imorning.chat.databinding.ActivityLoginBinding
 import cc.imorning.common.CommonApp
 import cc.imorning.common.action.LoginAction
