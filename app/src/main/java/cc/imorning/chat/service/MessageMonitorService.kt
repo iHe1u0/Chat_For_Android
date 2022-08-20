@@ -147,10 +147,14 @@ object NotificationHelper {
         val intent = Intent(context, ReplyReceiver::class.java)
         intent.putExtra(Config.Intent.Action.QUICK_REPLY_TO, title)
         // Build a PendingIntent for the reply action to trigger.
+        val requestCode = 1000
+        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        } else {
+            PendingIntent.FLAG_UPDATE_CURRENT
+        }
         val replyPendingIntent: PendingIntent =
-            PendingIntent.getBroadcast(
-                context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
-            )
+            PendingIntent.getBroadcast(context, requestCode, intent, flags)
         // Create the reply action and add the remote input.
         val action: NotificationCompat.Action =
             NotificationCompat.Action.Builder(smallIcon, "回复", replyPendingIntent)
