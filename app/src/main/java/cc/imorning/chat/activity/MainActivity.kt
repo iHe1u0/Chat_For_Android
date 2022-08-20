@@ -15,7 +15,6 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import cc.imorning.chat.R
 import cc.imorning.chat.databinding.ActivityMainBinding
-import cc.imorning.chat.service.MessageMonitorService
 import cc.imorning.chat.service.NetworkService
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -53,11 +52,11 @@ class MainActivity : BaseActivity() {
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main) as NavHostFragment
         val navController: NavController = navHostFragment.navController
 
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_message, R.id.navigation_contact, R.id.navigation_profile
-            )
-        )
+        // val appBarConfiguration = AppBarConfiguration(
+        //     setOf(
+        //         R.id.navigation_message, R.id.navigation_contact, R.id.navigation_profile
+        //     )
+        // )
         navView.setupWithNavController(navController)
 
         // Bind Network Service

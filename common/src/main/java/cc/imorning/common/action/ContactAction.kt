@@ -3,14 +3,10 @@ package cc.imorning.common.action
 import android.util.Log
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
-import cc.imorning.common.constant.Config
 import cc.imorning.common.database.AppDatabase
 import cc.imorning.common.exception.OfflineException
 import cc.imorning.common.manager.ConnectionManager
 import cc.imorning.common.utils.NetworkUtils
-import cc.imorning.common.utils.SessionManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import org.jivesoftware.smack.roster.Roster
 import org.jivesoftware.smack.roster.RosterEntry
 import org.jivesoftware.smack.roster.RosterGroup
@@ -156,8 +152,7 @@ object ContactAction {
         }
         try {
             val user = JidCreate.entityBareFrom(jid)
-            val vCard = VCardManager.getInstanceFor(connection).loadVCard(user)
-            return vCard
+            return VCardManager.getInstanceFor(connection).loadVCard(user)
         } catch (e: Exception) {
             if (BuildConfig.DEBUG) {
                 Log.e(TAG, "get user vCard failed", e)

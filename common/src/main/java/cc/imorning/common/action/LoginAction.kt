@@ -4,6 +4,7 @@ import android.util.Log
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.StatusCode
+import cc.imorning.common.constant.StatusCode.ERROR
 import cc.imorning.common.constant.StatusCode.OK
 import cc.imorning.common.utils.NetworkUtils
 import kotlinx.coroutines.Dispatchers
@@ -33,15 +34,21 @@ object LoginAction {
             runBlocking(Dispatchers.IO) {
                 supervisorScope {
                     val job = async(Dispatchers.IO) {
-                        if (!connection.isConnected) {
-                            connection.connect()
+                        try {
+                            if (!connection.isConnected) {
+                                connection.connect()
+                            }
+                            connection.login(account, password)
+                            val presence =
+                                connection.stanzaFactory.buildPresenceStanza()
+                                    .ofType(Presence.Type.unavailable)
+                                    .build()
+                            connection.sendStanza(presence)
+                            retCode = OK
+                        } catch (t: Throwable) {
+                            Log.e(TAG, "connect or login failed: ${t.localizedMessage}", t)
+                            retCode = ERROR
                         }
-                        connection.login(account, password)
-                        val presence =
-                            connection.stanzaFactory.buildPresenceStanza()
-                                .ofType(Presence.Type.unavailable)
-                                .build()
-                        connection.sendStanza(presence)
                     }
                     try {
                         job.await()
@@ -60,7 +67,7 @@ object LoginAction {
                         retCode = StatusCode.LOGIN_AUTH_FAILED
                     } catch (e: Exception) {
                         Log.e(TAG, "${e.message}", e)
-                        retCode = StatusCode.ERROR
+                        retCode = ERROR
                     }
                 }
             }

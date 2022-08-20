@@ -65,7 +65,7 @@ class ChatNotificationManager private constructor(val context: Context) {
     @WorkerThread
     fun showNotification(
         message: OnlineMessage,
-        from: String,
+        from: String? = "unknown sender",
         update: Boolean = false
     ) {
         val user =

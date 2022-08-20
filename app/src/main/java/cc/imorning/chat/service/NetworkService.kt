@@ -9,7 +9,6 @@ import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import cc.imorning.chat.monitor.ChatConnectionListener
 import cc.imorning.common.CommonApp
 import cc.imorning.common.utils.NetworkUtils
 

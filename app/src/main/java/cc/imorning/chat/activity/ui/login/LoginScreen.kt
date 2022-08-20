@@ -6,6 +6,4 @@ import androidx.compose.ui.tooling.preview.Preview
 @Composable
 @Preview(showSystemUi = true, showBackground = true)
 fun LoginScreen() {
-
-
 }
