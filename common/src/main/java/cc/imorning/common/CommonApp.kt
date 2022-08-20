@@ -3,6 +3,7 @@ package cc.imorning.common
 import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import cc.imorning.common.constant.ServerConfig
 import cc.imorning.common.database.AppDatabase
 import cc.imorning.common.manager.ConnectionManager
@@ -19,6 +20,7 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration
 import org.jivesoftware.smackx.vcardtemp.packet.VCard
 import java.util.*
+import kotlin.system.exitProcess
 
 
 open class CommonApp : Application() {
@@ -74,33 +76,24 @@ open class CommonApp : Application() {
         fun getTCPConnection(): XMPPTCPConnection {
             xmppTcpConnection!!.apply {
                 if (!this.isConnected && NetworkUtils.isNetworkConnected(getContext())) {
-//                    runBlocking(Dispatchers.IO) {
-//                        supervisorScope {
-//                            val connectJob = async(Dispatchers.IO) {
-//                                xmppTcpConnection!!.connect()
-//                            }
-//                            try {
-//                                connectJob.await()
-//                            } catch (throwable: Throwable) {
-//                                Logger.e("get TCP Connection failed", throwable)
-//                            }
-//                        }
-//                    }
                     ConnectionManager.connect(xmppTcpConnection!!)
                 }
                 return this
             }
         }
 
-        fun exitApp() {
-            if (ConnectionManager.isConnectionAuthenticated(connection = xmppTcpConnection)) {
-                xmppTcpConnection?.disconnect()
-            }
+        fun exitApp(status: Int = 0) {
             MainScope().launch(Dispatchers.IO) {
+                if (ConnectionManager.isConnectionAuthenticated(connection = xmppTcpConnection)) {
+                    xmppTcpConnection?.apply {
+                        disconnect()
+                    }
+                }
                 CommonApp().appDatabase.appDatabaseDao().deleteAllContact()
                 withContext(Dispatchers.Main) {
                     ActivityCollector.finishAll()
                 }
+                exitProcess(status)
             }
         }
     }

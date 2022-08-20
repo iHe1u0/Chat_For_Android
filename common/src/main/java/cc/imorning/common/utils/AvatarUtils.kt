@@ -52,6 +52,15 @@ class AvatarUtils private constructor() {
         return FileUtils.instance.isFileExist(FileUtils.instance.getAvatarCachePath(jid).absolutePath)
     }
 
+    /**
+     * get a online avatar
+     *
+     * @return address
+     */
+    fun getOnlineAvatar(jidString: String): String {
+        return "https://ui-avatars.com/api/?name=$jidString"
+    }
+
     companion object {
         private const val TAG = "AvatarUtils"
 

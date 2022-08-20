@@ -2,6 +2,7 @@ package cc.imorning.chat.activity.ui.profile
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -34,7 +37,10 @@ import cc.imorning.chat.R
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.view.ui.ComposeDialogUtils
 import cc.imorning.common.CommonApp
-import coil.compose.rememberAsyncImagePainter
+import cc.imorning.common.utils.AvatarUtils
+import coil.compose.AsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 
 private const val TAG = "ProfileFragment"
 
@@ -100,12 +106,15 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
             .offset(y = 12.dp)
             .fillMaxSize()
     ) {
-        val avatarPath = "${profileViewModel.avatarPath.observeAsState().value}"
+        var avatarPath = profileViewModel.avatarPath.observeAsState().value
         val nickName = profileViewModel.nickname.observeAsState()
         val phoneNumber = profileViewModel.phoneNumber.observeAsState()
-        val userName = profileViewModel.userName.observeAsState()
+        val jidString = profileViewModel.jidString.observeAsState()
         val status = profileViewModel.status.observeAsState()
 
+        if (avatarPath == null || !AvatarUtils.instance.hasAvatar(jidString.value.toString())) {
+            avatarPath = AvatarUtils.instance.getOnlineAvatar("${jidString.value}")
+        }
         var showBuildingDialog by remember { mutableStateOf(false) }
         if (showBuildingDialog) {
             ComposeDialogUtils.FunctionalityNotAvailablePopup { showBuildingDialog = false }
@@ -120,14 +129,11 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                 .fillMaxWidth()
                 .offset(y = 16.dp)
         ) {
-            Image(
-                painter = rememberAsyncImagePainter(model = avatarPath),
+            SubcomposeAsyncImage(
+                model = avatarPath,
                 contentDescription = "avatar",
                 modifier = Modifier
-                    .size(
-                        height = 72.dp,
-                        width = 72.dp
-                    )
+                    .size(72.dp)
                     .background(
                         color = Color.Transparent,
                         shape = RoundedCornerShape(72.dp)
@@ -135,7 +141,23 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                     .offset(x = 8.dp),
                 contentScale = ContentScale.FillBounds,
                 alignment = Alignment.Center,
-            )
+            ) {
+                when (painter.state) {
+                    is AsyncImagePainter.State.Loading -> {
+                        CircularProgressIndicator()
+                    }
+                    is AsyncImagePainter.State.Error -> {
+                        Log.w(TAG, "on error for get avatar: $avatarPath")
+                        Icon(imageVector = Icons.Filled.Person, contentDescription = null)
+                    }
+                    is AsyncImagePainter.State.Empty -> {
+                        Icon(imageVector = Icons.Filled.Person, contentDescription = null)
+                    }
+                    else -> {
+                        SubcomposeAsyncImageContent()
+                    }
+                }
+            }
             Column(
                 modifier = Modifier.offset(x = 20.dp)
             ) {
@@ -158,14 +180,14 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                 )
                 ClickableText(
                     text = AnnotatedString(
-                        text = "@${userName.value}",
+                        text = "@${jidString.value}",
                         spanStyle = SpanStyle(
                             color = Color.Blue,
                         )
                     ),
                     style = MaterialTheme.typography.bodyLarge,
                     onClick = {
-                        Toast.makeText(context, "${userName.value}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "${jidString.value}", Toast.LENGTH_SHORT).show()
                     }
                 )
             }
@@ -247,7 +269,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
         }
         TextButton(
             modifier = Modifier.fillMaxWidth(),
-            onClick = { CommonApp.exitApp() },
+            onClick = { CommonApp.exitApp(0) },
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,

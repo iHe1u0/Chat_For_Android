@@ -3,6 +3,8 @@ package cc.imorning.common.utils
 import android.content.Context
 import android.media.*
 import android.net.Uri
+import android.util.Log
+import cc.imorning.common.BuildConfig
 import cc.imorning.common.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -16,8 +18,11 @@ object RingUtils {
 
     fun playNewMessage(
         context: Context,
-        type: Message.Type? = Message.Type.chat
+        type: Message.Type  = Message.Type.chat
     ) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "playNewMessage: ${type.name}")
+        }
         var audioAttributes =
             AudioAttributes.Builder().setLegacyStreamType(AudioManager.STREAM_RING)
         var soundPool = SoundPool.Builder()

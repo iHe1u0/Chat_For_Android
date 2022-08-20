@@ -44,14 +44,14 @@ object LoginAction {
                         connection.sendStanza(presence)
                     }
                     try {
-                        if (!connection.isAuthenticated) {
-                            job.await()
-                            if (BuildConfig.DEBUG) {
-                                Log.d(TAG, "login success @ ${DateTime.now()}")
-                            }
+                        job.await()
+                        if (BuildConfig.DEBUG) {
+                            Log.d(TAG, "login success @ ${DateTime.now()}")
                         }
                         retCode = OK
                     } catch (e: SmackException.AlreadyConnectedException) {
+                        retCode = OK
+                    } catch (e: SmackException.AlreadyLoggedInException) {
                         retCode = OK
                     } catch (e: SmackException) {
                         Log.e(TAG, "network exception", e)

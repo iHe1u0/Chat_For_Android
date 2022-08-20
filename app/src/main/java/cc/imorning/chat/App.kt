@@ -1,6 +1,5 @@
 package cc.imorning.chat
 
-import android.content.Context
 import cc.imorning.chat.monitor.ChatConnectionListener
 import cc.imorning.chat.utils.ChatNotificationManager
 import cc.imorning.common.CommonApp
@@ -15,4 +14,9 @@ class App : CommonApp() {
         getTCPConnection().addConnectionListener(ChatConnectionListener())
     }
 
+    companion object {
+        fun exitApp(status: Int = 0) {
+            CommonApp.exitApp(status)
+        }
+    }
 }

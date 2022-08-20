@@ -35,6 +35,15 @@ class MessageMonitorService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onStartCommand: $this")
+        }
+        intent?.also {
+            val action = it.getStringExtra(ACTION_KEY)
+            if (null != action && action == STOP) {
+                stopSelf()
+            }
+        }
         if (ConnectionManager.isConnectionAuthenticated(connection = connection)) {
             chatManager = ChatManager.getInstanceFor(connection)
             if (!isRunning) {
@@ -69,7 +78,6 @@ class MessageMonitorService : Service() {
                 message = onlineMessage,
                 from = fromJidString,
             )
-
         }
         connection.addAsyncStanzaListener({ packet ->
             val message = packet as Message
@@ -95,12 +103,10 @@ class MessageMonitorService : Service() {
         val offlineMessages: List<Message>
         if (ConnectionManager.isConnectionAuthenticated(connection = connection)) {
             offlineMessages = MessageManager.getOfflineMessage()
-            if (BuildConfig.DEBUG) {
-                Log.i(TAG, "message count: ${offlineMessages.size}")
-                for (message in offlineMessages) {
-                    MessageHelper.processMessage(message = message)
-                    // Logger.xml(message.toXML().toString())
-                    Log.i(TAG, "message: ${message.body}")
+            for (message in offlineMessages) {
+                MessageHelper.processMessage(message = message)
+                if (BuildConfig.DEBUG){
+                    Log.d(TAG, "offline message >>> ${message.body}")
                 }
             }
         } else {
@@ -115,13 +121,16 @@ class MessageMonitorService : Service() {
 
     companion object {
 
+        const val ACTION_KEY = "key"
+        const val START = "start"
+        const val STOP = "stop"
+
         private const val TAG = "MessageMonitorService"
-
         private const val Notification_New_Message = R.string.app_name
-
     }
 
     inner class MessageServiceBinder : Binder() {
         fun getService(): MessageMonitorService = this@MessageMonitorService
     }
+
 }

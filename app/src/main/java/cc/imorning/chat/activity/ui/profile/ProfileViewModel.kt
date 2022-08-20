@@ -41,7 +41,7 @@ class ProfileViewModel : ViewModel() {
     }
 
 
-    private val _userName = MutableLiveData<String>().apply {
+    private val _jidString = MutableLiveData<String>().apply {
         if (connection.isConnected && connection.isAuthenticated) {
             value = connection.user.asEntityBareJidString()
         } else if (vCard != null) {
@@ -61,10 +61,8 @@ class ProfileViewModel : ViewModel() {
     val avatarPath: LiveData<String> = _avatarPath
     val nickname: LiveData<String> = _nickName
     val phoneNumber: LiveData<String> = _phoneNumber
-    val userName: LiveData<String> = _userName
+    val jidString: LiveData<String> = _jidString
     val status: LiveData<String> = _status
-
-    private var userId: String = ""
 
     fun getUserInfo() {
         // Workaround for simplicity

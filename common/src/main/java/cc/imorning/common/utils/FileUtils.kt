@@ -1,6 +1,9 @@
 package cc.imorning.common.utils
 
+import android.os.Build
+import android.os.Environment
 import android.util.Log
+import androidx.annotation.RequiresApi
 import cc.imorning.common.CommonApp
 import com.orhanobut.logger.BuildConfig
 import java.io.File
@@ -15,6 +18,14 @@ class FileUtils {
      */
     fun getAndroidRoot(): File {
         return context.getExternalFilesDir(null)!!
+    }
+
+    fun getCacheDir(): File? {
+        return if (Environment.isExternalStorageEmulated()) {
+            context.externalCacheDir
+        } else {
+            context.cacheDir
+        }
     }
 
     fun getAvatarCachePath(jid: String): File {
@@ -42,7 +53,7 @@ class FileUtils {
      * get avatar dir
      */
     private fun getAvatarImagesDir(): String {
-        val dir = context.externalCacheDir!!.absolutePath.plus("/avatar/")
+        val dir = getCacheDir()!!.absolutePath.plus("/avatar/")
         if (!File(dir).exists()) {
             File(dir).mkdir()
         }

@@ -36,7 +36,7 @@ fun ContactItem(
     val nickname = contact.nickName
     var avatarPath = AvatarUtils.instance.getAvatarPath(jidString)
     if (avatarPath == null || !AvatarUtils.instance.hasAvatar(jidString)) {
-        avatarPath = "https://ui-avatars.com/api/?name=$jidString"
+        avatarPath = AvatarUtils.instance.getOnlineAvatar(jidString)
     }
     TextButton(
         onClick = {
@@ -62,7 +62,6 @@ fun ContactItem(
                 }
                 is AsyncImagePainter.State.Error -> {
                     Log.w(TAG, "on error for get avatar: $avatarPath")
-                    // CircularProgressIndicator()
                     Icon(imageVector = Icons.Filled.Person, contentDescription = null)
                 }
                 is AsyncImagePainter.State.Empty -> {

@@ -7,6 +7,7 @@ import cc.imorning.common.manager.ConnectionManager
 import org.jivesoftware.smack.chat2.ChatManager
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Presence
+import org.jivesoftware.smack.packet.PresenceBuilder
 import org.jivesoftware.smackx.offline.OfflineMessageManager
 import org.jxmpp.jid.impl.JidCreate
 
@@ -30,29 +31,27 @@ object MessageManager {
     fun getOfflineMessage(): List<Message> {
 
         //将用户状态设为离线
-        val presence = Presence(Presence.Type.unavailable)
-        // val offlinePresence =
-        //     PresenceBuilder.buildPresence(Presence.Type.unavailable.toString())
-        connection.sendStanza(presence)
+        // val presence = Presence(Presence.Type.unavailable)
+        val offlinePresence =
+            PresenceBuilder.buildPresence().ofType(Presence.Type.unavailable).build()
+        connection.sendStanza(offlinePresence)
 
         val offlineMessageManager = OfflineMessageManager.getInstanceFor(connection)
         // 获取离线消息
         val messages: List<Message> = offlineMessageManager.messages
-        offlineMessageManager.headers
+        // offlineMessageManager.headers
 
-        val counts = offlineMessageManager.messageCount
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "getOfflineMessage: $counts messages")
-        }
+        // val counts = offlineMessageManager.messageCount
         // 获取后删除离线消息记录
         offlineMessageManager.deleteMessages()
 
         // 将用户状态设置为在线
-        val onlinePresence = Presence(Presence.Type.available)
+        val onlinePresence =
+            PresenceBuilder.buildPresence().ofType(Presence.Type.available).build()
+        // val onlinePresence = Presence(Presence.Type.available)
         connection.sendStanza(onlinePresence)
 
         return messages
-
     }
 
     /**
