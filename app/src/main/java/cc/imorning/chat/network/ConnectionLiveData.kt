@@ -38,7 +38,6 @@ class ConnectionLiveData(val context: Context) : LiveData<Boolean>() {
         connectivityManager.registerNetworkCallback(networkRequestBuilder.build(), getConnectivityLollipopManagerCallback())
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     private fun marshmallowNetworkAvailableRequest() {
         connectivityManager.registerNetworkCallback(networkRequestBuilder.build(), getConnectivityMarshmallowManagerCallback())
     }
@@ -57,23 +56,19 @@ class ConnectionLiveData(val context: Context) : LiveData<Boolean>() {
     }
 
     private fun getConnectivityMarshmallowManagerCallback(): ConnectivityManager.NetworkCallback {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            connectivityManagerCallback = object : ConnectivityManager.NetworkCallback() {
-                override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
-                    networkCapabilities.let { capabilities ->
-                        if (capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)) {
-                            postValue(true)
-                        }
+        connectivityManagerCallback = object : ConnectivityManager.NetworkCallback() {
+            override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
+                networkCapabilities.let { capabilities ->
+                    if (capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)) {
+                        postValue(true)
                     }
                 }
-                override fun onLost(network: Network) {
-                    postValue(false)
-                }
             }
-            return connectivityManagerCallback
-        } else {
-            throw IllegalAccessError("Accessing wrong API version")
+            override fun onLost(network: Network) {
+                postValue(false)
+            }
         }
+        return connectivityManagerCallback
     }
 
     private val networkReceiver = object : BroadcastReceiver() {

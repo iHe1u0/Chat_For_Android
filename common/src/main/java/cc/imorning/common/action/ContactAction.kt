@@ -77,7 +77,7 @@ object ContactAction {
             ConnectionManager.connect(connection)
         }
         if (!connection.isAuthenticated) {
-            if (BuildConfig.DEBUG){
+            if (BuildConfig.DEBUG) {
                 Log.d(TAG, "connection is not authenticated")
             }
             return null
@@ -146,16 +146,16 @@ object ContactAction {
     /**
      * Get VCard information
      */
-    fun getContactVCard(jid: String): VCard? {
+    fun getContactVCard(jidString: String): VCard? {
         if (!ConnectionManager.isConnectionAuthenticated(connection)) {
             return null
         }
         try {
-            val user = JidCreate.entityBareFrom(jid)
+            val user = JidCreate.entityBareFrom(jidString)
             return VCardManager.getInstanceFor(connection).loadVCard(user)
         } catch (e: Exception) {
             if (BuildConfig.DEBUG) {
-                Log.e(TAG, "get user vCard failed", e)
+                Log.e(TAG, "get user[$jidString] vCard failed", e)
             }
         }
         return null
@@ -208,5 +208,9 @@ object ContactAction {
             Log.e(TAG, "remove user failed", e)
         }
         return false
+    }
+
+    fun getNickName(jidString: String): String? {
+        return getContactVCard(jidString)?.nickName
     }
 }

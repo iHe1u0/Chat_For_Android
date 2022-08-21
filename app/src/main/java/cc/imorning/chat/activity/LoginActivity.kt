@@ -7,13 +7,9 @@ import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.FindInPage
-import androidx.compose.material.icons.filled.Password
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -22,12 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.ViewModelProvider
 import cc.imorning.chat.R
 import cc.imorning.chat.compontens.BottomSheetListItem
@@ -102,21 +98,25 @@ fun ContentScreen(viewModel: LoginViewModel) {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        var showToken by remember { mutableStateOf(false) }
+        val visualTransformation =
+            if (showToken) VisualTransformation.None else PasswordVisualTransformation()
         Column {
             OutlinedTextField(
                 value = account.value.toString(),
                 onValueChange = { viewModel.setAccount(it.trim()) },
                 label = { Text(text = "账号") },
-                maxLines = 1,
+                singleLine = true,
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text
+                    keyboardType = KeyboardType.Ascii,
+                    imeAction = ImeAction.Next
                 ),
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Filled.AccountCircle,
                         contentDescription = "账户"
                     )
-                }
+                },
             )
             Spacer(
                 modifier = Modifier
@@ -127,14 +127,27 @@ fun ContentScreen(viewModel: LoginViewModel) {
                 value = token.value.toString(),
                 onValueChange = { viewModel.setToken(it.trim()) },
                 label = { Text(text = "密码") },
-                maxLines = 1,
+                singleLine = true,
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Filled.Password,
                         contentDescription = "密码"
                     )
                 },
-                visualTransformation = PasswordVisualTransformation()
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                visualTransformation = visualTransformation,
+                trailingIcon = {
+                    IconButton(onClick = { showToken = !showToken }) {
+                        if (showToken) {
+                            Icon(imageVector = Icons.Filled.Visibility, contentDescription = "")
+                        } else {
+                            Icon(imageVector = Icons.Filled.VisibilityOff, contentDescription = "")
+                        }
+                    }
+                }
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically,

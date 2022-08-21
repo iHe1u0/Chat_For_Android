@@ -12,6 +12,11 @@ class AvatarUtils private constructor() {
 
     private val connection: XMPPConnection = CommonApp.getTCPConnection()
 
+
+    fun hasAvatar(jid: String): Boolean {
+        return FileUtils.instance.isFileExist(FileUtils.instance.getAvatarCachePath(jid).absolutePath)
+    }
+
     fun saveAvatar(jid: String) {
         if (!ConnectionManager.isConnectionAuthenticated(connection)) {
             if (BuildConfig.DEBUG) {
@@ -25,15 +30,18 @@ class AvatarUtils private constructor() {
             if (avatarByte != null) {
                 saveContactAvatar(jid = jid, avatarByte = avatarByte)
             }
-            return
+        } else {
+            if (BuildConfig.DEBUG) {
+                Log.w(TAG, "avatar is null for $jid")
+            }
         }
     }
 
-    fun getAvatarPath(jid: String): String? {
+    fun getAvatarPath(jidString: String): String {
         if (ConnectionManager.isConnectionAuthenticated(connection)) {
-            return FileUtils.instance.getAvatarCachePath(jid).absolutePath
+            return FileUtils.instance.getAvatarCachePath(jidString).absolutePath
         }
-        return null
+        return getOnlineAvatar(jidString)
     }
 
     private fun saveContactAvatar(jid: String, avatarByte: ByteArray) {
@@ -48,17 +56,13 @@ class AvatarUtils private constructor() {
         }
     }
 
-    fun hasAvatar(jid: String): Boolean {
-        return FileUtils.instance.isFileExist(FileUtils.instance.getAvatarCachePath(jid).absolutePath)
-    }
-
     /**
      * get a online avatar
      *
      * @return address
      */
-    fun getOnlineAvatar(jidString: String): String {
-        return "https://ui-avatars.com/api/?name=$jidString"
+    fun getOnlineAvatar(name: String): String {
+        return "https://ui-avatars.com/api/?name=$name"
     }
 
     companion object {

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
@@ -27,7 +28,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,7 +37,6 @@ import cc.imorning.chat.R
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.view.ui.ComposeDialogUtils
 import cc.imorning.common.CommonApp
-import cc.imorning.common.utils.AvatarUtils
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
@@ -102,19 +101,15 @@ fun TopBar() {
 fun ProfileScreen(profileViewModel: ProfileViewModel) {
     val context = LocalContext.current
     Column(
-        modifier = Modifier
-            .offset(y = 12.dp)
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
-        var avatarPath = profileViewModel.avatarPath.observeAsState().value
+
+        val avatarPath = profileViewModel.avatarPath.observeAsState().value
         val nickName = profileViewModel.nickname.observeAsState()
         val phoneNumber = profileViewModel.phoneNumber.observeAsState()
         val jidString = profileViewModel.jidString.observeAsState()
         val status = profileViewModel.status.observeAsState()
 
-        if (avatarPath == null || !AvatarUtils.instance.hasAvatar(jidString.value.toString())) {
-            avatarPath = AvatarUtils.instance.getOnlineAvatar("${jidString.value}")
-        }
         var showBuildingDialog by remember { mutableStateOf(false) }
         if (showBuildingDialog) {
             ComposeDialogUtils.FunctionalityNotAvailablePopup { showBuildingDialog = false }
@@ -127,7 +122,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .offset(y = 16.dp)
+                .padding(start = 8.dp)
         ) {
             SubcomposeAsyncImage(
                 model = avatarPath,
@@ -137,8 +132,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                     .background(
                         color = Color.Transparent,
                         shape = RoundedCornerShape(72.dp)
-                    )
-                    .offset(x = 8.dp),
+                    ),
                 contentScale = ContentScale.FillBounds,
                 alignment = Alignment.Center,
             ) {
@@ -159,12 +153,12 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                 }
             }
             Column(
-                modifier = Modifier.offset(x = 20.dp)
+                modifier = Modifier.padding(start = 8.dp)
             ) {
                 Text(
                     text = "${nickName.value}",
                     textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 ClickableText(
                     text = AnnotatedString(
@@ -180,7 +174,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                 )
                 ClickableText(
                     text = AnnotatedString(
-                        text = "@${jidString.value}",
+                        text = "${jidString.value}",
                         spanStyle = SpanStyle(
                             color = Color.Blue,
                         )
@@ -194,13 +188,9 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
         }
         Text(
             text = "${status.value}",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 28.dp),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Medium,
-            maxLines = 3,
-            softWrap = true
+            modifier = Modifier.fillMaxWidth(),
+            style = MaterialTheme.typography.titleSmall,
+            textAlign = TextAlign.Center
         )
         Divider(
             modifier = Modifier
@@ -209,92 +199,80 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                 .height(2.dp)
                 .background(color = Color.Cyan)
         )
-        TextButton(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = { showAboutDialog = true },
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp, top = 8.dp)
+                .clickable { showAboutDialog = true }
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start,
+            Image(
+                painter = painterResource(id = R.drawable.ic_code),
+                contentDescription = "关于",
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, top = 8.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_code),
-                    contentDescription = "关于",
-                    modifier = Modifier
-                        .size(36.dp, 36.dp)
-                        .background(
-                            color = Color.Blue.copy(alpha = 0.12f),
-                            shape = RoundedCornerShape(36.dp)
-                        )
-                )
-                Text(
-                    text = "关于",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(start = 12.dp),
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
+                    .size(36.dp, 36.dp)
+                    .background(
+                        color = Color.Blue.copy(alpha = 0.12f),
+                        shape = RoundedCornerShape(36.dp)
+                    )
+            )
+            Text(
+                text = "关于",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(start = 12.dp),
+                style = MaterialTheme.typography.titleMedium
+            )
         }
-        TextButton(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = { showBuildingDialog = true },
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp, top = 8.dp)
+                .clickable { showBuildingDialog = true }
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start,
+            Image(
+                painter = painterResource(id = R.drawable.ic_bug_report),
+                contentDescription = "报告问题",
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, top = 8.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_bug_report),
-                    contentDescription = "报告问题",
-                    modifier = Modifier
-                        .size(36.dp, 36.dp)
-                        .background(
-                            color = Color.Blue.copy(alpha = 0.12f),
-                            shape = RoundedCornerShape(36.dp)
-                        )
-                )
-                Text(
-                    text = "报告问题",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(start = 12.dp),
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
+                    .size(36.dp, 36.dp)
+                    .background(
+                        color = Color.Blue.copy(alpha = 0.12f),
+                        shape = RoundedCornerShape(36.dp)
+                    )
+            )
+            Text(
+                text = "报告问题",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(start = 12.dp),
+                style = MaterialTheme.typography.titleMedium
+            )
         }
-        TextButton(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = { CommonApp.exitApp(0) },
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp, top = 8.dp)
+                .clickable { CommonApp.exitApp(0) }
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start,
+            Image(
+                painter = painterResource(id = R.drawable.ic_exit_to_app),
+                contentDescription = "退出",
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, top = 8.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_exit_to_app),
-                    contentDescription = "退出",
-                    modifier = Modifier
-                        .size(36.dp, 36.dp)
-                        .background(
-                            color = Color.Blue.copy(alpha = 0.12f),
-                            shape = RoundedCornerShape(36.dp)
-                        )
-                )
-                Text(
-                    text = "退出",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(start = 12.dp),
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
+                    .size(36.dp, 36.dp)
+                    .background(
+                        color = Color.Blue.copy(alpha = 0.12f),
+                        shape = RoundedCornerShape(36.dp)
+                    )
+            )
+            Text(
+                text = "退出",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(start = 12.dp),
+                style = MaterialTheme.typography.titleMedium
+            )
         }
     }
 }

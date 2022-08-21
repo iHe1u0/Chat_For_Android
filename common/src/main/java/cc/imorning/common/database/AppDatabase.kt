@@ -13,7 +13,7 @@ import cc.imorning.common.database.table.UserInfoEntity
 
 @Database(
     entities = [UserInfoEntity::class, RecentMessageEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(DateTimeConverter::class)

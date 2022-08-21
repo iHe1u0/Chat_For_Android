@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_profile">
+    app:startDestination="@+id/navigation_message">
 
     <fragment
         android:id="@+id/navigation_message"
@@ -12,11 +12,11 @@
     <fragment
         android:id="@+id/navigation_contact"
         android:name="cc.imorning.chat.activity.ui.contact.ContactFragment"
-        android:label="@string/title_contact"/>
+        android:label="@string/title_contact" />
 
     <fragment
         android:id="@+id/navigation_profile"
         android:name="cc.imorning.chat.activity.ui.profile.ProfileFragment"
-        android:label="@string/title_profile"/>
+        android:label="@string/title_profile" />
 
 </navigation>

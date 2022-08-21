@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import cc.imorning.chat.R
 import cc.imorning.chat.activity.ChatActivity
 import cc.imorning.chat.model.Contact
-import cc.imorning.chat.view.ui.ComposeDialogUtils
 import cc.imorning.common.constant.Config
 import cc.imorning.common.utils.AvatarUtils
 import coil.compose.AsyncImagePainter
@@ -35,7 +34,7 @@ fun ContactItem(
     val jidString = contact.jid
     val nickname = contact.nickName
     var avatarPath = AvatarUtils.instance.getAvatarPath(jidString)
-    if (avatarPath == null || !AvatarUtils.instance.hasAvatar(jidString)) {
+    if (!AvatarUtils.instance.hasAvatar(jidString)) {
         avatarPath = AvatarUtils.instance.getOnlineAvatar(jidString)
     }
     TextButton(
@@ -53,7 +52,7 @@ fun ContactItem(
             contentDescription = stringResource(id = R.string.desc_contact_item_avatar),
             modifier = Modifier
                 .fillMaxHeight()
-                .size(24.dp),
+                .size(64.dp),
             alignment = Alignment.Center,
         ) {
             when (painter.state) {

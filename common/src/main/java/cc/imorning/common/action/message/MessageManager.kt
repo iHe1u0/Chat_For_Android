@@ -31,7 +31,6 @@ object MessageManager {
     fun getOfflineMessage(): List<Message> {
 
         //将用户状态设为离线
-        // val presence = Presence(Presence.Type.unavailable)
         val offlinePresence =
             PresenceBuilder.buildPresence().ofType(Presence.Type.unavailable).build()
         connection.sendStanza(offlinePresence)
@@ -48,7 +47,6 @@ object MessageManager {
         // 将用户状态设置为在线
         val onlinePresence =
             PresenceBuilder.buildPresence().ofType(Presence.Type.available).build()
-        // val onlinePresence = Presence(Presence.Type.available)
         connection.sendStanza(onlinePresence)
 
         return messages

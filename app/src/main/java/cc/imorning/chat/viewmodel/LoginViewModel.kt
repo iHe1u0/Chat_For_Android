@@ -115,22 +115,31 @@ class LoginViewModel : ViewModel() {
                 return@launch
             }
             if (!connection.isConnected) {
-                connection.connect()
+                try {
+                    connection.connect()
+                } catch (throwable: Throwable) {
+                    updateLoginStatus(
+                        isNeedWaiting = false,
+                        isError = true,
+                        message = "服务器连接失败: ${throwable.localizedMessage}"
+                    )
+                    return@launch
+                }
             }
             if (!connection.isAuthenticated) {
                 try {
                     connection.login(accountValue, tokenValue)
-                    updateLoginStatus(isNeedWaiting = false, isError = false)
                     if (BuildConfig.DEBUG) {
                         Log.d(TAG, "login success @ ${DateTime.now()}")
                     }
-                    withContext(Dispatchers.Main) { needStartActivity.value = true }
-                } catch (e: SASLErrorException) {
-                    updateLoginStatus(isNeedWaiting = false, isError = true, message = "账号或密码错误")
                     if (shouldSavedState.value == true) {
                         sessionManager.saveAccount(accountValue)
                         sessionManager.saveAuthToken(tokenValue)
                     }
+                    updateLoginStatus(isNeedWaiting = false, isError = false)
+                    withContext(Dispatchers.Main) { needStartActivity.value = true }
+                } catch (e: SASLErrorException) {
+                    updateLoginStatus(isNeedWaiting = false, isError = true, message = "账号或密码错误")
                     if (BuildConfig.DEBUG) {
                         Log.e(TAG, "auth failed [$accountValue,$tokenValue]")
                     }

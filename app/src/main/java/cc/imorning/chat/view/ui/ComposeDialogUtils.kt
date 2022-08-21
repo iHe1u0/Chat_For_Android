@@ -4,7 +4,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -46,7 +49,7 @@ object ComposeDialogUtils {
                 Column {
                     CircularProgressIndicator()
                     Text(
-                        text = "登陆中",
+                        text = "登录中",
                         modifier = Modifier.padding(top = 8.dp)
                     )
                 }
@@ -102,19 +105,19 @@ object ComposeDialogUtils {
         val bitmap: Bitmap = BitmapFactory.decodeStream(context.assets.open("logo.png"))
         AlertDialog(
             onDismissRequest = onDismiss,
+            icon = {
+                Image(
+                    bitmap = bitmap.asImageBitmap(),
+                    contentDescription = "",
+                    modifier = Modifier.size(128.dp),
+                    alignment = Alignment.Center
+                )
+            },
             text = {
-                Column {
-                    Image(
-                        bitmap = bitmap.asImageBitmap(),
-                        contentDescription = "",
-                        modifier = Modifier.fillMaxWidth(),
-                        alignment = Alignment.Center
-                    )
-                    Text(
-                        text = "Designed by iMorning",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
+                Text(
+                    text = "Designed by iMorning",
+                    style = MaterialTheme.typography.bodyMedium
+                )
             },
             confirmButton = {
                 TextButton(onClick = onDismiss) {
@@ -123,7 +126,6 @@ object ComposeDialogUtils {
             }
         )
     }
-
 }
 
 @Preview
