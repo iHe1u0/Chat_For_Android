@@ -70,7 +70,6 @@ class ChatActivity : BaseActivity() {
                 else -> {
                     if (BuildConfig.DEBUG) {
                         Log.w(TAG, "unknown action: $action")
-                        return
                     }
                     finish()
                 }

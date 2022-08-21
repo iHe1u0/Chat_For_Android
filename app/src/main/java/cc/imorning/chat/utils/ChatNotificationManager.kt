@@ -29,7 +29,7 @@ class ChatNotificationManager private constructor(val context: Context) {
         private const val CHANNEL_NEW_MESSAGES = "new_message"
 
         private const val REQUEST_CONTENT = 1
-        private const val REQUEST_BUBBLE = 2
+        private const val PENDING_INTENT_REQUEST_CODE = 2
 
         val manager: ChatNotificationManager by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
             ChatNotificationManager(CommonApp.getContext())
@@ -73,18 +73,26 @@ class ChatNotificationManager private constructor(val context: Context) {
                 .build()
         val icon = IconCompat.createWithResource(context, R.drawable.ic_default_avatar)
         val person = Person.Builder().setName(from).setIcon(icon).build()
-        // imorningchat://app/chat?chatJid=iMorning
         val contentUrl = "imorningchat://app/chat?chatJid=$from".toUri()
-
         val pendingIntent = PendingIntent.getActivity(
-            context,
-            REQUEST_BUBBLE,
+            context, PENDING_INTENT_REQUEST_CODE,
             Intent(context, ChatActivity::class.java)
                 .setAction(Intent.ACTION_VIEW)
-                .setData(contentUrl), getNotificationFlag(mutable = true)
+                .setData(contentUrl),
+            getNotificationFlag(mutable = true)
         )
 
         val messageStyle = NotificationCompat.MessagingStyle(user)
+        // val lastId = 0L
+
+        val m = NotificationCompat.MessagingStyle.Message(
+            message.message,
+            message.time.millis,
+            if (message.from != null) person else null
+        ).apply {
+
+        }
+        messageStyle.addMessage(m)
 
         val builder = NotificationCompat.Builder(context, CHANNEL_NEW_MESSAGES)
             .setBubbleMetadata(
@@ -138,7 +146,7 @@ class ChatNotificationManager private constructor(val context: Context) {
         if (update) {
             builder.setOnlyAlertOnce(true)
         }
-        notificationManager.notify(0, builder.build())
+        notificationManager.notify(CHANNEL_NEW_MESSAGES_ID, builder.build())
     }
 
     private fun cancelNotification(id: Int) {
