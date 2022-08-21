@@ -2,8 +2,8 @@ package cc.imorning.common
 
 import android.app.Activity
 import android.app.Application
+import android.app.NotificationManager
 import android.content.Context
-import android.util.Log
 import cc.imorning.common.constant.ServerConfig
 import cc.imorning.common.database.AppDatabase
 import cc.imorning.common.manager.ConnectionManager
@@ -83,12 +83,11 @@ open class CommonApp : Application() {
         }
 
         fun exitApp(status: Int = 0) {
+            val notificationManager =
+                getContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.cancelAll()
             MainScope().launch(Dispatchers.IO) {
-                if (ConnectionManager.isConnectionAuthenticated(connection = xmppTcpConnection)) {
-                    xmppTcpConnection?.apply {
-                        disconnect()
-                    }
-                }
+                ConnectionManager.disconnect()
                 CommonApp().appDatabase.appDatabaseDao().deleteAllContact()
                 withContext(Dispatchers.Main) {
                     ActivityCollector.finishAll()
@@ -104,6 +103,7 @@ object ActivityCollector {
     lateinit var currentActivity: String
 
     var activities = LinkedList<Activity>()
+
     fun addActivity(activity: Activity) {
         activities.add(activity)
         currentActivity = activity.localClassName

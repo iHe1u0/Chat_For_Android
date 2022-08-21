@@ -18,7 +18,32 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import cc.imorning.chat.R
 
+private const val TAG = "ComposeDialogUtils"
+
 object ComposeDialogUtils {
+
+    @Composable
+    fun InfoAlertDialog(
+        title: String = "提示",
+        message: String,
+        onDismiss: () -> Unit
+    ) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = {
+                Text(text = title)
+            },
+            text = {
+                Text(text = message)
+            },
+            confirmButton = {
+                TextButton(onClick = onDismiss)
+                {
+                    Text(text = "确定")
+                }
+            },
+        )
+    }
 
     @Composable
     fun FunctionalityNotAvailablePopup(onDismiss: () -> Unit) {

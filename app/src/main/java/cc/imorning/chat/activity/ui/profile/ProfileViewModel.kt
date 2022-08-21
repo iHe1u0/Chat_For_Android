@@ -8,33 +8,42 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import cc.imorning.chat.R
 import cc.imorning.common.CommonApp
+import cc.imorning.common.manager.ConnectionManager
 import cc.imorning.common.utils.AvatarUtils
+import org.jivesoftware.smackx.vcardtemp.VCardManager
+import org.jivesoftware.smackx.vcardtemp.packet.VCard
 
 class ProfileViewModel : ViewModel() {
 
     private var connection = CommonApp.getTCPConnection()
-    private var vCard = CommonApp.vCard
+    private var vCard: VCard
+
+    init {
+        if (ConnectionManager.isConnectionAuthenticated(connection = connection)) {
+            AvatarUtils.instance.saveAvatar(connection.user.asEntityBareJidString())
+            vCard = VCardManager.getInstanceFor(connection).loadVCard()
+        } else {
+            vCard = VCard()
+        }
+    }
 
     private val _avatarPath = MutableLiveData<String>().apply {
         value = AvatarUtils.instance.getAvatarPath(connection.user.asEntityBareJidString())
     }
     private val _nickName = MutableLiveData<String>().apply {
-        if (vCard != null) {
-            vCard!!.let { vcard ->
-                if (vcard.nickName.isNullOrBlank()) {
-                    value = connection.user.asEntityBareJidString().split("@")[0]
-                } else {
-                    value = vcard.nickName
-                }
+        vCard.let { vcard ->
+            if (vcard.nickName.isNullOrBlank()) {
+                value = connection.user.asEntityBareJidString().split("@")[0]
+            } else {
+                value = vcard.nickName
             }
         }
     }
     private val _phoneNumber = MutableLiveData<String>().apply {
         val phoneType = "TEL"
-        if (vCard != null &&
-            (!vCard!!.getPhoneHome(phoneType).isNullOrEmpty())
+        if (!vCard.getPhoneHome(phoneType).isNullOrEmpty()
         ) {
-            value = vCard!!.getPhoneWork(phoneType)
+            value = vCard.getPhoneWork(phoneType)
         } else {
             value = "暂未设置手机号"
         }
@@ -44,8 +53,8 @@ class ProfileViewModel : ViewModel() {
     private val _jidString = MutableLiveData<String>().apply {
         if (connection.isConnected && connection.isAuthenticated) {
             value = connection.user.asEntityBareJidString()
-        } else if (vCard != null) {
-            value = vCard!!.jabberId
+        } else {
+            value = vCard.jabberId
         }
     }
 

@@ -38,7 +38,9 @@ object LoginAction {
                             if (!connection.isConnected) {
                                 connection.connect()
                             }
-                            connection.login(account, password)
+                            if (!connection.isAuthenticated){
+                                connection.login(account, password)
+                            }
                             val presence =
                                 connection.stanzaFactory.buildPresenceStanza()
                                     .ofType(Presence.Type.unavailable)
@@ -64,7 +66,7 @@ object LoginAction {
                         Log.e(TAG, "network exception", e)
                         retCode = StatusCode.NETWORK_ERROR
                     } catch (e: SASLErrorException) {
-                        retCode = StatusCode.LOGIN_AUTH_FAILED
+                        retCode = StatusCode.LoginCode.LOGIN_AUTH_FAILED
                     } catch (e: Exception) {
                         Log.e(TAG, "${e.message}", e)
                         retCode = ERROR

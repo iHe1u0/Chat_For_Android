@@ -25,4 +25,9 @@
 -dontwarn org.openjsse.javax.net.ssl.SSLParameters
 -dontwarn org.openjsse.javax.net.ssl.SSLSocket
 -dontwarn org.openjsse.net.ssl.OpenJSSE
+-dontwarn org.xmlpull.mxp1.MXParser
+-dontwarn org.xmlpull.mxp1_serializer.MXSerializer
 -dontwarn org.xmlpull.mxp1.MXParser,org.xmlpull.mxp1_serializer.MXSerializer
+
+-dontwarn org.joda.convert.FromString
+-dontwarn org.joda.convert.ToString

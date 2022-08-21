@@ -68,4 +68,15 @@ object ConnectionManager {
         }
     }
 
+    @Synchronized
+    fun disconnect(connection: XMPPTCPConnection? = CommonApp.getTCPConnection()) {
+        if (connection==null){
+            return
+        }
+        if (isConnectionAuthenticated(connection)) {
+            MainScope().launch(Dispatchers.IO) {
+                connection.disconnect()
+            }
+        }
+    }
 }

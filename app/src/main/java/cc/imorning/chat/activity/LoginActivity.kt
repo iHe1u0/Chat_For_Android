@@ -1,93 +1,240 @@
 package cc.imorning.chat.activity
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
+import android.widget.Toast
 import androidx.activity.compose.setContent
-import cc.imorning.chat.activity.ui.login.ContentScreen
-import cc.imorning.chat.databinding.ActivityLoginBinding
-import cc.imorning.common.CommonApp
-import cc.imorning.common.action.LoginAction
-import cc.imorning.common.constant.Config
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
+import cc.imorning.chat.ui.theme.ChatTheme
+import cc.imorning.chat.view.ui.ComposeDialogUtils
+import cc.imorning.chat.viewmodel.LoginViewModel
 import cc.imorning.common.constant.StatusCode
-import cc.imorning.common.manager.ConnectionManager
-import cc.imorning.common.utils.AvatarUtils
-import cc.imorning.common.utils.SessionManager
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.jivesoftware.smackx.vcardtemp.VCardManager
 
 private const val TAG = "LoginActivity"
 
 class LoginActivity : BaseActivity() {
 
-    private lateinit var binding: ActivityLoginBinding
+    private val viewModel: LoginViewModel by lazy {
+        ViewModelProvider(this)[LoginViewModel::class.java]
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        val sessionManager = SessionManager(Config.LOGIN_INFO)
-        if (sessionManager.fetchAccount() != null && sessionManager.fetchAuthToken() != null) {
-            binding.loginAccountEdit.setText(sessionManager.fetchAccount())
-            binding.loginPasswordEdit.setText(sessionManager.fetchAuthToken())
+        setContent {
+            LoginScreen(viewModel)
         }
+    }
+}
 
-        binding.loginGoButton.setOnClickListener {
-            val account = binding.loginAccountEdit.text.toString().trim()
-            val password = binding.loginPasswordEdit.text.toString().trim()
-            if (account.isEmpty() || password.isEmpty()) {
-                Snackbar.make(binding.root, "账号密码不能为空", Snackbar.LENGTH_SHORT).show()
-                return@setOnClickListener
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LoginScreen(viewModel: LoginViewModel) {
+    ChatTheme {
+        Scaffold(
+            topBar = {},
+            floatingActionButton = { FloatingActionButton() },
+            content = {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(it),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    ContentScreen(viewModel)
+                }
             }
-            binding.loginProgress.visibility = View.VISIBLE
-            MainScope().launch(Dispatchers.IO) {
-                val result = LoginAction.run(
-                    account = account,
-                    password = password
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ContentScreen(viewModel: LoginViewModel) {
+    val context = LocalContext.current
+    val account = viewModel.getAccount().observeAsState()
+    val token = viewModel.getToken().observeAsState()
+    val isSaveChecked = viewModel.getChecked().observeAsState()
+
+
+    var showDialog by remember { mutableStateOf(false) }
+    var message by remember { mutableStateOf("") }
+    if (showDialog) {
+        ComposeDialogUtils.InfoAlertDialog(message = message) {
+            viewModel.setStatus()
+            showDialog = false
+        }
+    }
+    when (viewModel.getLoginStatus().observeAsState().value!!) {
+        StatusCode.INIT -> {}
+        StatusCode.OK -> {
+            val intent = Intent(context, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            context.startActivity(intent)
+            (context as Activity).finish()
+        }
+        StatusCode.LoginCode.ACCOUNT_OR_TOKEN_IS_NULL -> {
+            message = "账号或密码不能为空"
+            showDialog = true
+        }
+        StatusCode.LoginCode.LOGIN_AUTH_FAILED -> {
+            message = "账号或密码错误"
+            showDialog = true
+        }
+        else -> {
+            message = "登录失败"
+            showDialog = true
+        }
+    }
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column {
+            OutlinedTextField(
+                value = account.value.toString(),
+                onValueChange = { viewModel.setAccount(it) },
+                label = { Text(text = "账号") },
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text
+                ),
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.AccountCircle,
+                        contentDescription = "账户"
+                    )
+                }
+            )
+            OutlinedTextField(
+                value = token.value.toString(),
+                onValueChange = { viewModel.setToken(it) },
+                label = { Text(text = "密码") },
+                maxLines = 1,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.Password,
+                        contentDescription = "密码"
+                    )
+                },
+                visualTransformation = PasswordVisualTransformation()
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.align(Alignment.Start)
+            ) {
+                Checkbox(checked = isSaveChecked.value!!,
+                    onCheckedChange = {
+                        viewModel.setChecked(it)
+                    }
                 )
-                when (result) {
-                    StatusCode.OK -> {
-                        if (binding.loginRememberToken.isChecked) {
-                            sessionManager.saveAccount(account)
-                            sessionManager.saveAuthToken(password)
-                        }
-                        if (ConnectionManager.isConnectionAuthenticated(CommonApp.getTCPConnection())) {
-                            val selfVCard =
-                                VCardManager.getInstanceFor(CommonApp.getTCPConnection())
-                                    .loadVCard()
-                            CommonApp.vCard = selfVCard
-                            AvatarUtils.instance.saveAvatar(CommonApp.getTCPConnection().user.asEntityBareJidString())
-                            val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                            startActivity(intent)
-                            this@LoginActivity.finish()
-                        } else {
-                            Snackbar.make(binding.root, "登陆失败: 服务器未响应", Snackbar.LENGTH_SHORT)
-                                .show()
-                        }
-                    }
-                    StatusCode.LOGIN_AUTH_FAILED -> {
-                        Snackbar.make(binding.root, "登陆失败: 账号或密码错误", Snackbar.LENGTH_SHORT)
-                            .show()
-                    }
-                    StatusCode.NETWORK_ERROR -> {
-                        Snackbar.make(binding.root, "登陆失败: 网络无连接", Snackbar.LENGTH_SHORT).show()
-                    }
-                    else -> {
-                        Snackbar.make(binding.root, "登陆失败: $result", Snackbar.LENGTH_SHORT)
-                            .show()
-                    }
-                }
-                withContext(Dispatchers.Main) {
-                    binding.loginProgress.visibility = View.GONE
-                }
+                Text(text = "记住密码")
+            }
+            Button(
+                onClick = { viewModel.login() },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text(text = "登录")
             }
         }
+    }
+}
+
+@Composable
+fun FloatingActionButton() {
+    var showBuildingDialog by remember { mutableStateOf(false) }
+    if (showBuildingDialog) {
+        ComposeDialogUtils.FunctionalityNotAvailablePopup { showBuildingDialog = false }
+    }
+    FloatingActionButton(
+        onClick = {
+            showBuildingDialog = true
+        },
+        modifier = Modifier.padding(8.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Filled.HelpOutline,
+            contentDescription = "帮助"
+        )
+    }
+}
+
+@Composable
+fun BottomSheetListItem(
+    icon: ImageVector,
+    title: String,
+    onItemClick: (String) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = { onItemClick(title) })
+            .height(55.dp)
+            .padding(start = 15.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = title,
+            tint = Color.White
+        )
+        Spacer(modifier = Modifier.width(20.dp))
+        Text(text = title)
+    }
+}
+
+@Composable
+fun BottomSheetContent() {
+    val context = LocalContext.current
+    Column {
+        BottomSheetListItem(
+            icon = Icons.Filled.NoAccounts,
+            title = "找回密码",
+            onItemClick = { title ->
+                Toast.makeText(
+                    context,
+                    title,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        )
+        BottomSheetListItem(
+            icon = Icons.Filled.Add,
+            title = "添加用户",
+            onItemClick = { title ->
+                Toast.makeText(
+                    context,
+                    title,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        )
+        BottomSheetListItem(
+            icon = Icons.Filled.Copyright,
+            title = "关于",
+            onItemClick = { title ->
+                Toast.makeText(
+                    context,
+                    title,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        )
     }
 }
