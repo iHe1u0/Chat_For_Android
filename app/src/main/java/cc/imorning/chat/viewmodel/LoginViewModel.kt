@@ -1,31 +1,47 @@
 package cc.imorning.chat.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cc.imorning.common.action.LoginAction
+import cc.imorning.common.BuildConfig
+import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.Config
-import cc.imorning.common.constant.StatusCode
+import cc.imorning.common.utils.NetworkUtils
 import cc.imorning.common.utils.SessionManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.jivesoftware.smack.SmackException
+import org.jivesoftware.smack.sasl.SASLErrorException
+import org.joda.time.DateTime
 
 class LoginViewModel : ViewModel() {
 
+    private val connection = CommonApp.getTCPConnection()
     private val sessionManager = SessionManager(Config.LOGIN_INFO)
     private val account: MutableLiveData<String> by lazy {
-        MutableLiveData("") //.also { loadUser() }
+        MutableLiveData("")
     }
     private val token: MutableLiveData<String> by lazy {
-        MutableLiveData<String>("") //.also { token.value = "" }
+        MutableLiveData<String>("")
     }
-    private val isSaveChecked: MutableLiveData<Boolean> by lazy {
+    private val shouldSavedState: MutableLiveData<Boolean> by lazy {
         MutableLiveData<Boolean>(true)
     }
-    private val loginCode: MutableLiveData<Int> by lazy {
-        MutableLiveData<Int>(StatusCode.INIT)
+    private val shouldShowWaiting: MutableLiveData<Boolean> by lazy {
+        MutableLiveData<Boolean>(false)
+    }
+    private val showErrorDialog: MutableLiveData<Boolean> by lazy {
+        MutableLiveData<Boolean>(false)
+    }
+    private val errorMessage: MutableLiveData<String> by lazy {
+        MutableLiveData<String>("")
+    }
+    private val needStartActivity: MutableLiveData<Boolean> by lazy {
+        MutableLiveData<Boolean>(false)
     }
 
     private fun loadUser() {
@@ -48,12 +64,13 @@ class LoginViewModel : ViewModel() {
         token.value = value
     }
 
-    fun setChecked(value: Boolean) {
-        isSaveChecked.value = value
+    fun setSaveState(value: Boolean) {
+        shouldSavedState.value = value
     }
 
-    fun setStatus(statusCode: Int = StatusCode.INIT) {
-        loginCode.value = statusCode
+    fun closeDialog() {
+        showErrorDialog.value = false
+        shouldShowWaiting.value = false
     }
 
     fun getAccount(): LiveData<String> {
@@ -64,43 +81,88 @@ class LoginViewModel : ViewModel() {
         return token
     }
 
-    fun getChecked(): LiveData<Boolean> {
-        return isSaveChecked
+    fun shouldSaveState(): LiveData<Boolean> {
+        return shouldSavedState
     }
 
-    fun getLoginStatus(): MutableLiveData<Int> {
-        return loginCode
+    fun needStartActivity(): LiveData<Boolean> {
+        return needStartActivity
+    }
+
+    fun shouldShowWaitingDialog(): LiveData<Boolean> {
+        return shouldShowWaiting
+    }
+
+    fun shouldShowErrorDialog(): LiveData<Boolean> {
+        return showErrorDialog
+    }
+
+    fun getErrorMessage(): LiveData<String> {
+        return errorMessage
     }
 
     fun login() {
-        val accountValue = account.value
-        val tokenValue = token.value
+        shouldShowWaiting.value = true
+        val accountValue = account.value?.trim()
+        val tokenValue = token.value?.trim()
         if (accountValue.isNullOrBlank() || tokenValue.isNullOrBlank()) {
-            loginCode.value = StatusCode.LoginCode.ACCOUNT_OR_TOKEN_IS_NULL
+            updateLoginStatus(isNeedWaiting = false, isError = true, message = "账号或密码为空")
             return
         }
         viewModelScope.launch(Dispatchers.IO) {
-            when (LoginAction.run(accountValue, tokenValue)) {
-                StatusCode.OK -> {
-                    if (isSaveChecked.value!!) {
+            if (NetworkUtils.isNetworkNotConnected()) {
+                updateLoginStatus(isNeedWaiting = false, isError = true, message = "网络未连接")
+                return@launch
+            }
+            if (!connection.isConnected) {
+                connection.connect()
+            }
+            if (!connection.isAuthenticated) {
+                try {
+                    connection.login(accountValue, tokenValue)
+                    updateLoginStatus(isNeedWaiting = false, isError = false)
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "login success @ ${DateTime.now()}")
+                    }
+                    withContext(Dispatchers.Main) { needStartActivity.value = true }
+                } catch (e: SASLErrorException) {
+                    updateLoginStatus(isNeedWaiting = false, isError = true, message = "账号或密码错误")
+                    if (shouldSavedState.value == true) {
                         sessionManager.saveAccount(accountValue)
                         sessionManager.saveAuthToken(tokenValue)
                     }
-                    withContext(Dispatchers.Main) {
-                        loginCode.value = StatusCode.OK
+                    if (BuildConfig.DEBUG) {
+                        Log.e(TAG, "auth failed [$accountValue,$tokenValue]")
+                    }
+                } catch (e: SmackException.AlreadyLoggedInException) {
+                    updateLoginStatus(isNeedWaiting = false, isError = false)
+                    if (BuildConfig.DEBUG) {
+                        Log.e(TAG, "$accountValue already online")
+                    }
+                } catch (throwable: Throwable) {
+                    updateLoginStatus(isNeedWaiting = false, isError = true, message = "未知错误")
+                    if (BuildConfig.DEBUG) {
+                        Log.e(TAG, "login failed: ${throwable.localizedMessage}", throwable)
                     }
                 }
-                StatusCode.LoginCode.LOGIN_AUTH_FAILED -> {
-                    withContext(Dispatchers.Main) {
-                        loginCode.value = StatusCode.LoginCode.LOGIN_AUTH_FAILED
-                    }
-                }
-                else -> {
-                    withContext(Dispatchers.Main) {
-                        loginCode.value = StatusCode.ERROR
-                    }
-                }
+            } else {
+                updateLoginStatus(isNeedWaiting = false, isError = false, message = "用户已在线")
             }
         }
+    }
+
+    private fun updateLoginStatus(isNeedWaiting: Boolean, isError: Boolean, message: String = "") {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "updateLoginStatus: $isNeedWaiting $isError $message")
+        }
+        MainScope().launch(Dispatchers.Main) {
+            shouldShowWaiting.value = isNeedWaiting
+            showErrorDialog.value = isError
+            errorMessage.value = message
+        }
+    }
+
+    companion object {
+        private const val TAG = "LoginViewModel"
     }
 }

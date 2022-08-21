@@ -10,6 +10,7 @@ import cc.imorning.common.CommonApp
 import cc.imorning.common.connection.ReconnectionWorker
 import org.jivesoftware.smack.ConnectionListener
 import org.jivesoftware.smack.XMPPConnection
+import org.jivesoftware.smackx.vcardtemp.VCardManager
 
 class ChatConnectionListener : ConnectionListener {
 
@@ -21,6 +22,7 @@ class ChatConnectionListener : ConnectionListener {
             messageMonitor = Intent(CommonApp.getContext(), MessageMonitorService::class.java)
             context.startService(messageMonitor)
         }
+        CommonApp.vCard = VCardManager.getInstanceFor(connection).loadVCard()
         super.authenticated(connection, resumed)
     }
 

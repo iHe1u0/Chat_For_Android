@@ -34,7 +34,6 @@ import cc.imorning.chat.compontens.BottomSheetListItem
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.view.ui.ComposeDialogUtils
 import cc.imorning.chat.viewmodel.LoginViewModel
-import cc.imorning.common.constant.StatusCode
 
 private const val TAG = "LoginActivity"
 
@@ -79,68 +78,25 @@ fun ContentScreen(viewModel: LoginViewModel) {
     val context = LocalContext.current
     val account = viewModel.getAccount().observeAsState()
     val token = viewModel.getToken().observeAsState()
-    val isSaveChecked = viewModel.getChecked().observeAsState()
-
-    var showLoginDialog by remember { mutableStateOf(false) }
-    var showDialog by remember { mutableStateOf(false) }
-    var message by remember { mutableStateOf("") }
-    if (showLoginDialog) {
-        Dialog(
-            onDismissRequest = { showLoginDialog = false },
-            DialogProperties(
-                dismissOnBackPress = false,
-                dismissOnClickOutside = false
-            )
-        ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .size(100.dp)
-                    .background(
-                        MaterialTheme.colorScheme.background,
-                        shape = RoundedCornerShape(8.dp)
-                    )
-            ) {
-                Column {
-                    CircularProgressIndicator()
-                    Text(
-                        text = "登陆中",
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
-            }
+    val isSaveChecked = viewModel.shouldSaveState().observeAsState()
+    val shouldShowWaitingDialog = viewModel.shouldShowWaitingDialog().observeAsState()
+    val shouldShowErrorDialog = viewModel.shouldShowErrorDialog().observeAsState()
+    val message = viewModel.getErrorMessage().observeAsState()
+    val needStartActivity = viewModel.needStartActivity().observeAsState()
+    if (shouldShowWaitingDialog.value == true) {
+        ComposeDialogUtils.LoginAlertDialog {
+            // viewModel.closeDialog()
         }
     }
-    if (showDialog) {
-        ComposeDialogUtils.InfoAlertDialog(message = message) {
-            viewModel.setStatus()
-            showDialog = false
+    if (shouldShowErrorDialog.value == true) {
+        ComposeDialogUtils.InfoAlertDialog(message = message.value!!) {
+            viewModel.closeDialog()
         }
     }
-    when (viewModel.getLoginStatus().observeAsState().value!!) {
-        StatusCode.INIT -> {}
-        StatusCode.OK -> {
-            showLoginDialog = false
-            val intent = Intent(context, MainActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            context.startActivity(intent)
-            (context as Activity).finish()
-        }
-        StatusCode.LoginCode.ACCOUNT_OR_TOKEN_IS_NULL -> {
-            message = "账号或密码不能为空"
-            showDialog = true
-            showLoginDialog = false
-        }
-        StatusCode.LoginCode.LOGIN_AUTH_FAILED -> {
-            message = "账号或密码错误"
-            showDialog = true
-            showLoginDialog = false
-        }
-        else -> {
-            message = "登录失败"
-            showDialog = true
-            showLoginDialog = false
-        }
+    if (needStartActivity.value == true) {
+        val intent = Intent(context, MainActivity::class.java)
+        context.startActivity(intent)
+        (context as Activity).finish()
     }
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -149,7 +105,7 @@ fun ContentScreen(viewModel: LoginViewModel) {
         Column {
             OutlinedTextField(
                 value = account.value.toString(),
-                onValueChange = { viewModel.setAccount(it) },
+                onValueChange = { viewModel.setAccount(it.trim()) },
                 label = { Text(text = "账号") },
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(
@@ -169,7 +125,7 @@ fun ContentScreen(viewModel: LoginViewModel) {
             )
             OutlinedTextField(
                 value = token.value.toString(),
-                onValueChange = { viewModel.setToken(it) },
+                onValueChange = { viewModel.setToken(it.trim()) },
                 label = { Text(text = "密码") },
                 maxLines = 1,
                 leadingIcon = {
@@ -186,14 +142,13 @@ fun ContentScreen(viewModel: LoginViewModel) {
             ) {
                 Checkbox(checked = isSaveChecked.value!!,
                     onCheckedChange = { checked ->
-                        viewModel.setChecked(checked)
+                        viewModel.setSaveState(checked)
                     }
                 )
                 Text(text = "记住密码")
             }
             Button(
                 onClick = {
-                    showLoginDialog = true
                     viewModel.login()
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally)

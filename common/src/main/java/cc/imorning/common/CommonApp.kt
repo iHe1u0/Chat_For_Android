@@ -100,7 +100,7 @@ open class CommonApp : Application() {
 
 object ActivityCollector {
 
-    lateinit var currentActivity: String
+    var currentActivity: String = ""
 
     var activities = LinkedList<Activity>()
 
@@ -111,6 +111,7 @@ object ActivityCollector {
 
     fun removeActivity(activity: Activity) {
         activities.remove(activity)
+        currentActivity = activity.localClassName
     }
 
     fun finishAll() {

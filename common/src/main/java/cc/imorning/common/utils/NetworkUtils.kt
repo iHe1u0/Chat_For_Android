@@ -3,11 +3,11 @@ package cc.imorning.common.utils
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Build
+import cc.imorning.common.CommonApp
 
 object NetworkUtils {
 
-    fun isNetworkConnected(context: Context): Boolean {
+    fun isNetworkConnected(context: Context = CommonApp.getContext()): Boolean {
         val result: Boolean
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -23,7 +23,7 @@ object NetworkUtils {
         return result
     }
 
-    fun isNetworkNotConnected(context: Context): Boolean {
+    fun isNetworkNotConnected(context: Context = CommonApp.getContext()): Boolean {
         return !isNetworkConnected(context)
     }
 

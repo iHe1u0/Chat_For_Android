@@ -1,11 +1,7 @@
 package cc.imorning.common.action
 
 import android.util.Log
-import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
-import cc.imorning.common.constant.StatusCode
-import cc.imorning.common.constant.StatusCode.ERROR
-import cc.imorning.common.constant.StatusCode.OK
 import cc.imorning.common.utils.NetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -25,11 +21,10 @@ object LoginAction {
     fun run(
         account: String,
         password: String
-    ): Int {
-        var retCode: Int
+    ) {
         val connection: AbstractXMPPConnection = CommonApp.getTCPConnection()
         if (NetworkUtils.isNetworkNotConnected(CommonApp.getContext())) {
-            retCode = StatusCode.NETWORK_ERROR
+            return
         } else {
             runBlocking(Dispatchers.IO) {
                 supervisorScope {
@@ -38,7 +33,7 @@ object LoginAction {
                             if (!connection.isConnected) {
                                 connection.connect()
                             }
-                            if (!connection.isAuthenticated){
+                            if (!connection.isAuthenticated) {
                                 connection.login(account, password)
                             }
                             val presence =
@@ -46,35 +41,24 @@ object LoginAction {
                                     .ofType(Presence.Type.unavailable)
                                     .build()
                             connection.sendStanza(presence)
-                            retCode = OK
-                        } catch (t: Throwable) {
-                            Log.e(TAG, "connect or login failed: ${t.localizedMessage}", t)
-                            retCode = ERROR
+                        } catch (throwable: Throwable) {
+                            Log.e(TAG, "connect or login failed: ${throwable.localizedMessage}")
                         }
                     }
                     try {
                         job.await()
-                        if (BuildConfig.DEBUG) {
-                            Log.d(TAG, "login success @ ${DateTime.now()}")
-                        }
-                        retCode = OK
+                        Log.d(TAG, "login success @ ${DateTime.now()}")
                     } catch (e: SmackException.AlreadyConnectedException) {
-                        retCode = OK
                     } catch (e: SmackException.AlreadyLoggedInException) {
-                        retCode = OK
                     } catch (e: SmackException) {
                         Log.e(TAG, "network exception", e)
-                        retCode = StatusCode.NETWORK_ERROR
                     } catch (e: SASLErrorException) {
-                        retCode = StatusCode.LoginCode.LOGIN_AUTH_FAILED
                     } catch (e: Exception) {
                         Log.e(TAG, "${e.message}", e)
-                        retCode = ERROR
                     }
                 }
             }
         }
-        return retCode
     }
 
 }

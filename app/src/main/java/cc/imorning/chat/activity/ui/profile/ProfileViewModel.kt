@@ -1,70 +1,24 @@
 package cc.imorning.chat.activity.ui.profile
 
 import android.util.Log
-import androidx.annotation.DrawableRes
-import androidx.compose.runtime.Immutable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import cc.imorning.chat.R
+import cc.imorning.chat.BuildConfig
 import cc.imorning.common.CommonApp
 import cc.imorning.common.manager.ConnectionManager
-import cc.imorning.common.utils.AvatarUtils
+import com.orhanobut.logger.Logger
 import org.jivesoftware.smackx.vcardtemp.VCardManager
-import org.jivesoftware.smackx.vcardtemp.packet.VCard
 
 class ProfileViewModel : ViewModel() {
 
     private var connection = CommonApp.getTCPConnection()
-    private var vCard: VCard
 
-    init {
-        if (ConnectionManager.isConnectionAuthenticated(connection = connection)) {
-            AvatarUtils.instance.saveAvatar(connection.user.asEntityBareJidString())
-            vCard = VCardManager.getInstanceFor(connection).loadVCard()
-        } else {
-            vCard = VCard()
-        }
-    }
-
-    private val _avatarPath = MutableLiveData<String>().apply {
-        value = AvatarUtils.instance.getAvatarPath(connection.user.asEntityBareJidString())
-    }
-    private val _nickName = MutableLiveData<String>().apply {
-        vCard.let { vcard ->
-            if (vcard.nickName.isNullOrBlank()) {
-                value = connection.user.asEntityBareJidString().split("@")[0]
-            } else {
-                value = vcard.nickName
-            }
-        }
-    }
-    private val _phoneNumber = MutableLiveData<String>().apply {
-        val phoneType = "TEL"
-        if (!vCard.getPhoneHome(phoneType).isNullOrEmpty()
-        ) {
-            value = vCard.getPhoneWork(phoneType)
-        } else {
-            value = "暂未设置手机号"
-        }
-    }
-
-
-    private val _jidString = MutableLiveData<String>().apply {
-        if (connection.isConnected && connection.isAuthenticated) {
-            value = connection.user.asEntityBareJidString()
-        } else {
-            value = vCard.jabberId
-        }
-    }
-
-    private val _status = MutableLiveData<String>().apply {
-        if (connection.isConnected && connection.isAuthenticated) {
-            val presenceBuilder = connection.stanzaFactory.buildPresenceStanza()
-            value = presenceBuilder?.toString()
-            Log.i(TAG, presenceBuilder.toString())
-        }
-    }
+    private val _avatarPath = MutableLiveData("")
+    private val _nickName = MutableLiveData("")
+    private val _phoneNumber = MutableLiveData("")
+    private val _jidString = MutableLiveData("")
+    private val _status = MutableLiveData("")
 
 
     val avatarPath: LiveData<String> = _avatarPath
@@ -74,42 +28,19 @@ class ProfileViewModel : ViewModel() {
     val status: LiveData<String> = _status
 
     fun getUserInfo() {
-        // Workaround for simplicity
-        // _userData.value =  meProfile
+        if (!ConnectionManager.isConnectionAuthenticated(connection)) {
+            if (BuildConfig.DEBUG) {
+                Log.w(TAG, "get user info failed cause connection in error status")
+            }
+            return
+        }
+        val vCard = VCardManager.getInstanceFor(connection)
+        val currentUser = vCard.loadVCard()
+        Logger.xml(currentUser.toXML().toString())
         _phoneNumber.value = "2022"
     }
-
-    private val _userData = MutableLiveData<ProfileScreenState>()
-    val userData: LiveData<ProfileScreenState> = _userData
 
     companion object {
         private const val TAG = "ProfileViewModel"
     }
 }
-
-@Immutable
-data class ProfileScreenState(
-    val userId: String,
-    @DrawableRes val photo: Int?,
-    val name: String,
-    val status: String,
-    val displayName: String,
-    val position: String,
-    val twitter: String = "",
-    val timeZone: String?, // Null if me
-    val commonChannels: String? // Null if me
-) {
-    fun isMe() = userId == meProfile.userId
-}
-
-val meProfile = ProfileScreenState(
-    userId = "me",
-    photo = R.drawable.ic_default_avatar,
-    name = "Ali Conors",
-    status = "Online",
-    displayName = "aliconors",
-    position = "Senior Android Dev at Yearin\nGoogle Developer Expert",
-    twitter = "twitter.com/aliconors",
-    timeZone = "In your timezone",
-    commonChannels = null
-)
