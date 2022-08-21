@@ -1,12 +1,13 @@
 # Chat_For_Android
 
-This is IM app based on [Openfire](https://www.igniterealtime.org/projects/openfire/), you can use it with a openfire server.
+This is IM app based on [Openfire](https://www.igniterealtime.org/projects/openfire/), you can use it with an openfire server.
 
 ## Known Issue
 
 -----------
 
-* Contact's avatar will not refresh after reboot the app.
+* App may be crash when first login.
+* Contact's avatar will not refresh util reboot the app.
 
 ## License
 
