@@ -4,14 +4,26 @@ This is IM app based on [Openfire](https://www.igniterealtime.org/projects/openf
 
 ## Known Issue
 -----------
-* App may be crash when first login.
-* Contact's avatar will not refresh util reboot the app.
+* [ ] App may be crash when first login.
+* [x] Recent message list not refresh if in MeesageFragment.
+* [x] MessageFragment show wrong user avatar.
+* [x] RecentItem has too much lines for message or nick name.
+* [ ] Contact's avatar will not refresh util reboot the app.
 
-## todo List
+## TODO List
 -----------
-* [ ] Design different message type
-* [ ] Add Chat UI
-* [ ] Add Chat Funnction
+* [ ] Design different message type.
+* [ ] Add Chat UI.
+* [ ] Add Chat Funnction.
+* [ ] Add function for showing user's vCard.
+* [ ] Add function for modify user's vCard.
+* [ ] Add scanning and generating QR to add contact.
+* [ ] Add function for feedback.
+* [ ] Show more infomation when shou AboutDialog.
+* [ ] Add function for query contact on server.
+* [ ] Add function for removing a contact.
+* [ ] Add function for adding a contact
+* [ ] Add group chat function.
 
 ## License
 -----------
