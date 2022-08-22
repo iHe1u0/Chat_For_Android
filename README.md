@@ -27,7 +27,7 @@ This is IM app based on [Openfire](https://www.igniterealtime.org/projects/openf
 
 ## License
 -----------
-Copyright 2018 Google, Inc.
+Copyright 2022 iMorning.
 
 Licensed to the Apache Software Foundation (ASF) under one or more contributor
 license agreements.  See the NOTICE file distributed with this work for
