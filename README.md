@@ -1,6 +1,6 @@
 # Chat_For_Android
 
-This is IM app based on [Openfire](https://www.igniterealtime.org/projects/openfire/), you can use it with an openfire server.
+This is IM app for Android based on [Openfire](https://www.igniterealtime.org/projects/openfire/), you can use it with an openfire server.
 
 ## Known Issue
 -----------
