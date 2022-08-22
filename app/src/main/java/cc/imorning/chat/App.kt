@@ -1,6 +1,7 @@
 package cc.imorning.chat
 
 import android.util.Log
+import cc.imorning.chat.monitor.ActivityMonitor
 import cc.imorning.chat.monitor.ChatConnectionListener
 import cc.imorning.chat.utils.ChatNotificationManager
 import cc.imorning.common.CommonApp
@@ -19,6 +20,7 @@ class App : CommonApp() {
             getTCPConnection().addConnectionListener(connectionListener)
             Log.d(TAG, "getTCPConnection().addConnectionListener")
         }
+        registerActivityLifecycleCallbacks(ActivityMonitor.monitor)
     }
 
     companion object {

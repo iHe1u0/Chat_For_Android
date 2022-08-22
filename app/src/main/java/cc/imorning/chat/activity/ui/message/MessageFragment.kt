@@ -101,6 +101,7 @@ fun MessageScreen(viewModel: MessageViewModel) {
 
     Column {
         if ((connectionStatus != null) && (!connectionStatus)) {
+            viewModel.removeListener()
             Text(
                 text = "网络无连接",
                 modifier = Modifier
@@ -109,6 +110,8 @@ fun MessageScreen(viewModel: MessageViewModel) {
                 textAlign = TextAlign.Center,
                 color = Color.White
             )
+        } else if (connectionStatus != null && connectionStatus) {
+            viewModel.addListener()
         }
         SwipeRefresh(
             state = rememberSwipeRefreshState(isRefreshing = isRefreshing.value),

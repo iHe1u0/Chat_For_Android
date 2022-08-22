@@ -17,6 +17,7 @@ import androidx.core.net.toUri
 import cc.imorning.chat.R
 import cc.imorning.chat.activity.ChatActivity
 import cc.imorning.chat.model.OnlineMessage
+import cc.imorning.chat.monitor.ActivityMonitor
 import cc.imorning.chat.receiver.ReplyReceiver
 import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.Config
@@ -46,15 +47,17 @@ class ChatNotificationManager private constructor(val context: Context) {
         if (notificationManager.getNotificationChannel(CHANNEL_NEW_MESSAGES) != null) {
             return
         }
-        notificationManager.createNotificationChannel(
-            NotificationChannel(
-                CHANNEL_NEW_MESSAGES,
-                "消息通知",
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "新消息通知"
-            }
-        )
+        val notificationChannel = NotificationChannel(
+            CHANNEL_NEW_MESSAGES,
+            "消息通知",
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "新消息通知"
+            enableLights(false)
+            enableVibration(false)
+            setSound(null, null)
+        }
+        notificationManager.createNotificationChannel(notificationChannel)
     }
 
     /**
@@ -143,10 +146,12 @@ class ChatNotificationManager private constructor(val context: Context) {
                     .setAllowGeneratedReplies(true)
                     .build()
             )
-        if (update) {
-            builder.setOnlyAlertOnce(true)
+        // if (update) {
+        //     builder.setOnlyAlertOnce(true)
+        // }
+        if (!ActivityMonitor.monitor.isForeground()) {
+            notificationManager.notify(CHANNEL_NEW_MESSAGES_ID, builder.build())
         }
-        notificationManager.notify(CHANNEL_NEW_MESSAGES_ID, builder.build())
     }
 
     private fun cancelNotification(id: Int) {

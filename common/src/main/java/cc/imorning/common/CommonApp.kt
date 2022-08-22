@@ -50,10 +50,8 @@ open class CommonApp : Application() {
         configurationBuilder.setPort(ServerConfig.LOGIN_PORT)
         configurationBuilder.setResource(ServerConfig.RESOURCE)
         configurationBuilder.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled)
+        configurationBuilder.setDnssecMode(ConnectionConfiguration.DnssecMode.disabled)
         configurationBuilder.setSendPresence(false)
-        // if (BuildConfig.DEBUG){
-        //     configurationBuilder.enableDefaultDebugger()
-        // }
         xmppTcpConnection = XMPPTCPConnection(configurationBuilder.build())
         if (!ConnectionManager.isConnectionAuthenticated(getTCPConnection())) {
             MainScope().launch(Dispatchers.IO) { getTCPConnection() }
@@ -102,7 +100,7 @@ object ActivityCollector {
 
     var currentActivity: String = ""
 
-    var activities = LinkedList<Activity>()
+    private var activities = LinkedList<Activity>()
 
     fun addActivity(activity: Activity) {
         activities.add(activity)

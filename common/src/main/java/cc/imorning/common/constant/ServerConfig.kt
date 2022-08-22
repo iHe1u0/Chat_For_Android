@@ -1,7 +1,5 @@
 package cc.imorning.common.constant
 
-import org.jxmpp.jid.parts.Resourcepart
-
 object ServerConfig {
     const val RESOURCE = "chat"
     const val HOST_NAME = "chat.catcompany.cn"

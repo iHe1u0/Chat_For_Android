@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cc.imorning.chat.activity.ChatActivity
 import cc.imorning.chat.model.RecentMessage
@@ -43,9 +44,9 @@ fun RecentMessageItem(message: RecentMessage) {
             model = avatarPath,
             modifier = Modifier
                 .fillMaxHeight()
-                .size(64.dp),
+                .size(48.dp),
             contentDescription = message.nickName,
-            alignment = Alignment.Center
+            alignment = Alignment.Center,
         ) {
             when (painter.state) {
                 is AsyncImagePainter.State.Loading -> {
@@ -65,11 +66,15 @@ fun RecentMessageItem(message: RecentMessage) {
         Column(modifier = Modifier.padding(start = 8.dp)) {
             Text(
                 text = message.nickName,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = message.message,
-                style = MaterialTheme.typography.titleSmall
+                style = MaterialTheme.typography.titleSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }

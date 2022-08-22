@@ -8,6 +8,7 @@ import cc.imorning.chat.model.RecentMessage
 import cc.imorning.chat.utils.StatusHelper
 import cc.imorning.common.CommonApp
 import cc.imorning.common.database.dao.AppDatabaseDao
+import cc.imorning.common.database.table.RecentMessageEntity
 import cc.imorning.common.manager.ConnectionManager
 import cc.imorning.common.utils.AvatarUtils
 import cc.imorning.common.utils.NetworkUtils
@@ -15,6 +16,9 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import org.jivesoftware.smack.chat2.ChatManager
+import org.jivesoftware.smack.chat2.IncomingChatMessageListener
+import org.jivesoftware.smack.chat2.OutgoingChatMessageListener
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.roster.Roster
 import javax.inject.Inject
@@ -37,8 +41,13 @@ class MessageViewModel @Inject constructor(
     private val _messages = MutableLiveData<MutableList<RecentMessage>>()
     val messages: MutableLiveData<MutableList<RecentMessage>> = _messages
 
+    private var chatManager: ChatManager? = null
+    private var incomingChatMessageListener: IncomingChatMessageListener? = null
+    private var outgoingChatMessageListener: OutgoingChatMessageListener? = null
+
     init {
         updateStatus()
+        addListener()
     }
 
     @Synchronized
@@ -85,6 +94,35 @@ class MessageViewModel @Inject constructor(
             }
             delay(1000)
             _isRefreshing.emit(false)
+        }
+    }
+
+    @Synchronized
+    fun addListener() {
+        if (ConnectionManager.isConnectionAuthenticated(connection) &&
+            chatManager == null
+        ) {
+            chatManager = ChatManager.getInstanceFor(connection)
+            incomingChatMessageListener = IncomingChatMessageListener { from, message, chat ->
+                refresh(false)
+            }
+            outgoingChatMessageListener = OutgoingChatMessageListener { to, messageBuilder, chat ->
+                refresh(false)
+            }
+        }
+        if (chatManager != null) {
+            chatManager?.apply {
+                addIncomingListener(incomingChatMessageListener)
+                addOutgoingListener(outgoingChatMessageListener)
+            }
+        }
+    }
+
+    @Synchronized
+    fun removeListener() {
+        chatManager?.apply {
+            removeIncomingListener(incomingChatMessageListener)
+            removeOutgoingListener(outgoingChatMessageListener)
         }
     }
 
