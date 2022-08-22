@@ -1,5 +1,6 @@
 package cc.imorning.chat.utils
 
+import android.annotation.TargetApi
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -16,6 +17,7 @@ import androidx.core.graphics.drawable.IconCompat
 import androidx.core.net.toUri
 import cc.imorning.chat.R
 import cc.imorning.chat.activity.ChatActivity
+import cc.imorning.chat.activity.MainActivity
 import cc.imorning.chat.model.OnlineMessage
 import cc.imorning.chat.monitor.ActivityMonitor
 import cc.imorning.chat.receiver.ReplyReceiver
@@ -27,7 +29,10 @@ class ChatNotificationManager private constructor(val context: Context) {
     companion object {
 
         const val CHANNEL_NEW_MESSAGES_ID = 1124
-        private const val CHANNEL_NEW_MESSAGES = "new_message"
+        private const val CHANNEL_NEW_MESSAGES = "$CHANNEL_NEW_MESSAGES_ID"
+
+        const val CHANNEL_APP_RUNNING_ID = 1124
+        private const val CHANNEL_APP_RUNNING = "$CHANNEL_APP_RUNNING_ID"
 
         private const val REQUEST_CONTENT = 1
         private const val PENDING_INTENT_REQUEST_CODE = 2
@@ -40,7 +45,8 @@ class ChatNotificationManager private constructor(val context: Context) {
     private val notificationManager: NotificationManager =
         context.getSystemService() ?: throw IllegalArgumentException()
 
-    fun setUpNotificationChannels() {
+    @TargetApi(Build.VERSION_CODES.O)
+    fun setUpNewMessageNotificationChannels() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return
         }
@@ -53,6 +59,25 @@ class ChatNotificationManager private constructor(val context: Context) {
             NotificationManager.IMPORTANCE_HIGH
         ).apply {
             description = "新消息通知"
+            enableLights(false)
+            enableVibration(false)
+            setSound(null, null)
+        }
+        notificationManager.createNotificationChannel(notificationChannel)
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    fun setUpAppRunningNotificationChannels() {
+
+        if (notificationManager.getNotificationChannel(CHANNEL_APP_RUNNING) != null) {
+            return
+        }
+        val notificationChannel = NotificationChannel(
+            CHANNEL_APP_RUNNING,
+            context.getString(R.string.app_name),
+            NotificationManager.IMPORTANCE_MIN
+        ).apply {
+            description = context.getString(R.string.app_name)
             enableLights(false)
             enableVibration(false)
             setSound(null, null)
@@ -146,16 +171,12 @@ class ChatNotificationManager private constructor(val context: Context) {
                     .setAllowGeneratedReplies(true)
                     .build()
             )
-        // if (update) {
-        //     builder.setOnlyAlertOnce(true)
-        // }
+        if (update) {
+            builder.setOnlyAlertOnce(true)
+        }
         if (!ActivityMonitor.monitor.isForeground()) {
             notificationManager.notify(CHANNEL_NEW_MESSAGES_ID, builder.build())
         }
-    }
-
-    private fun cancelNotification(id: Int) {
-        notificationManager.cancel(id)
     }
 
     /**
@@ -171,5 +192,36 @@ class ChatNotificationManager private constructor(val context: Context) {
         } else {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         }
+    }
+
+    /**
+     * build an app running notification for Android O+
+     */
+    fun showAppRunningNotification(): Notification {
+       return NotificationCompat.Builder(context, CHANNEL_NEW_MESSAGES)
+            .setContentTitle(context.getString(R.string.app_name))
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setCategory(Notification.CATEGORY_SERVICE)
+            .setShowWhen(true)
+            .setContentIntent(
+                PendingIntent.getActivity(
+                    context, REQUEST_CONTENT, Intent(context, MainActivity::class.java),
+                    getNotificationFlag(mutable = true)
+                )
+            ).build()
+    }
+
+    /**
+     * cancel notification by id
+     */
+    fun cancelNotification(id: Int) {
+        notificationManager.cancel(id)
+    }
+
+    /**
+     * cancel all notification
+     */
+    fun cancelAll(){
+        notificationManager.cancelAll()
     }
 }

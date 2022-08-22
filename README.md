@@ -3,14 +3,17 @@
 This is IM app based on [Openfire](https://www.igniterealtime.org/projects/openfire/), you can use it with an openfire server.
 
 ## Known Issue
-
 -----------
-
 * App may be crash when first login.
 * Contact's avatar will not refresh util reboot the app.
 
-## License
+## todo List
+-----------
+* [ ] Design different message type
+* [ ] Add Chat UI
+* [ ] Add Chat Funnction
 
+## License
 -----------
 Copyright 2018 Google, Inc.
 

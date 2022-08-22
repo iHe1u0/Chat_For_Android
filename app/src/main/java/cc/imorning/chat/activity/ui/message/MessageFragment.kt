@@ -10,7 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
@@ -19,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
@@ -86,6 +87,11 @@ class MessageFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        messageViewModel.removeListener()
+        super.onDestroy()
     }
 }
 
@@ -161,13 +167,13 @@ fun TopBar(messageViewModel: MessageViewModel) {
                 onClick = {
                     showBuildingDialog = true
                 },
-                shape = RoundedCornerShape(4.dp),
             ) {
                 SubcomposeAsyncImage(
                     model = avatarPath.value,
                     contentDescription = stringResource(id = R.string.desc_contact_item_avatar),
                     modifier = Modifier
-                        .size(48.dp),
+                        .size(48.dp)
+                        .clip(CircleShape),
                     alignment = Alignment.Center,
                 ) {
                     when (painter.state) {
@@ -176,7 +182,7 @@ fun TopBar(messageViewModel: MessageViewModel) {
                         }
                         is AsyncImagePainter.State.Error -> {
                             if (BuildConfig.DEBUG) {
-                                Log.w(TAG, "on error for get avatar: $avatarPath")
+                                Log.w(TAG, "on error for get avatar: ${avatarPath.value}")
                             }
                             Icon(imageVector = Icons.Filled.Person, contentDescription = null)
                         }
@@ -188,7 +194,10 @@ fun TopBar(messageViewModel: MessageViewModel) {
                         }
                     }
                 }
-                Text(text = status.value!!)
+                Text(
+                    text = status.value!!,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
             }
         }
     )

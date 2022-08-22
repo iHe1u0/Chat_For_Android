@@ -3,11 +3,13 @@ package cc.imorning.chat.service
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import cc.imorning.chat.R
 import cc.imorning.chat.monitor.ChatStanzaListener
 import cc.imorning.chat.monitor.IncomingMessageListener
+import cc.imorning.chat.utils.ChatNotificationManager
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
 import cc.imorning.common.action.message.MessageManager
@@ -33,8 +35,21 @@ class MessageMonitorService : Service() {
     // database dao for operating database
     private val databaseDao = AppDatabase.getInstance().appDatabaseDao()
 
+    private val chatNotificationManager = ChatNotificationManager.manager
+
     override fun onBind(intent: Intent?): IBinder {
         return messageServiceBinder
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
+            chatNotificationManager.setUpAppRunningNotificationChannels()
+            startForeground(
+                ChatNotificationManager.CHANNEL_APP_RUNNING_ID,
+                chatNotificationManager.showAppRunningNotification()
+            )
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -75,6 +90,7 @@ class MessageMonitorService : Service() {
             chatManager.removeIncomingListener(incomingMessageListener)
             connection.removeStanzaListener(chatStanzaListener)
         }
+        chatNotificationManager.cancelNotification(ChatNotificationManager.CHANNEL_APP_RUNNING_ID)
         super.onDestroy()
     }
 

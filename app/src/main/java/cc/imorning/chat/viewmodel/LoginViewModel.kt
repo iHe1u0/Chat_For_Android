@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.Config
+import cc.imorning.common.utils.AvatarUtils
 import cc.imorning.common.utils.NetworkUtils
 import cc.imorning.common.utils.SessionManager
 import kotlinx.coroutines.Dispatchers

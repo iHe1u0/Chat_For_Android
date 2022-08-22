@@ -1,5 +1,6 @@
 package cc.imorning.chat.activity.ui.message
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -8,7 +9,6 @@ import cc.imorning.chat.model.RecentMessage
 import cc.imorning.chat.utils.StatusHelper
 import cc.imorning.common.CommonApp
 import cc.imorning.common.database.dao.AppDatabaseDao
-import cc.imorning.common.database.table.RecentMessageEntity
 import cc.imorning.common.manager.ConnectionManager
 import cc.imorning.common.utils.AvatarUtils
 import cc.imorning.common.utils.NetworkUtils
@@ -56,6 +56,7 @@ class MessageViewModel @Inject constructor(
             if (ConnectionManager.isConnectionAuthenticated(connection = connection) &&
                 NetworkUtils.isNetworkConnected()
             ) {
+                AvatarUtils.instance.saveAvatar(connection.user.asEntityBareJidString())
                 val roster = Roster.getInstanceFor(connection)
                 val availability = roster.getPresence(connection.user.asBareJid())
                 _avatarPath.value =
@@ -123,6 +124,7 @@ class MessageViewModel @Inject constructor(
         chatManager?.apply {
             removeIncomingListener(incomingChatMessageListener)
             removeOutgoingListener(outgoingChatMessageListener)
+            chatManager = null
         }
     }
 

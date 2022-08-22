@@ -13,7 +13,7 @@ class AvatarUtils private constructor() {
     private val connection: XMPPConnection = CommonApp.getTCPConnection()
 
 
-    fun hasAvatar(jid: String): Boolean {
+    fun hasAvatarCache(jid: String): Boolean {
         return FileUtils.instance.isFileExist(FileUtils.instance.getAvatarCachePath(jid).absolutePath)
     }
 
@@ -38,6 +38,9 @@ class AvatarUtils private constructor() {
     }
 
     fun getAvatarPath(jidString: String): String {
+        if (BuildConfig.DEBUG){
+            Log.d(TAG, "get avatar for [$jidString]")
+        }
         if (ConnectionManager.isConnectionAuthenticated(connection)) {
             return FileUtils.instance.getAvatarCachePath(jidString).absolutePath
         }

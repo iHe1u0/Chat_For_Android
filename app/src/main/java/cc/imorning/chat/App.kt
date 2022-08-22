@@ -14,7 +14,7 @@ class App : CommonApp() {
     override fun onCreate() {
         super.onCreate()
         FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
-        ChatNotificationManager.manager.setUpNotificationChannels()
+        ChatNotificationManager.manager.setUpNewMessageNotificationChannels()
         if (connectionListener == null) {
             connectionListener = ChatConnectionListener()
             getTCPConnection().addConnectionListener(connectionListener)

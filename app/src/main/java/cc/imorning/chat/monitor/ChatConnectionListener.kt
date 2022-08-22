@@ -2,6 +2,7 @@ package cc.imorning.chat.monitor
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.util.Log
 import androidx.work.*
 import cc.imorning.chat.service.MessageMonitorService
@@ -20,7 +21,11 @@ class ChatConnectionListener : ConnectionListener {
     override fun authenticated(connection: XMPPConnection?, resumed: Boolean) {
         if (messageMonitor == null) {
             messageMonitor = Intent(CommonApp.getContext(), MessageMonitorService::class.java)
-            context.startService(messageMonitor)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(messageMonitor)
+            } else {
+                context.startService(messageMonitor)
+            }
         }
         CommonApp.vCard = VCardManager.getInstanceFor(connection).loadVCard()
         super.authenticated(connection, resumed)

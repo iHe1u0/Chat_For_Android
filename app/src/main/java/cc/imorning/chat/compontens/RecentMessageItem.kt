@@ -1,6 +1,7 @@
 package cc.imorning.chat.compontens
 
 import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -17,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.activity.ChatActivity
 import cc.imorning.chat.model.RecentMessage
 import cc.imorning.common.constant.Config
@@ -56,6 +58,12 @@ fun RecentMessageItem(message: RecentMessage) {
                     CircularProgressIndicator()
                 }
                 is AsyncImagePainter.State.Error -> {
+                    if (BuildConfig.DEBUG) {
+                        Log.w(
+                            this.javaClass.simpleName,
+                            "error when load [${message.sender}] $avatarPath"
+                        )
+                    }
                     Icon(imageVector = Icons.Filled.Person, contentDescription = null)
                 }
                 is AsyncImagePainter.State.Empty -> {

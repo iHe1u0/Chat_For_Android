@@ -4,12 +4,14 @@ import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -34,7 +36,7 @@ fun ContactItem(
     val jidString = contact.jid
     val nickname = contact.nickName
     var avatarPath = AvatarUtils.instance.getAvatarPath(jidString)
-    if (!AvatarUtils.instance.hasAvatar(jidString)) {
+    if (!AvatarUtils.instance.hasAvatarCache(jidString)) {
         avatarPath = AvatarUtils.instance.getOnlineAvatar(jidString)
     }
     TextButton(
@@ -52,7 +54,8 @@ fun ContactItem(
             contentDescription = stringResource(id = R.string.desc_contact_item_avatar),
             modifier = Modifier
                 .fillMaxHeight()
-                .size(64.dp),
+                .size(64.dp)
+                .clip(CircleShape),
             alignment = Alignment.Center,
         ) {
             when (painter.state) {
