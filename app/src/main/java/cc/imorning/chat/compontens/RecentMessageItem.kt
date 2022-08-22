@@ -3,6 +3,7 @@ package cc.imorning.chat.compontens
 import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.CircularProgressIndicator
@@ -12,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -44,7 +46,8 @@ fun RecentMessageItem(message: RecentMessage) {
             model = avatarPath,
             modifier = Modifier
                 .fillMaxHeight()
-                .size(48.dp),
+                .size(48.dp)
+                .clip(CircleShape),
             contentDescription = message.nickName,
             alignment = Alignment.Center,
         ) {
