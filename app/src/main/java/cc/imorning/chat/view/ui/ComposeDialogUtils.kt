@@ -27,11 +27,9 @@ private const val TAG = "ComposeDialogUtils"
 object ComposeDialogUtils {
 
     @Composable
-    fun LoginAlertDialog(
-        onDismiss: () -> Unit
-    ) {
+    fun LoginAlertDialog() {
         Dialog(
-            onDismissRequest = onDismiss,
+            onDismissRequest = {},
             properties = DialogProperties(
                 dismissOnBackPress = false,
                 dismissOnClickOutside = false

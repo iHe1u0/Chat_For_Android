@@ -1,48 +1,50 @@
 package cc.imorning.chat.compontens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Password
-import androidx.compose.material.icons.filled.PermIdentity
-import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import cc.imorning.chat.R
+import cc.imorning.common.CommonApp
+import cc.imorning.common.action.account.RegisterAction
+import cc.imorning.common.constant.ResultCode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterDialog(onDismiss: () -> Unit) {
 
+    val context = LocalContext.current
     var nickName by remember { mutableStateOf("") }
     var account by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var rePassword by remember { mutableStateOf("") }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         icon = {
-            Icon(
-                painter = painterResource(id = R.mipmap.ic_launcher),
-                contentDescription = "注册"
-            )
+            Text(text = "注册新用户")
         },
         text = {
             Column {
-                TextField(
+                OutlinedTextField(
                     value = nickName,
                     onValueChange = { nickName = it },
                     label = { Text(text = "昵称") },
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Filled.VerifiedUser,
+                            painter = painterResource(id = R.drawable.ic_nick),
                             contentDescription = "昵称"
                         )
                     },
                     singleLine = true,
                 )
-                TextField(
+                OutlinedTextField(
                     value = account,
                     onValueChange = { account = it },
                     label = { Text(text = "账号") },
@@ -54,7 +56,7 @@ fun RegisterDialog(onDismiss: () -> Unit) {
                     },
                     singleLine = true
                 )
-                TextField(
+                OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
                     label = { Text(text = "密码") },
@@ -66,7 +68,7 @@ fun RegisterDialog(onDismiss: () -> Unit) {
                     },
                     singleLine = true
                 )
-                TextField(
+                OutlinedTextField(
                     value = rePassword,
                     onValueChange = { rePassword = it },
                     label = { Text(text = "确认密码") },
@@ -81,7 +83,17 @@ fun RegisterDialog(onDismiss: () -> Unit) {
             }
         },
         confirmButton = {
-            TextButton(onClick = { /*TODO*/ }) {
+            TextButton(onClick = {
+                if (nickName.isBlank() || account.isBlank() || password.isBlank()) {
+                    Toast.makeText(context, "请检查必填项是否为空", Toast.LENGTH_LONG).show()
+                    return@TextButton
+                }
+                if (password != rePassword) {
+                    Toast.makeText(context, "两次输入密码不一致", Toast.LENGTH_LONG).show()
+                    return@TextButton
+                }
+                doRegistration(nickName, account, password)
+            }) {
                 Text(text = "注册")
             }
         },
@@ -90,6 +102,27 @@ fun RegisterDialog(onDismiss: () -> Unit) {
                 Text(text = "取消")
             }
         })
+}
+
+fun doRegistration(nickName: String, account: String, password: String) {
+
+    val context = CommonApp.getContext()
+    when (RegisterAction.run(nickName, account, password)) {
+        ResultCode.OK -> {
+            Toast.makeText(context, "注册成功，请返回登录", Toast.LENGTH_LONG).show()
+        }
+        ResultCode.ERROR_NOT_SUPPORT_OPERATION -> {
+            Toast.makeText(context, "当前禁止新用户注册", Toast.LENGTH_LONG).show()
+        }
+        ResultCode.ERROR_NETWORK -> {
+            Toast.makeText(context, "网络连接失败，请检查网络", Toast.LENGTH_LONG).show()
+        }
+        ResultCode.ERROR -> {
+            Toast.makeText(context, "未知错误", Toast.LENGTH_LONG).show()
+        }
+        else -> {}
+    }
+
 }
 
 @Preview

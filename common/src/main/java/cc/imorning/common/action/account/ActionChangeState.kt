@@ -3,7 +3,7 @@ package cc.imorning.common.action.account
 import android.util.Log
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
-import cc.imorning.common.constant.StatusCode
+import cc.imorning.common.constant.ResultCode
 import org.jivesoftware.smack.SmackException.NotConnectedException
 
 object ActionChangeState {
@@ -11,19 +11,19 @@ object ActionChangeState {
     private const val TAG = "ActionChangeState"
 
     private val connection = CommonApp.getTCPConnection()
-    fun run(state: String): Int {
+    fun run(state: String): ResultCode {
         val presenceBuilder = connection.stanzaFactory.buildPresenceStanza()
         presenceBuilder.status = state
         try {
             connection.sendStanza(presenceBuilder.build())
-            return StatusCode.OK
+            return ResultCode.OK
         } catch (e: NotConnectedException) {
-            return StatusCode.NETWORK_ERROR
+            return ResultCode.ERROR_NETWORK
         } catch (e: InterruptedException) {
             if (BuildConfig.DEBUG) {
                 Log.e(TAG, e.localizedMessage, e)
             }
-            return StatusCode.ERROR
+            return ResultCode.ERROR
         }
     }
 }
