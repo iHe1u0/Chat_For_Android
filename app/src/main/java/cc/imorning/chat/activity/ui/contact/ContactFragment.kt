@@ -1,5 +1,6 @@
 package cc.imorning.chat.activity.ui.contact
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,20 +10,21 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import cc.imorning.chat.App
 import cc.imorning.chat.R
+import cc.imorning.chat.activity.SearchActivity
 import cc.imorning.chat.compontens.ContactItem
 import cc.imorning.chat.compontens.SearchBar
 import cc.imorning.chat.ui.theme.ChatTheme
-import cc.imorning.chat.view.ui.ComposeDialogUtils
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -65,15 +67,9 @@ class ContactFragment : Fragment() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(
-    showBackground = true
-)
 @Composable
 fun TopBar() {
-    var showBuildingDialog by remember { mutableStateOf(false) }
-    if (showBuildingDialog) {
-        ComposeDialogUtils.FunctionalityNotAvailablePopup { showBuildingDialog = false }
-    }
+    val context = LocalContext.current
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -84,7 +80,8 @@ fun TopBar() {
         actions = {
             TextButton(
                 onClick = {
-                    showBuildingDialog = true
+                    val searchActivity = Intent(context, SearchActivity::class.java)
+                    context.startActivity(searchActivity)
                 }) {
                 Icon(
                     imageVector = Icons.Filled.PersonAdd,

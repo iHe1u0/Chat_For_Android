@@ -48,6 +48,10 @@
                     android:scheme="imorningchat" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activity.SearchActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize" />
 
         <service
             android:name=".service.NetworkService"

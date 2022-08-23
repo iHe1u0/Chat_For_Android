@@ -1,30 +1,23 @@
 package cc.imorning.chat.compontens
 
 import android.content.Intent
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.*
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import cc.imorning.chat.R
 import cc.imorning.chat.activity.ChatActivity
 import cc.imorning.chat.model.Contact
 import cc.imorning.common.constant.Config
 import cc.imorning.common.utils.AvatarUtils
-import coil.compose.AsyncImagePainter
-import coil.compose.SubcomposeAsyncImage
-import coil.compose.SubcomposeAsyncImageContent
 
 private const val TAG = "ContactItem"
 
@@ -49,39 +42,14 @@ fun ContactItem(
         },
         modifier = Modifier.fillMaxWidth()
     ) {
-        SubcomposeAsyncImage(
-            model = avatarPath,
-            contentDescription = stringResource(id = R.string.desc_contact_item_avatar),
-            modifier = Modifier
-                .fillMaxHeight()
-                .size(64.dp)
-                .clip(CircleShape),
-            alignment = Alignment.Center,
-        ) {
-            when (painter.state) {
-                is AsyncImagePainter.State.Loading -> {
-                    CircularProgressIndicator()
-                }
-                is AsyncImagePainter.State.Error -> {
-                    Log.w(TAG, "on error for get avatar: $avatarPath")
-                    Icon(imageVector = Icons.Filled.Person, contentDescription = null)
-                }
-                is AsyncImagePainter.State.Empty -> {
-                    Icon(imageVector = Icons.Filled.Person, contentDescription = null)
-                }
-                else -> {
-                    SubcomposeAsyncImageContent()
-                }
-            }
-        }
+        Avatar(avatarPath)
         Column(
-            modifier = Modifier
-                .padding(start = 8.dp)
+            modifier = Modifier.padding(start = 8.dp)
         ) {
             Text(
                 text = nickname,
                 style = MaterialTheme.typography.titleMedium,
-                maxLines = 1
+                maxLines = 1,
             )
             Text(
                 text = jidString,

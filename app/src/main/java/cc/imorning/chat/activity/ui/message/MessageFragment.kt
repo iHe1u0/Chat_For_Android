@@ -1,6 +1,7 @@
 package cc.imorning.chat.activity.ui.message
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -31,6 +32,7 @@ import androidx.fragment.app.activityViewModels
 import cc.imorning.chat.App
 import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.R
+import cc.imorning.chat.activity.SearchActivity
 import cc.imorning.chat.compontens.RecentMessageItem
 import cc.imorning.chat.network.ConnectionLiveData
 import cc.imorning.chat.ui.theme.ChatTheme
@@ -205,13 +207,11 @@ fun TopBar(messageViewModel: MessageViewModel) {
 
 @Composable
 fun FloatingActionButton() {
-    var showBuildingDialog by remember { mutableStateOf(false) }
-    if (showBuildingDialog) {
-        ComposeDialogUtils.FunctionalityNotAvailablePopup { showBuildingDialog = false }
-    }
+    val context = LocalContext.current
     FloatingActionButton(
         onClick = {
-            showBuildingDialog = true
+            val searchActivity = Intent(context, SearchActivity::class.java)
+            context.startActivity(searchActivity)
         },
         modifier = Modifier.padding(8.dp)
     ) {

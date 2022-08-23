@@ -83,10 +83,12 @@ open class CommonApp : Application() {
         fun exitApp(status: Int = 0) {
             val notificationManager =
                 getContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val databaseDao = CommonApp().appDatabase.appDatabaseDao()
             notificationManager.cancelAll()
             MainScope().launch(Dispatchers.IO) {
                 ConnectionManager.disconnect()
-                CommonApp().appDatabase.appDatabaseDao().deleteAllContact()
+                databaseDao.deleteAllContact()
+                databaseDao.deleteAllRecentMessage()
                 withContext(Dispatchers.Main) {
                     ActivityCollector.finishAll()
                 }

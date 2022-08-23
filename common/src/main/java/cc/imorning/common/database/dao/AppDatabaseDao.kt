@@ -30,4 +30,7 @@ interface AppDatabaseDao {
     @Query("delete from ${DatabaseConstant.TABLE_CONTACT_INFO}")
     fun deleteAllContact()
 
+    @Query("delete from ${DatabaseConstant.TABLE_RECENT_MESSAGE}")
+    fun deleteAllRecentMessage()
+
 }

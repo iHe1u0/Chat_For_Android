@@ -2,7 +2,6 @@ package cc.imorning.chat.activity.ui.profile
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,15 +12,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -34,12 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import cc.imorning.chat.R
+import cc.imorning.chat.compontens.Avatar
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.view.ui.ComposeDialogUtils
 import cc.imorning.common.CommonApp
-import coil.compose.AsyncImagePainter
-import coil.compose.SubcomposeAsyncImage
-import coil.compose.SubcomposeAsyncImageContent
 
 private const val TAG = "ProfileFragment"
 
@@ -124,34 +118,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                 .fillMaxWidth()
                 .padding(start = 8.dp)
         ) {
-            SubcomposeAsyncImage(
-                model = avatarPath,
-                contentDescription = "avatar",
-                modifier = Modifier
-                    .size(72.dp)
-                    .background(
-                        color = Color.Transparent,
-                        shape = RoundedCornerShape(72.dp)
-                    ),
-                contentScale = ContentScale.FillBounds,
-                alignment = Alignment.Center,
-            ) {
-                when (painter.state) {
-                    is AsyncImagePainter.State.Loading -> {
-                        CircularProgressIndicator()
-                    }
-                    is AsyncImagePainter.State.Error -> {
-                        Log.w(TAG, "on error for get avatar: $avatarPath")
-                        Icon(imageVector = Icons.Filled.Person, contentDescription = null)
-                    }
-                    is AsyncImagePainter.State.Empty -> {
-                        Icon(imageVector = Icons.Filled.Person, contentDescription = null)
-                    }
-                    else -> {
-                        SubcomposeAsyncImageContent()
-                    }
-                }
-            }
+            Avatar(avatarPath = avatarPath.orEmpty())
             Column(
                 modifier = Modifier.padding(start = 8.dp)
             ) {
