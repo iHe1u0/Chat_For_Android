@@ -9,6 +9,7 @@ import cc.imorning.chat.utils.StatusHelper
 import cc.imorning.common.CommonApp
 import cc.imorning.common.manager.ConnectionManager
 import cc.imorning.common.utils.AvatarUtils
+import com.orhanobut.logger.Logger
 import org.jivesoftware.smack.roster.Roster
 import org.jivesoftware.smackx.vcardtemp.VCardManager
 

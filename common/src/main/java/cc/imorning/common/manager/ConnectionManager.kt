@@ -1,6 +1,7 @@
 package cc.imorning.common.manager
 
 import android.util.Log
+import android.widget.Toast
 import cc.imorning.common.ActivityCollector
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
@@ -19,7 +20,6 @@ object ConnectionManager {
     private const val TAG = "ConnectionManager"
 
     fun isConnectionAuthenticated(connection: XMPPConnection? = CommonApp.getTCPConnection()): Boolean {
-
         if (connection == null || !connection.isConnected || !connection.isAuthenticated) {
             return false
         }
@@ -27,9 +27,7 @@ object ConnectionManager {
     }
 
     @Synchronized
-    fun connect(
-        connection: XMPPTCPConnection
-    ) {
+    fun connect(connection: XMPPTCPConnection = CommonApp.getTCPConnection()) {
         MainScope().launch(Dispatchers.IO) {
             supervisorScope {
                 val connectJob = async(Dispatchers.IO) {
@@ -70,7 +68,7 @@ object ConnectionManager {
 
     @Synchronized
     fun disconnect(connection: XMPPTCPConnection? = CommonApp.getTCPConnection()) {
-        if (connection==null){
+        if (connection == null) {
             return
         }
         if (isConnectionAuthenticated(connection)) {

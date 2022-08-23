@@ -4,6 +4,7 @@ import android.util.Log
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.ResultCode
+import cc.imorning.common.manager.ConnectionManager
 import com.orhanobut.logger.Logger
 import org.jivesoftware.smackx.iqregister.AccountManager
 import org.jxmpp.jid.parts.Localpart
@@ -14,12 +15,9 @@ object RegisterAction {
 
     private val connection = CommonApp.getTCPConnection()
 
-    fun run(
-        nickName: String,
-        account: String,
-        password: String
-    ): ResultCode {
+    fun run(account: String, password: String): ResultCode {
         if (!connection.isConnected) {
+            ConnectionManager.connect()
             return ResultCode.ERROR_NETWORK
         }
         val accountManager = AccountManager.getInstance(connection)
@@ -28,9 +26,7 @@ object RegisterAction {
             if (!accountManager.supportsAccountCreation()) {
                 return ResultCode.ERROR_NOT_SUPPORT_OPERATION
             }
-            val attributes = mutableMapOf<String, String>()
-            attributes["nickname"] = nickName
-            accountManager.createAccount(Localpart.from(account), password, attributes)
+            accountManager.createAccount(Localpart.from(account), password)
             return ResultCode.OK
         } catch (e: Exception) {
             if (BuildConfig.DEBUG) {

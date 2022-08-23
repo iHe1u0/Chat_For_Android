@@ -20,7 +20,6 @@ import cc.imorning.common.constant.ResultCode
 fun RegisterDialog(onDismiss: () -> Unit) {
 
     val context = LocalContext.current
-    var nickName by remember { mutableStateOf("") }
     var account by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var rePassword by remember { mutableStateOf("") }
@@ -32,18 +31,6 @@ fun RegisterDialog(onDismiss: () -> Unit) {
         },
         text = {
             Column {
-                OutlinedTextField(
-                    value = nickName,
-                    onValueChange = { nickName = it },
-                    label = { Text(text = "昵称") },
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_nick),
-                            contentDescription = "昵称"
-                        )
-                    },
-                    singleLine = true,
-                )
                 OutlinedTextField(
                     value = account,
                     onValueChange = { account = it },
@@ -84,15 +71,15 @@ fun RegisterDialog(onDismiss: () -> Unit) {
         },
         confirmButton = {
             TextButton(onClick = {
-                if (nickName.isBlank() || account.isBlank() || password.isBlank()) {
-                    Toast.makeText(context, "请检查必填项是否为空", Toast.LENGTH_LONG).show()
+                if (account.isBlank() || password.isBlank()) {
+                    Toast.makeText(context, "账号或密码不能为空", Toast.LENGTH_LONG).show()
                     return@TextButton
                 }
                 if (password != rePassword) {
                     Toast.makeText(context, "两次输入密码不一致", Toast.LENGTH_LONG).show()
                     return@TextButton
                 }
-                doRegistration(nickName, account, password)
+                doRegistration(account, password)
             }) {
                 Text(text = "注册")
             }
@@ -104,10 +91,10 @@ fun RegisterDialog(onDismiss: () -> Unit) {
         })
 }
 
-fun doRegistration(nickName: String, account: String, password: String) {
+fun doRegistration(account: String, password: String) {
 
     val context = CommonApp.getContext()
-    when (RegisterAction.run(nickName, account, password)) {
+    when (RegisterAction.run(account, password)) {
         ResultCode.OK -> {
             Toast.makeText(context, "注册成功，请返回登录", Toast.LENGTH_LONG).show()
         }
