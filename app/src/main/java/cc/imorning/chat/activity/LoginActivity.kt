@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import cc.imorning.chat.R
 import cc.imorning.chat.compontens.BottomSheetListItem
+import cc.imorning.chat.compontens.RegisterDialog
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.view.ui.ComposeDialogUtils
 import cc.imorning.chat.viewmodel.LoginViewModel
@@ -175,13 +176,15 @@ fun ContentScreen(viewModel: LoginViewModel) {
 @Preview
 @Composable
 fun FloatingActionButton() {
-    var showBuildingDialog by remember { mutableStateOf(false) }
-    if (showBuildingDialog) {
-        ComposeDialogUtils.FunctionalityNotAvailablePopup { showBuildingDialog = false }
+    var showRegisterDialog by remember { mutableStateOf(false) }
+    if (showRegisterDialog) {
+        RegisterDialog(
+            onDismiss = { showRegisterDialog = false }
+        )
     }
     FloatingActionButton(
         onClick = {
-            showBuildingDialog = true
+            showRegisterDialog = true
         },
         modifier = Modifier.padding(8.dp)
     ) {

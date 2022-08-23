@@ -14,12 +14,12 @@ This is IM app for Android based on [Openfire](https://www.igniterealtime.org/pr
 -----------
 * [ ] Design different message type.
 * [ ] Add Chat UI.
-* [ ] Add Chat Funnction.
+* [ ] Add Chat Function.
 * [ ] Add function for showing user's vCard.
 * [ ] Add function for modify user's vCard.
 * [ ] Add scanning and generating QR to add contact.
 * [ ] Add function for feedback.
-* [ ] Show more infomation when shou AboutDialog.
+* [ ] Show more information when shou AboutDialog.
 * [ ] Add function for query contact on server.
 * [ ] Add function for removing a contact.
 * [ ] Add function for adding a contact
