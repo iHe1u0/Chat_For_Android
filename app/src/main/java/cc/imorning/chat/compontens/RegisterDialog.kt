@@ -2,6 +2,7 @@ package cc.imorning.chat.compontens
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Password
@@ -9,6 +10,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import cc.imorning.chat.R
 import cc.imorning.common.CommonApp
@@ -41,7 +45,10 @@ fun RegisterDialog(onDismiss: () -> Unit) {
                             contentDescription = "账号"
                         )
                     },
-                    singleLine = true
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Search
+                    ),
                 )
                 OutlinedTextField(
                     value = password,
@@ -53,7 +60,10 @@ fun RegisterDialog(onDismiss: () -> Unit) {
                             contentDescription = "密码"
                         )
                     },
-                    singleLine = true
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Search
+                    ),
                 )
                 OutlinedTextField(
                     value = rePassword,
@@ -65,7 +75,10 @@ fun RegisterDialog(onDismiss: () -> Unit) {
                             contentDescription = "确认密码"
                         )
                     },
-                    singleLine = true
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Search
+                    ),
                 )
             }
         },
@@ -103,6 +116,9 @@ fun doRegistration(account: String, password: String) {
         }
         ResultCode.ERROR_NETWORK -> {
             Toast.makeText(context, "网络连接失败，请检查网络", Toast.LENGTH_LONG).show()
+        }
+        ResultCode.ERROR_NO_RESPONSE -> {
+            Toast.makeText(context, "服务器未响应，请重启App后尝试", Toast.LENGTH_LONG).show()
         }
         ResultCode.ERROR -> {
             Toast.makeText(context, "未知错误", Toast.LENGTH_LONG).show()

@@ -6,6 +6,8 @@ import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.ResultCode
 import cc.imorning.common.manager.ConnectionManager
 import com.orhanobut.logger.Logger
+import org.jivesoftware.smack.SmackException
+import org.jivesoftware.smack.XMPPException
 import org.jivesoftware.smackx.iqregister.AccountManager
 import org.jxmpp.jid.parts.Localpart
 
@@ -28,7 +30,12 @@ object RegisterAction {
             }
             accountManager.createAccount(Localpart.from(account), password)
             return ResultCode.OK
-        } catch (e: Exception) {
+        } catch (e: XMPPException.XMPPErrorException) {
+            return ResultCode.ERROR_NOT_SUPPORT_OPERATION
+        }catch (e:SmackException.NoResponseException){
+            return ResultCode.ERROR_NO_RESPONSE
+        }
+        catch (e: Exception) {
             if (BuildConfig.DEBUG) {
                 Log.e(TAG, "register new user failed: ${e.localizedMessage}", e)
             }
