@@ -3,14 +3,19 @@ package cc.imorning.chat.monitor
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.work.*
+import cc.imorning.chat.activity.LoginActivity
 import cc.imorning.chat.service.MessageMonitorService
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
 import cc.imorning.common.connection.ReconnectionWorker
 import org.jivesoftware.smack.ConnectionListener
 import org.jivesoftware.smack.XMPPConnection
+import org.jivesoftware.smack.XMPPException
 import org.jivesoftware.smackx.vcardtemp.VCardManager
 
 class ChatConnectionListener : ConnectionListener {
@@ -39,13 +44,26 @@ class ChatConnectionListener : ConnectionListener {
         super.connectionClosed()
     }
 
+    /**
+     * java.net.SocketException: Software caused connection abort >>> Close cause network error
+     * org.jivesoftware.smack.XMPPException$StreamErrorException  >>> Close cause sign in elsewhere
+     */
     override fun connectionClosedOnError(e: Exception?) {
         if (BuildConfig.DEBUG) {
-            Log.w(TAG, "connection closed with error: ${e?.localizedMessage}")
+            Log.e(TAG, "connection closed with error: ${e?.localizedMessage}", e)
         }
         context.stopService(messageMonitor)
         messageMonitor = null
-        reconnect(CommonApp.getContext())
+        if (e is XMPPException.StreamErrorException) {
+            val loginActivity = Intent(context, LoginActivity::class.java)
+            loginActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(loginActivity)
+            Handler(Looper.getMainLooper()).post {
+                Toast.makeText(context, "登录过期，请重新登录", Toast.LENGTH_LONG).show()
+            }
+        } else {
+            reconnect(CommonApp.getContext())
+        }
         super.connectionClosedOnError(e)
     }
 
