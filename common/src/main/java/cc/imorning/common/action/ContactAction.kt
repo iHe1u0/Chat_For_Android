@@ -10,6 +10,7 @@ import cc.imorning.common.utils.NetworkUtils
 import org.jivesoftware.smack.roster.Roster
 import org.jivesoftware.smack.roster.RosterEntry
 import org.jivesoftware.smack.roster.RosterGroup
+import org.jivesoftware.smackx.search.UserSearchManager
 import org.jivesoftware.smackx.vcardtemp.VCardManager
 import org.jivesoftware.smackx.vcardtemp.packet.VCard
 import org.jxmpp.jid.impl.JidCreate
@@ -210,7 +211,30 @@ object ContactAction {
         return false
     }
 
+    /**
+     * get contact's nick name by jid like im@test.com
+     */
     fun getNickName(jidString: String): String? {
         return getContactVCard(jidString)?.nickName
     }
+
+    fun search() {
+        if (ConnectionManager.isConnectionAuthenticated(connection)) {
+            val userSearchManager = UserSearchManager(connection)
+            for (service in userSearchManager.searchServices) {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "search with service: $service")
+                }
+                // val searchForm = userSearchManager.getSearchForm(service)
+                // val answerForm = searchForm.createAnswerForm()
+                // answerForm.setAnswer("userAccount", true)
+                // answerForm.setAnswer("Username", "admin")
+                // val data = userSearchManager.getSearchResults(answerForm, service)
+                // if (data != null) {
+                //     Log.i(TAG, data.toString())
+                // }
+            }
+        }
+    }
+
 }

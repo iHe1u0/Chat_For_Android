@@ -46,9 +46,12 @@ dependencies {
     // Logger
     api "com.orhanobut:logger:2.2.0"
     // Smack
+    api "org.igniterealtime.smack:smack-core:$smack_version"
+    api "org.igniterealtime.smack:smack-extensions:$smack_version"
     api "org.igniterealtime.smack:smack-android-extensions:$smack_version"
     api "org.igniterealtime.smack:smack-experimental:$smack_version"
     api "org.igniterealtime.smack:smack-tcp:$smack_version"
+    api "org.igniterealtime.smack:smack-im:$smack_version"
     // Joda Time
     api "joda-time:joda-time:2.11.0"
 
