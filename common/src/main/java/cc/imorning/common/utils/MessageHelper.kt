@@ -1,12 +1,19 @@
 package cc.imorning.common.utils
 
+import android.util.Log
+import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
 import cc.imorning.common.action.UserAction
 import cc.imorning.common.database.AppDatabase
 import cc.imorning.common.database.table.RecentMessageEntity
+import cc.imorning.common.entity.MessageContent
+import cc.imorning.common.entity.MessageEntity
+import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import org.jivesoftware.smack.chat2.Chat
 import org.jivesoftware.smack.packet.Message
 import org.joda.time.DateTime
+import java.io.File
 
 private const val TAG = "MessageHelper"
 
@@ -41,6 +48,59 @@ object MessageHelper {
 
             }
             else -> {}
+        }
+    }
+
+    /**
+     * build a message entity with data
+     */
+    fun buildMsg(
+        receiver: String,
+        plainText: String = "",
+        picFile: File? = null,
+        audioFile: File? = null,
+        videoFile: File? = null,
+        fileFile: File? = null,
+        action: String? = "",
+    ): String {
+
+        val encodeImage = picFile?.let { Base64Utils.encodeFile(it) }
+        val encodeAudio = audioFile?.let { Base64Utils.encodeFile(it) }
+        val encodeFile = fileFile?.let { Base64Utils.encodeFile(it) }
+        val encodeVideo = videoFile?.let { Base64Utils.encodeFile(it) }
+        val encodeAction = action?.let { Base64Utils.encodeString(it) }
+
+        val messageContent = MessageContent(
+            text = plainText,
+            pic = encodeImage,
+            audio = encodeAudio,
+            video = encodeVideo,
+            file = encodeFile,
+            action = encodeAction
+        )
+        val messageEntity = MessageEntity(
+            sender = connection.user.asUnescapedString(),
+            receiver = receiver,
+            content = messageContent,
+        )
+        return Base64Utils.encodeString(Gson().toJson(messageEntity, MessageEntity::class.java))
+    }
+
+    /**
+     * decode base64 msg to a Message
+     *
+     * @return an MessageEntity if decode success, or null if failed.
+     *
+     */
+    fun decodeMsg(msg: String): MessageEntity? {
+        val sourceString = Base64Utils.decodeString(msg)
+        return try {
+            Gson().fromJson(sourceString, MessageEntity::class.java)
+        } catch (e: JsonSyntaxException) {
+            if (BuildConfig.DEBUG) {
+                Log.e(TAG, "decode msg failed cause: ${e.localizedMessage}")
+            }
+            null
         }
     }
 

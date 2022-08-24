@@ -1,7 +1,6 @@
 package cc.imorning.common.manager
 
 import android.util.Log
-import android.widget.Toast
 import cc.imorning.common.ActivityCollector
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp

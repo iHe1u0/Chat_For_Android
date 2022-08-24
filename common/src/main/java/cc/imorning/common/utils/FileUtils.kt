@@ -1,9 +1,7 @@
 package cc.imorning.common.utils
 
-import android.os.Build
 import android.os.Environment
 import android.util.Log
-import androidx.annotation.RequiresApi
 import cc.imorning.common.CommonApp
 import com.orhanobut.logger.BuildConfig
 import java.io.File
@@ -20,7 +18,7 @@ class FileUtils {
         return context.getExternalFilesDir(null)!!
     }
 
-    fun getCacheDir(): File? {
+    private fun getCacheDir(): File? {
         return if (Environment.isExternalStorageEmulated()) {
             context.externalCacheDir
         } else {
@@ -50,14 +48,27 @@ class FileUtils {
     }
 
     /**
-     * get avatar dir
+     * get avatar cache dir
      */
     private fun getAvatarImagesDir(): String {
-        val dir = getCacheDir()!!.absolutePath.plus("/avatar/")
-        if (!File(dir).exists()) {
-            File(dir).mkdir()
+        val dir = getCacheDir()!!.absolutePath.plus("/avatarCache/")
+        val file = File(dir)
+        if (!file.exists()) {
+            file.mkdir()
         }
         return dir
+    }
+
+    /**
+     * get a file for message file
+     */
+    fun getChatMessageCache(fileName: String? = "file"): File {
+        val dir = getCacheDir()!!.absolutePath.plus("/messageCache")
+        val fileDir = File(dir)
+        if (!fileDir.exists()) {
+            fileDir.mkdir()
+        }
+        return File(fileDir, fileName!!)
     }
 
     companion object {

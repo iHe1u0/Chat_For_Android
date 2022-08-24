@@ -6,6 +6,7 @@ import cc.imorning.common.CommonApp
 import cc.imorning.common.manager.ConnectionManager
 import org.jivesoftware.smack.chat2.ChatManager
 import org.jivesoftware.smack.packet.Message
+import org.jivesoftware.smack.packet.MessageBuilder
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.packet.PresenceBuilder
 import org.jivesoftware.smackx.offline.OfflineMessageManager

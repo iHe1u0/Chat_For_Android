@@ -4,9 +4,11 @@ import android.app.Activity
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
+import android.util.Log
 import cc.imorning.common.constant.ServerConfig
 import cc.imorning.common.database.AppDatabase
 import cc.imorning.common.manager.ConnectionManager
+import cc.imorning.common.utils.MessageHelper
 import cc.imorning.common.utils.NetworkUtils
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger

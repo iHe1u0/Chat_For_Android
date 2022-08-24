@@ -12,7 +12,7 @@ class SearchViewModel : ViewModel() {
 
     private val connection = CommonApp.getTCPConnection()
 
-    private val _key = MutableLiveData<String>("")
+    private val _key = MutableLiveData("")
     val key: LiveData<String>
         get() = _key
 
