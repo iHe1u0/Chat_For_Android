@@ -17,6 +17,5 @@
 
     <string name="desc_contact_item_avatar">用户头像</string>
     <string name="desc_add_contact">添加联系人</string>
-    <string name="members">%d 个成员</string>
     <string name="new_message">新消息</string>
 </resources>

@@ -3,7 +3,7 @@ package cc.imorning.common.utils
 import android.util.Log
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
-import cc.imorning.common.action.ContactAction
+import cc.imorning.common.action.UserAction
 import cc.imorning.common.manager.ConnectionManager
 import org.jivesoftware.smack.XMPPConnection
 import java.io.IOException
@@ -24,7 +24,7 @@ class AvatarUtils private constructor() {
             }
             return
         }
-        val vCard = ContactAction.getContactVCard(jid)
+        val vCard = UserAction.getContactVCard(jid)
         if (vCard != null) {
             val avatarByte = vCard.avatar
             if (avatarByte != null) {

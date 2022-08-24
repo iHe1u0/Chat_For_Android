@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import cc.imorning.chat.activity.ChatActivity
 import cc.imorning.chat.model.Contact
+import cc.imorning.common.constant.ChatType
 import cc.imorning.common.constant.Config
 import cc.imorning.common.utils.AvatarUtils
 
@@ -37,7 +38,7 @@ fun ContactItem(
             val chatActivity = Intent(context, ChatActivity::class.java)
             chatActivity.action = Config.Intent.Action.START_CHAT_FROM_APP
             chatActivity.putExtra(Config.Intent.Key.START_CHAT_JID, jidString)
-            chatActivity.putExtra(Config.Intent.Key.START_CHAT_TYPE, Config.ChatType.Single)
+            chatActivity.putExtra(Config.Intent.Key.START_CHAT_TYPE, ChatType.Type.Single)
             context.startActivity(chatActivity)
         },
         modifier = Modifier.fillMaxWidth()

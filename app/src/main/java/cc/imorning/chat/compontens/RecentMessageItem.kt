@@ -13,6 +13,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cc.imorning.chat.activity.ChatActivity
 import cc.imorning.chat.model.RecentMessage
+import cc.imorning.common.constant.ChatType
 import cc.imorning.common.constant.Config
 import cc.imorning.common.utils.AvatarUtils
 
@@ -27,7 +28,7 @@ fun RecentMessageItem(message: RecentMessage) {
                 val chatActivity = Intent(context, ChatActivity::class.java)
                 chatActivity.action = Config.Intent.Action.START_CHAT_FROM_APP
                 chatActivity.putExtra(Config.Intent.Key.START_CHAT_JID, message.sender)
-                chatActivity.putExtra(Config.Intent.Key.START_CHAT_TYPE, Config.ChatType.Single)
+                chatActivity.putExtra(Config.Intent.Key.START_CHAT_TYPE, ChatType.Type.Single)
                 context.startActivity(chatActivity)
             },
         horizontalArrangement = Arrangement.Start,

@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cc.imorning.common.CommonApp
-import cc.imorning.common.action.ContactAction
+import cc.imorning.common.action.UserAction
 import kotlinx.coroutines.launch
 
 class SearchViewModel : ViewModel() {
@@ -24,7 +24,7 @@ class SearchViewModel : ViewModel() {
 
     fun search() {
         viewModelScope.launch {
-            ContactAction.search()
+            UserAction.search()
         }
     }
 

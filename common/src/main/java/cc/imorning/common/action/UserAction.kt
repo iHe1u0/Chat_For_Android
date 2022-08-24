@@ -18,7 +18,7 @@ import org.jxmpp.jid.impl.JidCreate
 
 private const val TAG = "ContactAction"
 
-object ContactAction {
+object UserAction {
 
     private val connection = CommonApp.getTCPConnection()
     private val databaseDao = AppDatabase.getInstance().appDatabaseDao()

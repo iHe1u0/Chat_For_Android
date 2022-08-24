@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import cc.imorning.chat.model.Contact
-import cc.imorning.common.action.ContactAction
+import cc.imorning.common.action.UserAction
 import cc.imorning.common.database.AppDatabase
 import cc.imorning.common.database.dao.AppDatabaseDao
 import cc.imorning.common.database.table.UserInfoEntity
@@ -54,7 +54,7 @@ class ContactViewModel @Inject constructor(
         }
         viewModelScope.launch(Dispatchers.IO) {
             _isRefreshing.emit(true)
-            val members = ContactAction.getContactList()
+            val members = UserAction.getContactList()
             val contactList = ArrayList<Contact>()
             if ((members != null) && members.isNotEmpty()) {
                 for (member in members) {

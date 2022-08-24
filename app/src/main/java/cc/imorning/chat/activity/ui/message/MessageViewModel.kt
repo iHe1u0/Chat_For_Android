@@ -35,6 +35,7 @@ class MessageViewModel @Inject constructor(
 
     private val _avatarPath = MutableLiveData("")
     val avatarPath: MutableLiveData<String> = _avatarPath
+
     private val _status = MutableLiveData("在线")
     val status: MutableLiveData<String> = _status
 

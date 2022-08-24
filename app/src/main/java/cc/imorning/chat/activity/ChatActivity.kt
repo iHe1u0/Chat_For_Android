@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,18 +16,22 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cc.imorning.chat.BuildConfig
-import cc.imorning.chat.R
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.view.ui.ComposeDialogUtils
+import cc.imorning.chat.viewmodel.ChatViewModel
+import cc.imorning.chat.viewmodel.ChatViewModelFactory
 import cc.imorning.common.CommonApp
+import cc.imorning.common.action.UserAction
+import cc.imorning.common.constant.ChatType
 import cc.imorning.common.constant.Config
 import cc.imorning.common.manager.ConnectionManager
 
@@ -35,19 +40,20 @@ private const val TAG = "ChatActivity"
 
 class ChatActivity : BaseActivity() {
 
-    private var chatJid: String? = null
+    private var chatUserJid: String = ""
+    private var chatType: ChatType.Type = ChatType.Type.Unknown
     private val connection = CommonApp.getTCPConnection()
 
-//    private val viewModel: ChatViewModel by lazy {
-//        ViewModelProvider(this)[ChatViewModel::class.java]
-//    }
+    private val viewModel: ChatViewModel by viewModels {
+        ChatViewModelFactory(CommonApp().appDatabase.appDatabaseDao())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         handleIntent(intent)
         setContent {
             ChatTheme {
-                ChatScreen()
+                ChatScreen(viewModel, chatUserJid, chatType)
             }
         }
     }
@@ -62,10 +68,17 @@ class ChatActivity : BaseActivity() {
                         startActivity(loginActivity)
                         this.finish()
                     }
-                    chatJid = intent.data?.getQueryParameter(Config.Intent.Key.START_CHAT_JID)
+                    chatUserJid =
+                        intent.data?.getQueryParameter(Config.Intent.Key.START_CHAT_JID).toString()
+                    chatType = ChatType.from(
+                        intent.data?.getQueryParameter(Config.Intent.Key.START_CHAT_TYPE).toString()
+                    )
                 }
                 Config.Intent.Action.START_CHAT_FROM_APP -> {
-                    chatJid = intent.getStringExtra(Config.Intent.Key.START_CHAT_JID).toString()
+                    chatUserJid = intent.getStringExtra(Config.Intent.Key.START_CHAT_JID).toString()
+                    chatType = ChatType.from(
+                        intent.getStringExtra(Config.Intent.Key.START_CHAT_JID).toString()
+                    )
                 }
                 else -> {
                     if (BuildConfig.DEBUG) {
@@ -75,49 +88,55 @@ class ChatActivity : BaseActivity() {
                 }
             }
         }
-        if (chatJid == null) {
+        if (chatUserJid.isEmpty()) {
             if (BuildConfig.DEBUG) {
                 Log.w(TAG, "chat user name is null or empty")
                 return
             }
-            Toast.makeText(this, "发起消息失败，目标用户: $chatJid", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "发起会话失败", Toast.LENGTH_LONG).show()
             this.finish()
             return
         }
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "start with jid: $chatJid")
+            Log.d(TAG, "start with jid: $chatUserJid")
         }
     }
 
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
-fun ChatScreen() {
+fun ChatScreen(viewModel: ChatViewModel, chatUserJid: String, chatType: ChatType.Type) {
     // Just for dev
     var showBuildingDialog by remember { mutableStateOf(false) }
     if (showBuildingDialog) {
         ComposeDialogUtils.FunctionalityNotAvailablePopup { showBuildingDialog = false }
     }
-    val contactName = "iMorning"
-    val member = 2022
+    val user = viewModel.userOrGroupName.observeAsState()
+    val status = viewModel.userOrGroupStatus.observeAsState()
+
+    // set user jid and chat type
+    viewModel.setChatType(chatType)
+    viewModel.setChatUserId(chatUserJid)
+
     Scaffold(
         topBar = {
             ChatAppBar(
                 modifier = Modifier.fillMaxWidth(),
                 title = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        // Channel name
                         Text(
-                            text = contactName,
-                            style = MaterialTheme.typography.titleMedium
+                            text = "${UserAction.getNickName(user.value.orEmpty())}",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
-                        // Number of members
                         Text(
-                            text = stringResource(id = R.string.members, member),
+                            text = "${status.value}",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 },
