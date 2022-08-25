@@ -3,7 +3,6 @@ package cc.imorning.chat.activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -32,7 +31,6 @@ import cc.imorning.chat.compontens.RegisterDialog
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.view.ui.ComposeDialogUtils
 import cc.imorning.chat.viewmodel.LoginViewModel
-import cc.imorning.common.utils.MessageHelper
 
 private const val TAG = "LoginActivity"
 
@@ -83,7 +81,7 @@ fun ContentScreen(viewModel: LoginViewModel) {
     val message = viewModel.getErrorMessage().observeAsState()
     val needStartActivity = viewModel.needStartActivity().observeAsState()
     if (shouldShowWaitingDialog.value == true) {
-        ComposeDialogUtils.LoginAlertDialog()
+        ComposeDialogUtils.WaitingDialog(title = "登陆中")
     }
     if (shouldShowErrorDialog.value == true) {
         ComposeDialogUtils.InfoAlertDialog(message = message.value!!) {

@@ -5,6 +5,9 @@ import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
 import cc.imorning.common.action.UserAction
 import cc.imorning.common.manager.ConnectionManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import org.jivesoftware.smack.XMPPConnection
 import java.io.IOException
 
@@ -12,50 +15,62 @@ class AvatarUtils private constructor() {
 
     private val connection: XMPPConnection = CommonApp.getTCPConnection()
 
-
+    /**
+     * did jid has avatar cache
+     *
+     * @return true if cached or false for any other case.
+     */
     fun hasAvatarCache(jid: String): Boolean {
         return FileUtils.instance.isFileExist(FileUtils.instance.getAvatarCachePath(jid).absolutePath)
     }
 
-    fun saveAvatar(jid: String) {
+    /**
+     * try to get and save avatar for user @param jid
+     */
+    fun saveAvatar(jidString: String) {
         if (!ConnectionManager.isConnectionAuthenticated(connection)) {
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "connection is not authenticated")
             }
             return
         }
-        val vCard = UserAction.getContactVCard(jid)
+        val vCard = UserAction.getContactVCard(jidString)
         if (vCard != null) {
             val avatarByte = vCard.avatar
             if (avatarByte != null) {
-                saveContactAvatar(jid = jid, avatarByte = avatarByte)
+                saveContactAvatar(jidString = jidString, avatarByte = avatarByte)
             }
         } else {
             if (BuildConfig.DEBUG) {
-                Log.w(TAG, "avatar is null for $jid")
+                Log.w(TAG, "avatar is null for $jidString")
             }
         }
     }
 
     fun getAvatarPath(jidString: String): String {
-        if (BuildConfig.DEBUG){
+        if (BuildConfig.DEBUG) {
             Log.d(TAG, "get avatar for [$jidString]")
         }
         if (ConnectionManager.isConnectionAuthenticated(connection)) {
+            if (!hasAvatarCache(jidString)) {
+                saveAvatar(jidString)
+            }
             return FileUtils.instance.getAvatarCachePath(jidString).absolutePath
         }
         return getOnlineAvatar(jidString)
     }
 
-    private fun saveContactAvatar(jid: String, avatarByte: ByteArray) {
-        val localCache = FileUtils.instance.getAvatarCachePath(jid)
-        if (localCache.exists()) {
-            localCache.delete()
-        }
-        try {
-            localCache.writeBytes(avatarByte)
-        } catch (e: IOException) {
-            Log.e(TAG, "saveContactAvatar failed", e)
+    private fun saveContactAvatar(jidString: String, avatarByte: ByteArray) {
+        val localCache = FileUtils.instance.getAvatarCachePath(jidString)
+        MainScope().launch(Dispatchers.IO) {
+            if (localCache.exists()) {
+                localCache.delete()
+            }
+            try {
+                localCache.writeBytes(avatarByte)
+            } catch (e: IOException) {
+                Log.e(TAG, "saveContactAvatar failed", e)
+            }
         }
     }
 

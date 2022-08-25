@@ -13,6 +13,7 @@ import org.jivesoftware.smack.roster.RosterGroup
 import org.jivesoftware.smackx.search.UserSearchManager
 import org.jivesoftware.smackx.vcardtemp.VCardManager
 import org.jivesoftware.smackx.vcardtemp.packet.VCard
+import org.jivesoftware.smackx.xdata.form.Form
 import org.jxmpp.jid.impl.JidCreate
 
 
@@ -218,23 +219,68 @@ object UserAction {
         return getContactVCard(jidString)?.nickName
     }
 
-    fun search() {
+    /**
+     * Search user by key
+     */
+    fun search(key: String?): MutableList<SearchResult>? {
+        if (key == null) {
+            return null
+        }
         if (ConnectionManager.isConnectionAuthenticated(connection)) {
             val userSearchManager = UserSearchManager(connection)
             for (service in userSearchManager.searchServices) {
-                if (BuildConfig.DEBUG) {
-                    Log.d(TAG, "search with service: $service")
+                try {
+                    val searchDataForm = userSearchManager.getSearchForm(service)
+                    val searchForm = Form(searchDataForm)
+                    val requestForm = searchForm.fillableForm
+                    if (BuildConfig.DEBUG) {
+                        val supportName = StringBuilder()
+                        for (supportFieldName in searchDataForm.fields) {
+                            supportName.append("${supportFieldName.fieldName} ")
+                        }
+                        Log.d(TAG, "service [$service] support [$supportName]")
+                    }
+                    requestForm.setAnswer("search", key)
+                    requestForm.setAnswer("Username", true)
+                    requestForm.setAnswer("Name", true)
+                    requestForm.setAnswer("Email", true)
+                    val reportedData =
+                        userSearchManager.getSearchResults(requestForm.dataFormToSubmit, service)
+                    if (reportedData != null) {
+                        val results: MutableList<SearchResult> = mutableListOf()
+                        for (row in reportedData.rows) {
+                            results.add(
+                                SearchResult(
+                                    jid = row.getValues("jid")[0].toString(),
+                                    username = row.getValues("Username")[0].toString(),
+                                    name = row.getValues("Name")[0].toString(),
+                                    email = row.getValues("Email")[0].toString()
+                                )
+                            )
+                        }
+                        return results
+                    }
+                } catch (e: Exception) {
+                    if (BuildConfig.DEBUG) {
+                        Log.w(TAG, "search user failed cause ${e.localizedMessage}")
+                    }
+                    continue
                 }
-                // val searchForm = userSearchManager.getSearchForm(service)
-                // val answerForm = searchForm.createAnswerForm()
-                // answerForm.setAnswer("userAccount", true)
-                // answerForm.setAnswer("Username", "admin")
-                // val data = userSearchManager.getSearchResults(answerForm, service)
-                // if (data != null) {
-                //     Log.i(TAG, data.toString())
-                // }
             }
         }
+        return null
     }
-
 }
+
+/**
+ * This class used to save search result from server
+ *
+ * @see <a href="https://xmpp.org/extensions/xep-0055.html#registrar-formtypes">Field Standardization</a>
+ *
+ */
+data class SearchResult(
+    val jid: String,
+    val username: String,
+    val name: String?,
+    val email: String?
+)

@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -27,7 +28,7 @@ private const val TAG = "ComposeDialogUtils"
 object ComposeDialogUtils {
 
     @Composable
-    fun LoginAlertDialog() {
+    fun WaitingDialog(title: String) {
         Dialog(
             onDismissRequest = {},
             properties = DialogProperties(
@@ -45,10 +46,14 @@ object ComposeDialogUtils {
                     )
             ) {
                 Column {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
                     Text(
-                        text = "登录中",
-                        modifier = Modifier.padding(top = 8.dp)
+                        text = title,
+                        modifier = Modifier.padding(top = 8.dp),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
