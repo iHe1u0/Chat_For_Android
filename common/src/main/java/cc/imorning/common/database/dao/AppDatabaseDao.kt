@@ -13,24 +13,24 @@ interface AppDatabaseDao {
     fun getAllContact(): LiveData<List<UserInfoEntity>>
 
     @Query("select * from ${DatabaseConstant.TABLE_RECENT_MESSAGE}")
-    fun getAllRecentMessages(): List<RecentMessageEntity>
+    suspend fun getAllRecentMessages(): List<RecentMessageEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertContact(userInfoEntity: UserInfoEntity)
+    suspend fun insertContact(userInfoEntity: UserInfoEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertRecentMessage(recentMessage: RecentMessageEntity)
+    suspend fun insertRecentMessage(recentMessage: RecentMessageEntity)
 
     @Delete
-    fun deleteContact(userInfoEntity: UserInfoEntity)
+    suspend fun deleteContact(userInfoEntity: UserInfoEntity)
 
     @Update
-    fun updateContact(userInfoEntity: UserInfoEntity)
+    suspend fun updateContact(userInfoEntity: UserInfoEntity)
 
     @Query("delete from ${DatabaseConstant.TABLE_CONTACT_INFO}")
-    fun deleteAllContact()
+    suspend fun deleteAllContact()
 
     @Query("delete from ${DatabaseConstant.TABLE_RECENT_MESSAGE}")
-    fun deleteAllRecentMessage()
+    suspend fun deleteAllRecentMessage()
 
 }

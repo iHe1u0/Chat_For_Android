@@ -20,6 +20,10 @@ class SearchViewModel : ViewModel() {
     val key: LiveData<String>
         get() = _key
 
+    private val _selectedUserJidString = MutableLiveData("")
+    val selectedUserJidString: LiveData<String>
+        get() = _selectedUserJidString
+
     private val _results = MutableLiveData<MutableList<SearchResult>?>()
     val result: LiveData<MutableList<SearchResult>?>
         get() = _results
@@ -30,6 +34,10 @@ class SearchViewModel : ViewModel() {
     private val _shouldShowWaitingDialog = MutableLiveData(false)
     val shouldShowWaitingDialog: LiveData<Boolean>
         get() = _shouldShowWaitingDialog
+
+    private val _shouldShowVCardDialog = MutableLiveData(false)
+    val shouldShowVCardDialog: LiveData<Boolean>
+        get() = _shouldShowVCardDialog
 
     fun setKey(key: String) {
         _key.value = key
@@ -49,6 +57,15 @@ class SearchViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    fun showVCard(user: SearchResult) {
+        _selectedUserJidString.value = user.jid
+        _shouldShowVCardDialog.value = true
+    }
+
+    fun closeVCard() {
+        _shouldShowVCardDialog.value = false
     }
 
     companion object {

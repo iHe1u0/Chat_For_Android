@@ -9,12 +9,8 @@ import androidx.compose.material.icons.filled.Password
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import cc.imorning.chat.R
 import cc.imorning.common.CommonApp
 import cc.imorning.common.action.account.RegisterAction
 import cc.imorning.common.constant.ResultCode
@@ -88,6 +84,10 @@ fun RegisterDialog(onDismiss: () -> Unit) {
                     Toast.makeText(context, "账号或密码不能为空", Toast.LENGTH_LONG).show()
                     return@TextButton
                 }
+                if (account.contains("@")) {
+                    Toast.makeText(context, "账号不能含有@", Toast.LENGTH_LONG).show()
+                    return@TextButton
+                }
                 if (password != rePassword) {
                     Toast.makeText(context, "两次输入密码不一致", Toast.LENGTH_LONG).show()
                     return@TextButton
@@ -109,7 +109,7 @@ fun doRegistration(account: String, password: String) {
     val context = CommonApp.getContext()
     when (RegisterAction.run(account, password)) {
         ResultCode.OK -> {
-            Toast.makeText(context, "注册成功，请返回登录", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "账号[$account]注册成功，请返回登录", Toast.LENGTH_LONG).show()
         }
         ResultCode.ERROR_NOT_SUPPORT_OPERATION -> {
             Toast.makeText(context, "当前禁止新用户注册", Toast.LENGTH_LONG).show()

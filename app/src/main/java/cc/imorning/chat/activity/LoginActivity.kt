@@ -81,7 +81,7 @@ fun ContentScreen(viewModel: LoginViewModel) {
     val message = viewModel.getErrorMessage().observeAsState()
     val needStartActivity = viewModel.needStartActivity().observeAsState()
     if (shouldShowWaitingDialog.value == true) {
-        ComposeDialogUtils.WaitingDialog(title = "登陆中")
+        ComposeDialogUtils.ShowWaitingDialog(title = "登录中")
     }
     if (shouldShowErrorDialog.value == true) {
         ComposeDialogUtils.InfoAlertDialog(message = message.value!!) {

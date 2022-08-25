@@ -10,6 +10,9 @@ import cc.imorning.common.entity.MessageContent
 import cc.imorning.common.entity.MessageEntity
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import org.jivesoftware.smack.chat2.Chat
 import org.jivesoftware.smack.packet.Message
 import org.joda.time.DateTime
@@ -118,7 +121,7 @@ object MessageHelper {
             lastMessage = message.body,
             lastMessageTime = dateTime,
         )
-        databaseDao.insertRecentMessage(recentMessage)
+        MainScope().launch(Dispatchers.IO) { databaseDao.insertRecentMessage(recentMessage) }
     }
 
     private fun processGroupChatMessage(message: Message) {

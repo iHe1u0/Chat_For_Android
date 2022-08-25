@@ -215,8 +215,12 @@ object UserAction {
     /**
      * get contact's nick name by jid like im@test.com
      */
-    fun getNickName(jidString: String): String? {
-        return getContactVCard(jidString)?.nickName
+    fun getNickName(jidString: String): String {
+        val vCard = getContactVCard(jidString)
+        if (vCard == null || vCard.nickName == null) {
+            return jidString.split("@")[0]
+        }
+        return vCard.nickName
     }
 
     /**

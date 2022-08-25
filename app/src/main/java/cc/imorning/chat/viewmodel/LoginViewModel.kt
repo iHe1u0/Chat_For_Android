@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.Config
-import cc.imorning.common.utils.AvatarUtils
 import cc.imorning.common.utils.NetworkUtils
 import cc.imorning.common.utils.SessionManager
 import kotlinx.coroutines.Dispatchers
@@ -157,13 +156,14 @@ class LoginViewModel : ViewModel() {
                 }
             } else {
                 updateLoginStatus(isNeedWaiting = false, isError = false, message = "用户已在线")
+                withContext(Dispatchers.Main) { needStartActivity.value = true }
             }
         }
     }
 
     private fun updateLoginStatus(isNeedWaiting: Boolean, isError: Boolean, message: String = "") {
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "updateLoginStatus: $isNeedWaiting $isError $message")
+            Log.d(TAG, "update login status: $isNeedWaiting $isError $message")
         }
         MainScope().launch(Dispatchers.Main) {
             shouldShowWaiting.value = isNeedWaiting

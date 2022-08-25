@@ -74,10 +74,17 @@ fun ContentScreen(viewModel: SearchViewModel) {
 
     val context = LocalContext.current
     val key = viewModel.key.observeAsState()
+    val selectedUser = viewModel.selectedUserJidString.observeAsState()
     val userList = viewModel.result.observeAsState()
-    val showDialog = viewModel.shouldShowWaitingDialog.observeAsState()
-    if (showDialog.value == true) {
-        ComposeDialogUtils.WaitingDialog(title = "搜索 [${key.value}]")
+    val showWaitingDialog = viewModel.shouldShowWaitingDialog.observeAsState()
+    if (showWaitingDialog.value == true) {
+        ComposeDialogUtils.ShowWaitingDialog(title = "搜索 [${key.value}]")
+    }
+    val shouldShowVCard = viewModel.shouldShowVCardDialog.observeAsState()
+    if (shouldShowVCard.value == true && !selectedUser.value.isNullOrBlank()) {
+        ComposeDialogUtils.ShowVCard(jidString = selectedUser.value!!) {
+            viewModel.closeVCard()
+        }
     }
     Column(modifier = Modifier.fillMaxWidth()) {
         OutlinedTextField(
@@ -145,7 +152,9 @@ fun ContentScreen(viewModel: SearchViewModel) {
                             .clip(RoundedCornerShape(4.dp))
                             .background(Color.Green.copy(0.1f))
                             .animateItemPlacement()
-                            .clickable { }
+                            .clickable {
+                                viewModel.showVCard(user)
+                            }
                         ) {
                             Avatar(
                                 avatarPath = AvatarUtils.instance.getAvatarPath(user.jid)
