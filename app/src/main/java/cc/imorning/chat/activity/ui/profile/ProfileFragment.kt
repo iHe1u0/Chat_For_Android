@@ -6,9 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
@@ -25,15 +24,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import cc.imorning.chat.App
 import cc.imorning.chat.R
 import cc.imorning.chat.compontens.Avatar
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.view.ui.ComposeDialogUtils
-import cc.imorning.common.CommonApp
 
 private const val TAG = "ProfileFragment"
 
@@ -76,9 +74,6 @@ class ProfileFragment : Fragment() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(
-    showBackground = true
-)
 @Composable
 fun TopBar() {
     CenterAlignedTopAppBar(
@@ -95,14 +90,15 @@ fun TopBar() {
 fun ProfileScreen(profileViewModel: ProfileViewModel) {
     val context = LocalContext.current
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
 
         val avatarPath = profileViewModel.avatarPath.observeAsState().value
         val nickName = profileViewModel.nickname.observeAsState()
         val phoneNumber = profileViewModel.phoneNumber.observeAsState()
         val jidString = profileViewModel.jidString.observeAsState()
-        val status = profileViewModel.status.observeAsState()
 
         var showBuildingDialog by remember { mutableStateOf(false) }
         if (showBuildingDialog) {
@@ -153,93 +149,71 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                 )
             }
         }
-        Text(
-            text = "${status.value}",
-            modifier = Modifier.fillMaxWidth(),
-            style = MaterialTheme.typography.titleSmall,
-            textAlign = TextAlign.Center
-        )
+//        Text(
+//            text = "${status.value}",
+//            modifier = Modifier.fillMaxWidth(),
+//            style = MaterialTheme.typography.titleSmall,
+//            textAlign = TextAlign.Center
+//        )
         Divider(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp)
-                .height(2.dp)
-                .background(color = Color.Cyan)
+                .height(12.dp)
+                .background(color = Color.Blue.copy(0.04f))
         )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start,
+        MenuItem(
+            icon = R.drawable.ic_code,
+            title = "关于",
+            action = {
+                showAboutDialog = true
+            }
+        )
+        MenuItem(
+            icon = R.drawable.ic_bug_report,
+            title = "反馈问题",
+            action = {
+                showBuildingDialog = true
+            }
+        )
+        MenuItem(
+            icon = R.drawable.ic_exit_to_app,
+            title = stringResource(id = R.string.close),
+            action = {
+                App.exitApp(0)
+            }
+        )
+    }
+}
+
+@Composable
+fun MenuItem(
+    @DrawableRes icon: Int,
+    title: String,
+    action: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 8.dp, top = 8.dp)
+            .clickable { /*CommonApp.exitApp(0)*/ action() }
+    ) {
+        Image(
+            painter = painterResource(id = icon),
+            contentDescription = title,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, top = 8.dp)
-                .clickable { showAboutDialog = true }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_code),
-                contentDescription = "关于",
-                modifier = Modifier
-                    .size(36.dp, 36.dp)
-                    .background(
-                        color = Color.Blue.copy(alpha = 0.12f),
-                        shape = RoundedCornerShape(36.dp)
-                    )
-            )
-            Text(
-                text = "关于",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(start = 12.dp),
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, top = 8.dp)
-                .clickable { showBuildingDialog = true }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_bug_report),
-                contentDescription = "报告问题",
-                modifier = Modifier
-                    .size(36.dp, 36.dp)
-                    .background(
-                        color = Color.Blue.copy(alpha = 0.12f),
-                        shape = RoundedCornerShape(36.dp)
-                    )
-            )
-            Text(
-                text = "报告问题",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(start = 12.dp),
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, top = 8.dp)
-                .clickable { CommonApp.exitApp(0) }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_exit_to_app),
-                contentDescription = "退出",
-                modifier = Modifier
-                    .size(36.dp, 36.dp)
-                    .background(
-                        color = Color.Blue.copy(alpha = 0.12f),
-                        shape = RoundedCornerShape(36.dp)
-                    )
-            )
-            Text(
-                text = "退出",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(start = 12.dp),
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
+                .size(36.dp, 36.dp)
+                .background(
+                    color = Color.Blue.copy(alpha = 0.12f),
+                    shape = RoundedCornerShape(36.dp)
+                )
+        )
+        Text(
+            text = title,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(start = 12.dp),
+            style = MaterialTheme.typography.titleMedium
+        )
     }
 }

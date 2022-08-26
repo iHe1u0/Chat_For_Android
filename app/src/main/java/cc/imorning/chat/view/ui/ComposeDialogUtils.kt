@@ -144,6 +144,9 @@ object ComposeDialogUtils {
         val bitmap = QrUtils.createQRImage(content = data, widthPix = 144, heightPix = 144)
         AlertDialog(
             onDismissRequest = onDismiss,
+            title = {
+                Text(text = "扫一扫添加好友")
+            },
             text = {
                 Box(
                     modifier = Modifier.fillMaxWidth(),
