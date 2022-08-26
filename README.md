@@ -14,7 +14,7 @@ This is IM app for Android based on [Openfire](https://www.igniterealtime.org/pr
 ## TODO List
 -----------
 * [ ] Design different message type.
-* [ ] Add Chat UI.
+* [x] Add Chat UI.
 * [ ] Add Chat Function.
 * [x] Function for create a user.
 * [ ] Remove a contact from server.

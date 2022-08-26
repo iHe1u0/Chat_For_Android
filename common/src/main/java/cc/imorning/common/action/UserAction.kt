@@ -17,7 +17,7 @@ import org.jivesoftware.smackx.xdata.form.Form
 import org.jxmpp.jid.impl.JidCreate
 
 
-private const val TAG = "ContactAction"
+private const val TAG = "UserAction"
 
 object UserAction {
 
@@ -149,7 +149,9 @@ object UserAction {
      * Get VCard information
      */
     fun getContactVCard(jidString: String): VCard? {
-        if (!ConnectionManager.isConnectionAuthenticated(connection)) {
+        if (!ConnectionManager.isConnectionAuthenticated(connection) ||
+            jidString.isEmpty()
+        ) {
             return null
         }
         try {
@@ -220,7 +222,7 @@ object UserAction {
         if (vCard == null || vCard.nickName == null) {
             return jidString.split("@")[0]
         }
-        return vCard.nickName
+        return vCard.nickName.orEmpty()
     }
 
     /**
