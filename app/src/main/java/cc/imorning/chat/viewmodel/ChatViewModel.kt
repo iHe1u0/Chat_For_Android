@@ -55,7 +55,7 @@ class ChatViewModel @Inject constructor(
         _chatUserId.value = userJidString
     }
 
-    fun getUserOrGroupName(): String? {
+    fun getUserOrGroupName(): String {
         if (_chatUserId.value == null || _chatUserId.value.isNullOrEmpty()) {
             return ""
         }

@@ -24,11 +24,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.AlternateEmail
+import androidx.compose.material.icons.outlined.InsertPhoto
+import androidx.compose.material.icons.outlined.Mood
+import androidx.compose.material.icons.outlined.RecordVoiceOver
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -38,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.FirstBaseline
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.SemanticsPropertyReceiver
@@ -56,12 +61,10 @@ import cc.imorning.chat.view.ui.ComposeDialogUtils.FunctionalityNotAvailablePopu
 
 enum class InputSelector {
     NONE,
-    MAP,
     DM,
     EMOJI,
-    AUDIO,
+    Record,
     PICTURE,
-    FILE
 }
 
 enum class EmojiStickerSelector {
@@ -75,7 +78,7 @@ fun UserInputPreview() {
     UserInput(onMessageSent = {})
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun UserInput(
     onMessageSent: (String) -> Unit,
@@ -95,6 +98,9 @@ fun UserInput(
     // Used to decide if the keyboard should be shown
     var textFieldFocusState by remember { mutableStateOf(false) }
 
+    // Hide IME
+    val keyboard = LocalSoftwareKeyboardController.current
+
     Surface(tonalElevation = 2.dp) {
         Column(modifier = modifier) {
             UserInputText(
@@ -113,7 +119,10 @@ fun UserInput(
                 focusState = textFieldFocusState
             )
             UserInputSelector(
-                onSelectorChange = { currentInputSelector = it },
+                onSelectorChange = {
+                    currentInputSelector = it
+                    keyboard?.hide()
+                },
                 sendMessageEnabled = textState.text.isNotBlank(),
                 onMessageSent = {
                     onMessageSent(textState.text)
@@ -170,9 +179,7 @@ private fun SelectorExpanded(
             InputSelector.EMOJI -> EmojiSelector(onTextAdded, focusRequester)
             InputSelector.DM -> NotAvailablePopup(onCloseRequested)
             InputSelector.PICTURE -> FunctionalityNotAvailablePanel()
-            InputSelector.MAP -> FunctionalityNotAvailablePanel()
-            InputSelector.AUDIO -> FunctionalityNotAvailablePanel()
-            InputSelector.FILE -> FunctionalityNotAvailablePanel()
+            InputSelector.Record -> FunctionalityNotAvailablePanel()
             else -> {
                 throw NotImplementedError()
             }
@@ -236,9 +243,9 @@ private fun UserInputSelector(
             description = "@"
         )
         InputSelectorButton(
-            onClick = { onSelectorChange(InputSelector.AUDIO) },
-            icon = Icons.Outlined.AudioFile,
-            selected = currentInputSelector == InputSelector.AUDIO,
+            onClick = { onSelectorChange(InputSelector.Record) },
+            icon = Icons.Outlined.RecordVoiceOver,
+            selected = currentInputSelector == InputSelector.Record,
             description = "@"
         )
         InputSelectorButton(
@@ -246,18 +253,6 @@ private fun UserInputSelector(
             icon = Icons.Outlined.InsertPhoto,
             selected = currentInputSelector == InputSelector.PICTURE,
             description = "图片消息"
-        )
-        InputSelectorButton(
-            onClick = { onSelectorChange(InputSelector.MAP) },
-            icon = Icons.Outlined.Place,
-            selected = currentInputSelector == InputSelector.MAP,
-            description = "发送定位"
-        )
-        InputSelectorButton(
-            onClick = { onSelectorChange(InputSelector.FILE) },
-            icon = Icons.Outlined.FileUpload,
-            selected = currentInputSelector == InputSelector.FILE,
-            description = "发送定位"
         )
 
         val border = if (!sendMessageEnabled) {
@@ -382,7 +377,7 @@ private fun UserInputText(
                         keyboardType = keyboardType,
                         imeAction = ImeAction.Send
                     ),
-                    maxLines = 1,
+                    maxLines = 2,
                     cursorBrush = SolidColor(LocalContentColor.current),
                     textStyle = LocalTextStyle.current.copy(color = LocalContentColor.current)
                 )
@@ -503,7 +498,7 @@ fun EmojiTable(
     }
 }
 
-private const val EMOJI_COLUMNS = 10
+private const val EMOJI_COLUMNS = 9
 
 private val emojis = listOf(
     "\ud83d\ude00", // Grinning Face

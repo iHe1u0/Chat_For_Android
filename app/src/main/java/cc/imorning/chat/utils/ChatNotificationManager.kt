@@ -31,7 +31,7 @@ class ChatNotificationManager private constructor(val context: Context) {
         const val CHANNEL_NEW_MESSAGES_ID = 1124
         private const val CHANNEL_NEW_MESSAGES = "$CHANNEL_NEW_MESSAGES_ID"
 
-        const val CHANNEL_APP_RUNNING_ID = 1124
+        const val CHANNEL_APP_RUNNING_ID = 1809
         private const val CHANNEL_APP_RUNNING = "$CHANNEL_APP_RUNNING_ID"
 
         private const val REQUEST_CONTENT = 1
@@ -74,10 +74,10 @@ class ChatNotificationManager private constructor(val context: Context) {
         }
         val notificationChannel = NotificationChannel(
             CHANNEL_APP_RUNNING,
-            context.getString(R.string.app_name),
+            context.getString(R.string.app_is_running),
             NotificationManager.IMPORTANCE_MIN
         ).apply {
-            description = context.getString(R.string.app_name)
+            description = context.getString(R.string.app_is_running)
             enableLights(false)
             enableVibration(false)
             setSound(null, null)
@@ -198,7 +198,7 @@ class ChatNotificationManager private constructor(val context: Context) {
      * build an app running notification for Android O+
      */
     fun showAppRunningNotification(): Notification {
-       return NotificationCompat.Builder(context, CHANNEL_NEW_MESSAGES)
+        return NotificationCompat.Builder(context, CHANNEL_NEW_MESSAGES)
             .setContentTitle(context.getString(R.string.app_name))
             .setSmallIcon(R.mipmap.ic_launcher)
             .setCategory(Notification.CATEGORY_SERVICE)
@@ -221,7 +221,7 @@ class ChatNotificationManager private constructor(val context: Context) {
     /**
      * cancel all notification
      */
-    fun cancelAll(){
+    fun cancelAll() {
         notificationManager.cancelAll()
     }
 }

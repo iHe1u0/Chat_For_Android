@@ -1,6 +1,5 @@
 package cc.imorning.chat
 
-import android.util.Log
 import cc.imorning.chat.monitor.ActivityMonitor
 import cc.imorning.chat.monitor.ChatConnectionListener
 import cc.imorning.chat.utils.ChatNotificationManager
@@ -15,13 +14,19 @@ class App : CommonApp(), ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
+
+        // Init Firebase
         FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
+
+        // Setup notification
         ChatNotificationManager.manager.setUpNewMessageNotificationChannels()
+
         if (connectionListener == null) {
             connectionListener = ChatConnectionListener()
             getTCPConnection().addConnectionListener(connectionListener)
-            Log.d(TAG, "getTCPConnection().addConnectionListener")
         }
+
+        // Register activity monitor
         registerActivityLifecycleCallbacks(ActivityMonitor.monitor)
     }
 

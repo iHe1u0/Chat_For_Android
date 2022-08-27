@@ -33,7 +33,6 @@ class ChatConnectionListener : ConnectionListener {
             }
         }
         CommonApp.vCard = VCardManager.getInstanceFor(connection).loadVCard()
-        super.authenticated(connection, resumed)
     }
 
     override fun connectionClosed() {
@@ -62,6 +61,9 @@ class ChatConnectionListener : ConnectionListener {
                 Toast.makeText(context, "登录过期，请重新登录", Toast.LENGTH_LONG).show()
             }
         } else {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "connection closed and reconnecting...")
+            }
             reconnect(CommonApp.getContext())
         }
         super.connectionClosedOnError(e)

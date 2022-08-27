@@ -13,8 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.compontens.conversation.ConversationContent
+import cc.imorning.chat.compontens.conversation.ConversationUiState
 import cc.imorning.chat.compontens.conversation.LocalBackPressedDispatcher
 import cc.imorning.chat.data.exampleUiState
+import cc.imorning.chat.data.initialMessages
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.viewmodel.ChatViewModel
 import cc.imorning.chat.viewmodel.ChatViewModelFactory
@@ -41,14 +43,19 @@ class ChatActivity : ComponentActivity() {
         // Turn off the decor fitting system windows, which allows us to handle insets,
         // including IME animations
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        // handleIntent(intent)
+        handleIntent(intent)
         setContent {
             CompositionLocalProvider(
                 LocalBackPressedDispatcher provides this@ChatActivity.onBackPressedDispatcher
             ) {
                 ChatTheme {
+                    val uiState = ConversationUiState(
+                        initialMessages = initialMessages,
+                        channelName = viewModel.getUserOrGroupName(),
+                        channelMembers = 42
+                    )
                     ConversationContent(
-                        uiState = exampleUiState,
+                        uiState = uiState,
                         navigateToProfile = { /*Action when click user avatar */ },
                         onNavIconPressed = { this@ChatActivity.finish() },
                         // Add padding so that we are inset from any navigation bars
@@ -102,9 +109,7 @@ class ChatActivity : ComponentActivity() {
             this.finish()
             return
         }
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "start with jid: $chatUserJid")
-        }
+        viewModel.setChatUserId(chatUserJid)
     }
 
 }

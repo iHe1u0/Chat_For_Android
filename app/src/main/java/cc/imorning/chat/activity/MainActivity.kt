@@ -1,6 +1,5 @@
 package cc.imorning.chat.activity
 
-
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -11,7 +10,6 @@ import android.view.KeyEvent
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import cc.imorning.chat.R
 import cc.imorning.chat.databinding.ActivityMainBinding

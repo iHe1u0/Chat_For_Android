@@ -19,4 +19,6 @@
     <string name="desc_add_contact">添加联系人</string>
     <string name="new_message">新消息</string>
     <string name="send">发送</string>
+
+    <string name="app_is_running">软件运行中</string>
 </resources>

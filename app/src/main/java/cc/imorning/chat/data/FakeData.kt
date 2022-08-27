@@ -21,7 +21,7 @@ import cc.imorning.chat.compontens.conversation.ConversationUiState
 import cc.imorning.chat.compontens.conversation.Message
 
 
-private val initialMessages = listOf(
+val initialMessages = listOf(
     Message(
         "me",
         "Check it out!",

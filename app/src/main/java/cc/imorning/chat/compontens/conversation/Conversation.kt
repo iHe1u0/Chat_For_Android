@@ -30,8 +30,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.VoiceChat
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -46,6 +46,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import cc.imorning.chat.view.ui.ComposeDialogUtils.FunctionalityNotAvailablePopup
+import cc.imorning.common.CommonApp
 import com.example.compose.jetchat.conversation.JumpToBottom
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
@@ -109,7 +110,7 @@ fun ConversationContent(
             // Channel name bar floats above the messages
             ChannelNameBar(
                 channelName = uiState.channelName,
-                channelMembers = uiState.channelMembers,
+                channelStatus = uiState.channelMembers,
                 onNavIconPressed = onNavIconPressed,
                 scrollBehavior = scrollBehavior,
                 // Use statusBarsPadding() to move the app bar content below the status bar
@@ -123,16 +124,17 @@ fun ConversationContent(
 @Composable
 fun ChannelNameBar(
     channelName: String,
-    channelMembers: Int,
+    channelStatus: Int,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     onNavIconPressed: () -> Unit = { }
 ) {
+    val user = CommonApp.getTCPConnection().user.asUnescapedString()
     var functionalityNotAvailablePopupShown by remember { mutableStateOf(false) }
     if (functionalityNotAvailablePopupShown) {
         FunctionalityNotAvailablePopup { functionalityNotAvailablePopupShown = false }
     }
-    JetchatAppBar(
+    ChatAppBar(
         modifier = modifier,
         scrollBehavior = scrollBehavior,
         onNavIconPressed = onNavIconPressed,
@@ -145,7 +147,7 @@ fun ChannelNameBar(
                 )
                 // Number of members
                 Text(
-                    text = String.format("%d 名成员", channelMembers),
+                    text = String.format("%d 名成员", channelStatus),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -154,13 +156,13 @@ fun ChannelNameBar(
         actions = {
             // Call icon
             Icon(
-                imageVector = Icons.Outlined.Call,
+                imageVector = Icons.Outlined.VoiceChat,
+                contentDescription = "通话",
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
                     .clickable(onClick = { functionalityNotAvailablePopupShown = true })
                     .padding(horizontal = 12.dp, vertical = 16.dp)
                     .height(24.dp),
-                contentDescription = "通话"
             )
             // Info icon
             Icon(
