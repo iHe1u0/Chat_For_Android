@@ -15,7 +15,6 @@ import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.compontens.conversation.ConversationContent
 import cc.imorning.chat.compontens.conversation.ConversationUiState
 import cc.imorning.chat.compontens.conversation.LocalBackPressedDispatcher
-import cc.imorning.chat.data.exampleUiState
 import cc.imorning.chat.data.initialMessages
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.viewmodel.ChatViewModel
@@ -24,7 +23,6 @@ import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.ChatType
 import cc.imorning.common.constant.Config
 import cc.imorning.common.manager.ConnectionManager
-
 
 private const val TAG = "ChatActivity"
 
