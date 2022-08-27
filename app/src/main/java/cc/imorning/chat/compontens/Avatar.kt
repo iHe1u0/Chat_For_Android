@@ -32,7 +32,6 @@ fun Avatar(avatarPath: String) {
         alignment = Alignment.Center,
         filterQuality = FilterQuality.High
     ) {
-        Log.d(TAG, "Avatar: ${painter.state}")
         when (painter.state) {
             is AsyncImagePainter.State.Loading -> {
                 CircularProgressIndicator()

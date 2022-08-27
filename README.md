@@ -9,7 +9,7 @@ This is IM app for Android based on [Openfire](https://www.igniterealtime.org/pr
 * [x] MessageFragment show wrong user avatar.
 * [x] RecentItem has too much lines for message or nick name.
 * [ ] Contact's avatar will not refresh util reboot the app.
-* [ ] Notification has a wrong action maybe cause its id.
+* [x] Notification has a wrong action maybe cause its id.
 
 ## TODO List
 -----------

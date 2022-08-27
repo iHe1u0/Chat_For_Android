@@ -19,16 +19,17 @@ package cc.imorning.chat.compontens.conversation
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.toMutableStateList
 import cc.imorning.chat.R
+import cc.imorning.common.entity.MessageEntity
 
 class ConversationUiState(
     val channelName: String,
     val channelMembers: Int,
-    initialMessages: List<Message>
+    initialMessages: List<MessageEntity>
 ) {
-    private val _messages: MutableList<Message> = initialMessages.toMutableStateList()
-    val messages: List<Message> = _messages
+    private val _messages: MutableList<MessageEntity> = initialMessages.toMutableStateList()
+    val messages: List<MessageEntity> = _messages
 
-    fun addMessage(msg: Message) {
+    fun addMessage(msg: MessageEntity) {
         _messages.add(0, msg) // Add to the beginning of the list
     }
 }

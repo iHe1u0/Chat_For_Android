@@ -16,52 +16,28 @@
 
 package cc.imorning.chat.data
 
-import cc.imorning.chat.R
-import cc.imorning.chat.compontens.conversation.ConversationUiState
-import cc.imorning.chat.compontens.conversation.Message
-
+import cc.imorning.common.entity.MessageBody
+import cc.imorning.common.entity.MessageEntity
 
 val initialMessages = listOf(
-    Message(
-        "me",
-        "Check it out!",
-        "8:07 PM"
+    MessageEntity(
+        sender = "admin@chat.catcompany.cn",
+        receiver = "imorning@chat.catcompany.cn",
+        messageBody = MessageBody(text = "谁爱孤单、谁再平淡、昨夜的抱怨会让谁不安"),
     ),
-    Message(
-        "me",
-        "Thank you!",
-        "8:06 PM",
-        R.drawable.ic_message
+    MessageEntity(
+        sender = "admin@chat.catcompany.cn",
+        receiver = "imorning@chat.catcompany.cn",
+        messageBody = MessageBody(text = "谁想孤单、谁再平凡、明天的祝愿会不会再留下遗憾"),
     ),
-    Message(
-        "Taylor Brooks",
-        "You can use all the same stuff",
-        "8:05 PM"
+    MessageEntity(
+        sender = "admin@chat.catcompany.cn",
+        receiver = "imorning@chat.catcompany.cn",
+        messageBody = MessageBody(text = "是谁把我丢在路旁都没有留下一句话"),
     ),
-    Message(
-        "Taylor Brooks",
-        "@aliconors Take a look at the `Flow.collectAsState()` APIs",
-        "8:05 PM"
-    ),
-    Message(
-        "John Glenn",
-        "Compose newbie as well, have you looked at the JetNews sample? Most blog posts end up " +
-                "out of date pretty fast but this sample is always up to date and deals with async " +
-                "data loading (it's faked but the same idea applies) \uD83D\uDC49" +
-                "https://github.com/android/compose-samples/tree/master/JetNews",
-        "8:04 PM"
-    ),
-    Message(
-        "me",
-        "Compose newbie: I’ve scourged the internet for tutorials about async data loading " +
-                "but haven’t found any good ones. What’s the recommended way to load async " +
-                "data and emit composable widgets?",
-        "8:03 PM"
+    MessageEntity(
+        sender = "admin@chat.catcompany.cn",
+        receiver = "imorning@chat.catcompany.cn",
+        messageBody = MessageBody(text = "我向前看有些凄凉是否该留下一丝幻想"),
     )
-)
-
-val exampleUiState = ConversationUiState(
-    initialMessages = initialMessages,
-    channelName = "#composers",
-    channelMembers = 42
 )

@@ -10,7 +10,7 @@ import org.joda.time.DateTime
  * @param sender who sent the message
  * @param receiver the user who will receive the message
  * @param sendTime a joda DateTime object
- * @param content the message body
+ * @param messageBody the message body
  *
  */
 data class MessageEntity(
@@ -22,7 +22,7 @@ data class MessageEntity(
     val receiver: String,
 
     @SerializedName("content")
-    val content: MessageContent,
+    val messageBody: MessageBody,
 
     @SerializedName("sendTime")
     val sendTime: String = DateTime.now().toString(),
@@ -31,19 +31,19 @@ data class MessageEntity(
  * This data class will include message body
  *
  * @param text message's text, for most time,will not be encode or decode
- * @param pic you should convert a picture to String with base64
+ * @param image you should convert a picture to String with base64
  * @param audio process with encode by base64
  * @param video process with encode by base64
  * @param action process with encode by base64
  *
  */
-data class MessageContent(
+data class MessageBody(
 
     @SerializedName("text")
     val text: String = "",
 
     @SerializedName("pic")
-    val pic: String? = "",
+    val image: String? = "",
 
     @SerializedName("audio")
     val audio: String? = "",

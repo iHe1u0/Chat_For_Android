@@ -1,7 +1,5 @@
 plugins {
     id 'com.android.application'
-    id 'com.google.gms.google-services'
-    id 'com.google.firebase.crashlytics'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
@@ -77,10 +75,6 @@ dependencies {
     implementation(project(path: ":common")) {
         exclude module: "xpp3"
     }
-    // Firebase BoM
-    implementation "com.google.firebase:firebase-bom:30.3.2"
-    implementation "com.google.firebase:firebase-analytics:21.1.0"
-    implementation "com.google.firebase:firebase-crashlytics:18.2.12"
     // Hilt
     implementation "com.google.dagger:hilt-android:2.43.2"
     kapt 'com.google.dagger:hilt-android-compiler:2.43.2'

@@ -1,14 +1,20 @@
 package cc.imorning.common.utils
 
+import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
+import cc.imorning.common.R
 import cc.imorning.common.action.UserAction
 import cc.imorning.common.manager.ConnectionManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.jivesoftware.smack.XMPPConnection
+import org.jivesoftware.smackx.vcardtemp.VCardManager
+import org.jxmpp.jid.impl.JidCreate
 import java.io.IOException
 
 class AvatarUtils private constructor() {
@@ -81,6 +87,18 @@ class AvatarUtils private constructor() {
      */
     fun getOnlineAvatar(name: String): String {
         return "https://ui-avatars.com/api/?name=$name"
+    }
+
+    fun getUserBitmap(jidString: String): Bitmap {
+        if (connection.isConnected) {
+            val vCard = VCardManager.getInstanceFor(connection)
+                .loadVCard(JidCreate.entityBareFrom(jidString))
+            val byteArray = vCard.avatar
+            if (byteArray != null) {
+                return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+            }
+        }
+        return BitmapFactory.decodeResource(Resources.getSystem(), R.drawable.ic_avatar)
     }
 
     companion object {

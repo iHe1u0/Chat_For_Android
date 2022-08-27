@@ -6,7 +6,6 @@ import cc.imorning.chat.utils.ChatNotificationManager
 import cc.imorning.common.CommonApp
 import coil.ImageLoader
 import coil.ImageLoaderFactory
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 class App : CommonApp(), ImageLoaderFactory {
 
@@ -14,9 +13,6 @@ class App : CommonApp(), ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
-
-        // Init Firebase
-        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
 
         // Setup notification
         ChatNotificationManager.manager.setUpNewMessageNotificationChannels()

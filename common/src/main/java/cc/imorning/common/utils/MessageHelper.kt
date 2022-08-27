@@ -6,7 +6,7 @@ import cc.imorning.common.CommonApp
 import cc.imorning.common.action.UserAction
 import cc.imorning.common.database.AppDatabase
 import cc.imorning.common.database.table.RecentMessageEntity
-import cc.imorning.common.entity.MessageContent
+import cc.imorning.common.entity.MessageBody
 import cc.imorning.common.entity.MessageEntity
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -73,9 +73,9 @@ object MessageHelper {
         val encodeVideo = videoFile?.let { Base64Utils.encodeFile(it) }
         val encodeAction = action?.let { Base64Utils.encodeString(it) }
 
-        val messageContent = MessageContent(
+        val messageBody = MessageBody(
             text = plainText,
-            pic = encodeImage,
+            image = encodeImage,
             audio = encodeAudio,
             video = encodeVideo,
             file = encodeFile,
@@ -84,7 +84,7 @@ object MessageHelper {
         val messageEntity = MessageEntity(
             sender = connection.user.asUnescapedString(),
             receiver = receiver,
-            content = messageContent,
+            messageBody = messageBody,
         )
         return Base64Utils.encodeString(Gson().toJson(messageEntity, MessageEntity::class.java))
     }

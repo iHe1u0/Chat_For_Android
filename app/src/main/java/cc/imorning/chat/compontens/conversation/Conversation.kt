@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package cc.imorning.chat.compontens.conversation
 
 import androidx.compose.foundation.Image
@@ -37,16 +35,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.LastBaseline
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import cc.imorning.chat.view.ui.ComposeDialogUtils.FunctionalityNotAvailablePopup
 import cc.imorning.common.CommonApp
+import cc.imorning.common.entity.MessageBody
+import cc.imorning.common.entity.MessageEntity
+import cc.imorning.common.utils.AvatarUtils
 import com.example.compose.jetchat.conversation.JumpToBottom
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
@@ -68,8 +69,7 @@ fun ConversationContent(
     modifier: Modifier = Modifier,
     onNavIconPressed: () -> Unit = { }
 ) {
-    val authorMe = "iMorning"
-    val timeNow = DateTime.now().toString("HH:mm:ss")
+    val authorMe = "imorning@chat.catcompany.cn"
 
     val scrollState = rememberLazyListState()
     val topBarState = rememberTopAppBarState()
@@ -92,7 +92,13 @@ fun ConversationContent(
                 UserInput(
                     onMessageSent = { content ->
                         uiState.addMessage(
-                            Message(authorMe, content, timeNow)
+                            MessageEntity(
+                                sender = authorMe,
+                                receiver = "sb@im.com",
+                                messageBody = MessageBody(
+                                    text = content,
+                                )
+                            )
                         )
                     },
                     resetScroll = {
@@ -129,7 +135,6 @@ fun ChannelNameBar(
     scrollBehavior: TopAppBarScrollBehavior? = null,
     onNavIconPressed: () -> Unit = { }
 ) {
-    val user = CommonApp.getTCPConnection().user.asUnescapedString()
     var functionalityNotAvailablePopupShown by remember { mutableStateOf(false) }
     if (functionalityNotAvailablePopupShown) {
         FunctionalityNotAvailablePopup { functionalityNotAvailablePopupShown = false }
@@ -180,7 +185,7 @@ fun ChannelNameBar(
 
 @Composable
 fun Messages(
-    messages: List<Message>,
+    messages: List<MessageEntity>,
     navigateToProfile: (String) -> Unit,
     scrollState: LazyListState,
     modifier: Modifier = Modifier
@@ -188,7 +193,6 @@ fun Messages(
     val scope = rememberCoroutineScope()
     Box(modifier = modifier) {
 
-        val authorMe = "iMorning"
         LazyColumn(
             reverseLayout = true,
             state = scrollState,
@@ -200,11 +204,11 @@ fun Messages(
             modifier = Modifier.fillMaxSize()
         ) {
             for (index in messages.indices) {
-                val prevAuthor = messages.getOrNull(index - 1)?.author
-                val nextAuthor = messages.getOrNull(index + 1)?.author
+                val prevAuthor = messages.getOrNull(index - 1)?.sender
+                val nextAuthor = messages.getOrNull(index + 1)?.sender
                 val content = messages[index]
-                val isFirstMessageByAuthor = prevAuthor != content.author
-                val isLastMessageByAuthor = nextAuthor != content.author
+                val isFirstMessageByAuthor = prevAuthor != content.sender
+                val isLastMessageByAuthor = nextAuthor != content.sender
 
                 // Hardcode day dividers for simplicity
                 if (index == messages.size - 1) {
@@ -219,12 +223,11 @@ fun Messages(
                         DayHeader(DateTime.now())
                     }
                 }
-
                 item {
                     Message(
                         onAuthorClick = { name -> navigateToProfile(name) },
                         msg = content,
-                        isUserMe = content.author == authorMe,
+                        isUserMe = content.sender == content.receiver,
                         isFirstMessageByAuthor = isFirstMessageByAuthor,
                         isLastMessageByAuthor = isLastMessageByAuthor
                     )
@@ -262,7 +265,7 @@ fun Messages(
 @Composable
 fun Message(
     onAuthorClick: (String) -> Unit,
-    msg: Message,
+    msg: MessageEntity,
     isUserMe: Boolean,
     isFirstMessageByAuthor: Boolean,
     isLastMessageByAuthor: Boolean
@@ -279,14 +282,14 @@ fun Message(
             // Avatar
             Image(
                 modifier = Modifier
-                    .clickable(onClick = { onAuthorClick(msg.author) })
+                    .clickable(onClick = { onAuthorClick(msg.sender) })
                     .padding(horizontal = 16.dp)
                     .size(42.dp)
                     .border(1.5.dp, borderColor, CircleShape)
                     .border(3.dp, MaterialTheme.colorScheme.surface, CircleShape)
                     .clip(CircleShape)
                     .align(Alignment.Top),
-                painter = painterResource(id = msg.authorImage),
+                bitmap = AvatarUtils.instance.getUserBitmap(msg.sender).asImageBitmap(),
                 contentScale = ContentScale.Crop,
                 contentDescription = null,
             )
@@ -309,7 +312,7 @@ fun Message(
 
 @Composable
 fun AuthorAndTextMessage(
-    msg: Message,
+    msg: MessageEntity,
     isUserMe: Boolean,
     isFirstMessageByAuthor: Boolean,
     isLastMessageByAuthor: Boolean,
@@ -332,11 +335,11 @@ fun AuthorAndTextMessage(
 }
 
 @Composable
-private fun AuthorNameTimestamp(msg: Message) {
+private fun AuthorNameTimestamp(msg: MessageEntity) {
     // Combine author and timestamp for a11y.
     Row(modifier = Modifier.semantics(mergeDescendants = true) {}) {
         Text(
-            text = msg.author,
+            text = msg.sender,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier
                 .alignBy(LastBaseline)
@@ -344,7 +347,7 @@ private fun AuthorNameTimestamp(msg: Message) {
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            text = msg.timestamp,
+            text = DateTime(msg.sendTime).toString("HH:mm:ss"),
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.alignBy(LastBaseline),
             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -389,7 +392,7 @@ private fun RowScope.DayHeaderLine() {
 
 @Composable
 fun ChatItemBubble(
-    message: Message,
+    message: MessageEntity,
     isUserMe: Boolean,
     authorClicked: (String) -> Unit
 ) {
@@ -406,39 +409,39 @@ fun ChatItemBubble(
             shape = ChatBubbleShape
         ) {
             ClickableMessage(
-                message = message,
+                message = message.messageBody.text,
                 isUserMe = isUserMe,
                 authorClicked = authorClicked
             )
         }
 
-        message.image?.let {
-            Spacer(modifier = Modifier.height(4.dp))
-            Surface(
-                color = backgroundBubbleColor,
-                shape = ChatBubbleShape
-            ) {
-                Image(
-                    painter = painterResource(it),
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.size(160.dp),
-                    contentDescription = "跳转到最新消息"
-                )
-            }
-        }
+        // message.messageBody.image?.let {
+        //     Spacer(modifier = Modifier.height(4.dp))
+        //     Surface(
+        //         color = backgroundBubbleColor,
+        //         shape = ChatBubbleShape
+        //     ) {
+        //         Image(
+        //             painter = painterResource(it),
+        //             contentScale = ContentScale.Fit,
+        //             modifier = Modifier.size(160.dp),
+        //             contentDescription = "跳转到最新消息"
+        //         )
+        //     }
+        // }
     }
 }
 
 @Composable
 fun ClickableMessage(
-    message: Message,
+    message: String,
     isUserMe: Boolean,
     authorClicked: (String) -> Unit
 ) {
     val uriHandler = LocalUriHandler.current
 
     val styledMessage = messageFormatter(
-        text = message.content,
+        text = message,
         primary = isUserMe
     )
 
