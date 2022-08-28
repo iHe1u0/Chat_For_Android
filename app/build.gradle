@@ -15,7 +15,7 @@ android {
         versionName "1.0.${releaseTime()}"
 
         ndk {
-            abiFilters "armeabi-v7a", "arm64-v8a"//, "x86"
+            // abiFilters "armeabi-v7a", "arm64-v8a", "x86"
         }
 
         vectorDrawables {
@@ -24,18 +24,13 @@ android {
         resourceConfigurations += ['zh-rCN']
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-//    splits {
-//        density {
-//            enable true
-//            reset()
-//            include "hdpi", "mdpi", "xhdpi", "xxhdpi", "xxxhdpi"
-//        }
-//        abi {
-//            enable true
-//            reset()
-//            include "x86", "x86_64", "arm64-v8a"
-//        }
-//    }
+    // splits {
+    //     abi {
+    //         enable true
+    //         reset()
+    //         include "x86", "x86_64", "arm64-v8a"
+    //     }
+    // }
     buildTypes {
         debug {
             minifyEnabled false
@@ -49,8 +44,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_16
+        targetCompatibility JavaVersion.VERSION_16
     }
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17
@@ -81,6 +76,7 @@ dependencies {
     }
     // Hilt
     implementation "com.google.dagger:hilt-android:2.43.2"
+    implementation project(path: ':silk')
     kapt 'com.google.dagger:hilt-android-compiler:2.43.2'
     // Compose
     implementation "androidx.compose.ui:ui:$compose_version"

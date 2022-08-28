@@ -4,7 +4,7 @@ buildscript {
         viewmodel_version = "2.5.1"
         navigation_compose_version = "2.5.0"
         compose_version = "1.2.1"
-        room_version = "2.5.0-alpha02"
+        room_version = "2.5.0-alpha03"
         smack_version = "4.4.6"
         work_version = "2.7.1"
     }
@@ -35,7 +35,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
         freeCompilerArgs += '-opt-in=kotlinx.coroutines.FlowPreview'
         freeCompilerArgs += '-opt-in=kotlin.Experimental'
 
-        // Set JVM target to 11
+        // Set JVM target to 17
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
 }

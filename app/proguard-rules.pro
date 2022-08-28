@@ -31,3 +31,6 @@
 
 -dontwarn org.joda.convert.FromString
 -dontwarn org.joda.convert.ToString
+
+-keep class cc.imorning.silk.** { *; }
+-keepnames class cc.imorning.silk.** { *; }
