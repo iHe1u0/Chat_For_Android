@@ -43,7 +43,7 @@ extern "C"
 
 /* Encodes signs of excitation */
 void SKP_Silk_encode_signs(
-    SKP_Silk_range_coder_state  *psRC,              /* I/O  Range coder state                           */
+    SKP_Silk_range_coder_state  *psRC,              /* I/O  Range Coder state                           */
     const SKP_int8              q[],                /* I    pulse signal                                */
     const SKP_int               length,             /* I    length of input                             */
     const SKP_int               sigtype,            /* I    Signal type                                 */
@@ -53,7 +53,7 @@ void SKP_Silk_encode_signs(
 
 /* Decodes signs of excitation */
 void SKP_Silk_decode_signs(
-    SKP_Silk_range_coder_state  *psRC,              /* I/O  Range coder state                           */
+    SKP_Silk_range_coder_state  *psRC,              /* I/O  Range Coder state                           */
     SKP_int                     q[],                /* I/O  pulse signal                                */
     const SKP_int               length,             /* I    length of output                            */
     const SKP_int               sigtype,            /* I    Signal type                                 */
@@ -68,12 +68,12 @@ SKP_int SKP_Silk_control_audio_bandwidth(
 );
 
 /***************/
-/* Shell coder */
+/* Shell Coder */
 /***************/
 
 /* Encode quantization indices of excitation */
 void SKP_Silk_encode_pulses(
-    SKP_Silk_range_coder_state  *psRC,              /* I/O  Range coder state                           */
+    SKP_Silk_range_coder_state  *psRC,              /* I/O  Range Coder state                           */
     const SKP_int               sigtype,            /* I    Sigtype                                     */
     const SKP_int               QuantOffsetType,    /* I    QuantOffsetType                             */
     const SKP_int8              q[],                /* I    quantization indices                        */
@@ -86,7 +86,7 @@ void SKP_Silk_shell_encoder(
     const SKP_int               *pulses0            /* I    data: nonnegative pulse amplitudes          */
 );
 
-/* Shell decoder, operates on one shell code frame of 16 pulses */
+/* Shell Coder, operates on one shell code frame of 16 pulses */
 void SKP_Silk_shell_decoder(
     SKP_int                     *pulses0,           /* O    data: nonnegative pulse amplitudes          */
     SKP_Silk_range_coder_state  *psRC,              /* I/O  compressor data structure                   */
@@ -94,7 +94,7 @@ void SKP_Silk_shell_decoder(
 );
 
 /***************/
-/* Range coder */
+/* Range Coder */
 /***************/
 /* Range encoder for one symbol */
 void SKP_Silk_range_encoder(
@@ -111,7 +111,7 @@ void SKP_Silk_range_encoder_multi(
     const SKP_int               nSymbols            /* I    number of data symbols                      */
 );
 
-/* Range decoder for one symbol */
+/* Range Coder for one symbol */
 void SKP_Silk_range_decoder(
     SKP_int                     data[],             /* O    uncompressed data                           */
     SKP_Silk_range_coder_state  *psRC,              /* I/O  compressor data structure                   */
@@ -119,7 +119,7 @@ void SKP_Silk_range_decoder(
     SKP_int                     probIx              /* I    initial (middle) entry of cdf               */
 );
 
-/* Range decoder for multiple symbols */
+/* Range Coder for multiple symbols */
 void SKP_Silk_range_decoder_multi(
     SKP_int                     data[],             /* O    uncompressed data                [nSymbols] */
     SKP_Silk_range_coder_state  *psRC,              /* I/O  compressor data structure                   */
@@ -128,12 +128,12 @@ void SKP_Silk_range_decoder_multi(
     const SKP_int               nSymbols            /* I    number of data symbols                      */
 );
 
-/* Initialize range coder structure for encoder */
+/* Initialize range Coder structure for encoder */
 void SKP_Silk_range_enc_init(
     SKP_Silk_range_coder_state  *psRC               /* O    compressor data structure                   */
 );
 
-/* Initialize range coder structure for decoder */
+/* Initialize range Coder structure for Coder */
 void SKP_Silk_range_dec_init(
     SKP_Silk_range_coder_state  *psRC,              /* O    compressor data structure                   */
     const SKP_uint8             buffer[],           /* I    buffer for compressed data [bufferLength]   */
@@ -287,7 +287,7 @@ SKP_int SKP_Silk_init_decoder(
     SKP_Silk_decoder_state      *psDec              /* I/O  Decoder state pointer                       */
 );
 
-/* Set decoder sampling rate */
+/* Set Coder sampling rate */
 void SKP_Silk_decoder_set_fs(
     SKP_Silk_decoder_state      *psDec,             /* I/O  Decoder state pointer                       */
     SKP_int                     fs_kHz              /* I    Sampling frequency (kHz)                    */
@@ -297,7 +297,7 @@ void SKP_Silk_decoder_set_fs(
 /* Decode frame */
 /****************/
 SKP_int SKP_Silk_decode_frame(
-    SKP_Silk_decoder_state      *psDec,             /* I/O  Pointer to Silk decoder state               */
+    SKP_Silk_decoder_state      *psDec,             /* I/O  Pointer to Silk Coder state               */
     SKP_int16                   pOut[],             /* O    Pointer to output speech frame              */
     SKP_int16                   *pN,                /* O    Pointer to size of output frame             */
     const SKP_uint8             pCode[],            /* I    Pointer to payload                          */
@@ -314,7 +314,7 @@ void SKP_Silk_decode_parameters(
     const SKP_int               fullDecoding        /* I    Flag to tell if only arithmetic decoding    */
 );
 
-/* Core decoder. Performs inverse NSQ operation LTP + LPC */
+/* Core Coder. Performs inverse NSQ operation LTP + LPC */
 void SKP_Silk_decode_core(
     SKP_Silk_decoder_state      *psDec,                             /* I/O  Decoder state               */
     SKP_Silk_decoder_control    *psDecCtrl,                         /* I    Decoder control             */
@@ -322,7 +322,7 @@ void SKP_Silk_decode_core(
     const SKP_int               q[ MAX_FRAME_LENGTH ]               /* I    Pulse signal                */
 );
 
-/* NLSF vector decoder */
+/* NLSF vector Coder */
 void SKP_Silk_NLSF_MSVQ_decode(
     SKP_int                         *pNLSF_Q15,     /* O    Pointer to decoded output [LPC_ORDER x 1]   */
     const SKP_Silk_NLSF_CB_struct   *psNLSF_CB,     /* I    Pointer to NLSF codebook struct             */
@@ -336,7 +336,7 @@ void SKP_Silk_NLSF_MSVQ_decode(
 
 /* Decode quantization indices of excitation (Shell coding) */
 void SKP_Silk_decode_pulses(
-    SKP_Silk_range_coder_state  *psRC,              /* I/O  Range coder state                           */
+    SKP_Silk_range_coder_state  *psRC,              /* I/O  Range Coder state                           */
     SKP_Silk_decoder_control    *psDecCtrl,         /* I/O  Decoder control                             */
     SKP_int                     q[],                /* O    Excitation signal                           */
     const SKP_int               frame_length        /* I    Frame length (preliminary)                  */
@@ -363,7 +363,7 @@ void SKP_Silk_CNG(
 void SKP_Silk_encode_parameters(
     SKP_Silk_encoder_state      *psEncC,            /* I/O  Encoder state                               */
     SKP_Silk_encoder_control    *psEncCtrlC,        /* I/O  Encoder control                             */
-    SKP_Silk_range_coder_state  *psRC,              /* I/O  Range coder state                           */
+    SKP_Silk_range_coder_state  *psRC,              /* I/O  Range Coder state                           */
     const SKP_int8               *q                 /* I    Quantization indices                        */
 );
 

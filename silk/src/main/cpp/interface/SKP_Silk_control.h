@@ -65,7 +65,7 @@ typedef struct {
 } SKP_SILK_SDK_EncControlStruct;
 
 /**************************************************************************/
-/* Structure for controlling decoder operation and reading decoder status */
+/* Structure for controlling Coder operation and reading Coder status */
 /**************************************************************************/
 typedef struct {
     /* I:   Output signal sampling rate in Hertz; 8000/12000/16000/24000                    */
@@ -77,7 +77,7 @@ typedef struct {
     /* O:   Frames per packet 1, 2, 3, 4, 5                                                 */
     SKP_int framesPerPacket;
 
-    /* O:   Flag to indicate that the decoder has remaining payloads internally             */
+    /* O:   Flag to indicate that the Coder has remaining payloads internally             */
     SKP_int moreInternalDecoderFrames;
 
     /* O:   Distance between main payload and redundant payload in packets                  */

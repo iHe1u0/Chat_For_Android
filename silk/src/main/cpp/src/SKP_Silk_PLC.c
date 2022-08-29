@@ -361,7 +361,7 @@ void SKP_Silk_PLC_conceal(
 
 /* Glues concealed frames with new good recieved frames             */
 void SKP_Silk_PLC_glue_frames(
-    SKP_Silk_decoder_state      *psDec,             /* I/O decoder state    */
+    SKP_Silk_decoder_state      *psDec,             /* I/O Coder state    */
     SKP_Silk_decoder_control    *psDecCtrl,         /* I/O Decoder control  */
     SKP_int16                   signal[],           /* I/O signal           */
     SKP_int                     length              /* I length of residual */

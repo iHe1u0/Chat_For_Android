@@ -152,7 +152,7 @@ SKP_int SKP_Silk_encode_frame_FIX(
     }
 
     /****************************************/
-    /* Initialize range coder               */
+    /* Initialize range Coder               */
     /****************************************/
     if( psEnc->sCmn.nFramesInPayloadBuf == 0 ) {
         SKP_Silk_range_enc_init( &psEnc->sCmn.sRC );
@@ -253,7 +253,7 @@ SKP_int SKP_Silk_encode_frame_FIX(
         
     }
 
-    /* Check for arithmetic coder errors */
+    /* Check for arithmetic Coder errors */
     if( psEnc->sCmn.sRC.error ) {
         ret = SKP_SILK_ENC_INTERNAL_ERROR;
     }
@@ -324,7 +324,7 @@ void SKP_Silk_LBRR_encode_FIX(
                 psEncCtrl->sCmn.GainsIndices[ 0 ] = psEncCtrl->sCmn.GainsIndices[ 0 ] + psEnc->sCmn.LBRR_GainIncreases;
                 psEncCtrl->sCmn.GainsIndices[ 0 ] = SKP_LIMIT_int( psEncCtrl->sCmn.GainsIndices[ 0 ], 0, N_LEVELS_QGAIN - 1 );
             }
-            /* Decode to get gains in sync with decoder         */
+            /* Decode to get gains in sync with Coder         */
             /* Overwrite unquantized gains with quantized gains */
             SKP_Silk_gains_dequant( psEncCtrl->Gains_Q16, psEncCtrl->sCmn.GainsIndices, 
                 &psEnc->sCmn.LBRRprevLastGainIndex, psEnc->sCmn.nFramesInPayloadBuf );
@@ -348,7 +348,7 @@ void SKP_Silk_LBRR_encode_FIX(
             psEncCtrl->sCmn.LTP_scaleIndex = 0;
         }
         /****************************************/
-        /* Initialize arithmetic coder          */
+        /* Initialize arithmetic Coder          */
         /****************************************/
         if( psEnc->sCmn.nFramesInPayloadBuf == 0 ) {
             SKP_Silk_range_enc_init( &psEnc->sCmn.sRC_LBRR );

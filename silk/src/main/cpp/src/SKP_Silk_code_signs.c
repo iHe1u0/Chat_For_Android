@@ -35,7 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Encodes signs of excitation */
 void SKP_Silk_encode_signs(
-    SKP_Silk_range_coder_state      *sRC,               /* I/O  Range coder state                       */
+    SKP_Silk_range_coder_state      *sRC,               /* I/O  Range Coder state                       */
     const SKP_int8                  q[],                /* I    Pulse signal                            */
     const SKP_int                   length,             /* I    Length of input                         */
     const SKP_int                   sigtype,            /* I    Signal type                             */
@@ -62,7 +62,7 @@ void SKP_Silk_encode_signs(
 
 /* Decodes signs of excitation */
 void SKP_Silk_decode_signs(
-    SKP_Silk_range_coder_state      *sRC,               /* I/O  Range coder state                           */
+    SKP_Silk_range_coder_state      *sRC,               /* I/O  Range Coder state                           */
     SKP_int                         q[],                /* I/O  pulse signal                                */
     const SKP_int                   length,             /* I    length of output                            */
     const SKP_int                   sigtype,            /* I    Signal type                                 */

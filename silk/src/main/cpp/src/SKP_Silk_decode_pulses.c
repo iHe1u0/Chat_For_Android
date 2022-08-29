@@ -31,7 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* Decode quantization indices of excitation */
 /*********************************************/
 void SKP_Silk_decode_pulses(
-    SKP_Silk_range_coder_state      *psRC,              /* I/O  Range coder state                           */
+    SKP_Silk_range_coder_state      *psRC,              /* I/O  Range Coder state                           */
     SKP_Silk_decoder_control        *psDecCtrl,         /* I/O  Decoder control                             */
     SKP_int                         q[],                /* O    Excitation signal                           */
     const SKP_int                   frame_length        /* I    Frame length (preliminary)                  */

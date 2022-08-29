@@ -27,7 +27,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "SKP_Silk_main.h"
 
-/* shell coder; pulse-subframe length is hardcoded */
+/* shell Coder; pulse-subframe length is hardcoded */
 
 SKP_INLINE void combine_pulses(
     SKP_int         *out,   /* O:   combined pulses vector [len] */
@@ -119,7 +119,7 @@ void SKP_Silk_shell_encoder(
 }
 
 
-/* Shell decoder, operates on one shell code frame of 16 pulses */
+/* Shell Coder, operates on one shell code frame of 16 pulses */
 void SKP_Silk_shell_decoder(
     SKP_int                         *pulses0,           /* O    data: nonnegative pulse amplitudes          */
     SKP_Silk_range_coder_state      *sRC,               /* I/O  compressor data structure                   */

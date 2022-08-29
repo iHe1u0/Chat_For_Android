@@ -18,7 +18,7 @@ class FileUtils {
         return context.getExternalFilesDir(null)!!
     }
 
-    private fun getCacheDir(): File? {
+    fun getCacheDir(): File? {
         return if (Environment.isExternalStorageEmulated()) {
             context.externalCacheDir
         } else {
@@ -69,6 +69,26 @@ class FileUtils {
             fileDir.mkdir()
         }
         return File(fileDir, fileName!!)
+    }
+
+    fun getAudioMessagePath(fileName: String): File {
+        val audioFileDir = getChatMessageCache("audio")
+        if (!audioFileDir.exists()) {
+            audioFileDir.mkdir()
+        }
+        val audioFile = File(audioFileDir, fileName)
+        if (!audioFile.exists()) {
+            audioFile.delete()
+        }
+        return audioFile
+    }
+
+    fun getAudioPCMCacheDir(): String {
+        val pcmFileDir = getChatMessageCache("pcm")
+        if (!pcmFileDir.exists()) {
+            pcmFileDir.mkdir()
+        }
+        return pcmFileDir.absolutePath
     }
 
     companion object {

@@ -111,7 +111,7 @@ void SKP_Silk_range_encoder_multi(
     }
 }
 
-/* Range decoder for one symbol */
+/* Range Coder for one symbol */
 void SKP_Silk_range_decoder(
     SKP_int                         data[],             /* O    uncompressed data                           */
     SKP_Silk_range_coder_state      *psRC,              /* I/O  compressor data structure                   */
@@ -230,7 +230,7 @@ void SKP_Silk_range_decoder(
     psRC->bufferIx  = bufferIx;
 }
 
-/* Range decoder for multiple symbols */
+/* Range Coder for multiple symbols */
 void SKP_Silk_range_decoder_multi(
     SKP_int                         data[],             /* O    uncompressed data                [nSymbols] */
     SKP_Silk_range_coder_state      *psRC,              /* I/O  compressor data structure                   */
@@ -258,7 +258,7 @@ void SKP_Silk_range_enc_init(
     psRC->error        = 0;
 }
 
-/* Initialize range decoder */
+/* Initialize range Coder */
 void SKP_Silk_range_dec_init(
     SKP_Silk_range_coder_state      *psRC,              /* O    compressor data structure                   */
     const SKP_uint8                 buffer[],           /* I    buffer for compressed data [bufferLength]   */

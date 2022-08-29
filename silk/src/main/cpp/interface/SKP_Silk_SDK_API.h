@@ -93,14 +93,14 @@ SKP_int SKP_Silk_SDK_Encode(
 /****************************************/
 
 /***********************************************/
-/* Get size in bytes of the Silk decoder state */
+/* Get size in bytes of the Silk Coder state */
 /***********************************************/
 SKP_int SKP_Silk_SDK_Get_Decoder_Size( 
-    SKP_int32                           *decSizeBytes   /* O:   Number of bytes in SILK decoder state           */
+    SKP_int32                           *decSizeBytes   /* O:   Number of bytes in SILK Coder state           */
 );
 
 /*************************/
-/* Init or Reset decoder */
+/* Init or Reset Coder */
 /*************************/
 SKP_int SKP_Silk_SDK_InitDecoder( 
     void                                *decState       /* I/O: State                                           */

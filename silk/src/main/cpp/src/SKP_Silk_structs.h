@@ -79,7 +79,7 @@ typedef struct {
 } SKP_Silk_VAD_state;
 
 /*******************************/
-/* Range encoder/decoder state */
+/* Range encoder/Coder state */
 /*******************************/
 typedef struct {
     SKP_int32   bufferLength;
@@ -133,8 +133,8 @@ typedef struct {
 /* Encoder state                */
 /********************************/
 typedef struct {
-    SKP_Silk_range_coder_state      sRC;                            /* Range coder state                                                    */
-    SKP_Silk_range_coder_state      sRC_LBRR;                       /* Range coder state (for low bitrate redundancy)                       */
+    SKP_Silk_range_coder_state      sRC;                            /* Range Coder state                                                    */
+    SKP_Silk_range_coder_state      sRC_LBRR;                       /* Range Coder state (for low bitrate redundancy)                       */
     SKP_Silk_nsq_state              sNSQ;                           /* Noise Shape Quantizer State                                          */
     SKP_Silk_nsq_state              sNSQ_LBRR;                      /* Noise Shape Quantizer State ( for low bitrate redundancy )           */
 
@@ -274,7 +274,7 @@ typedef struct {
 /* Decoder state                */
 /********************************/
 typedef struct {
-    SKP_Silk_range_coder_state  sRC;                            /* Range coder state                                                    */
+    SKP_Silk_range_coder_state  sRC;                            /* Range Coder state                                                    */
     SKP_int32       prev_inv_gain_Q16;
     SKP_int32       sLTP_Q16[ 2 * MAX_FRAME_LENGTH ];
     SKP_int32       sLPC_Q14[ MAX_FRAME_LENGTH / NB_SUBFR + MAX_LPC_ORDER ];

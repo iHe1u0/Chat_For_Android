@@ -206,7 +206,7 @@ endif ()
 
 add_library(silkCoder STATIC ${silk_SOURCES})
 
-add_library(silk SHARED silk.cpp silk_16.cpp)
+add_library(silk SHARED silk.cpp coder.cpp)
 
 find_library(log-lib log)
 

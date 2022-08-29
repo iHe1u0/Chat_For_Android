@@ -28,6 +28,7 @@ This is IM app for Android based on [Openfire](https://www.igniterealtime.org/pr
 * [x] Add function for adding a contact into contact's list.
 * [ ] Add group chat function.
 * [ ] use gzip to compress MessageEntity.
+* [ ] Silk Coder.
 
 ## License
 -----------

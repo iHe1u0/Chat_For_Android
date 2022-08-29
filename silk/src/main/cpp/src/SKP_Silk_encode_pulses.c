@@ -53,7 +53,7 @@ SKP_INLINE SKP_int combine_and_check(       /* return ok */
 
 /* Encode quantization indices of excitation */
 void SKP_Silk_encode_pulses(
-    SKP_Silk_range_coder_state      *psRC,          /* I/O  Range coder state               */
+    SKP_Silk_range_coder_state      *psRC,          /* I/O  Range Coder state               */
     const SKP_int                   sigtype,        /* I    Sigtype                         */
     const SKP_int                   QuantOffsetType,/* I    QuantOffsetType                 */
     const SKP_int8                  q[],            /* I    quantization indices            */

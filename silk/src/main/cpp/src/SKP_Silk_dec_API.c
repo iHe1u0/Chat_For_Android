@@ -41,7 +41,7 @@ SKP_int SKP_Silk_SDK_Get_Decoder_Size( SKP_int32 *decSizeBytes )
     return ret;
 }
 
-/* Reset decoder state */
+/* Reset Coder state */
 SKP_int SKP_Silk_SDK_InitDecoder(
     void* decState                                      /* I/O: State                                          */
 )
@@ -99,7 +99,7 @@ SKP_int SKP_Silk_SDK_Decode(
     /* Save previous sample frequency */
     prev_fs_kHz = psDec->fs_kHz;
     
-    /* Call decoder for one frame */
+    /* Call Coder for one frame */
     ret += SKP_Silk_decode_frame( psDec, pSamplesOutInternal, nSamplesOut, inData, nBytesIn, 
             lostFlag, &used_bytes );
     
@@ -178,7 +178,7 @@ void SKP_Silk_SDK_search_for_LBRR(
     SKP_int16                           *nLBRRBytes     /* O:   Number of LBRR Bytes                            */
 )
 {
-    SKP_Silk_decoder_state   sDec; // Local decoder state to avoid interfering with running decoder */
+    SKP_Silk_decoder_state   sDec; // Local Coder state to avoid interfering with running Coder */
     SKP_Silk_decoder_control sDecCtrl;
     SKP_int TempQ[ MAX_FRAME_LENGTH ];
 
@@ -225,7 +225,7 @@ void SKP_Silk_SDK_get_TOC(
     SKP_Silk_TOC_struct                 *Silk_TOC       /* O:   Type of content                                 */
 )
 {
-    SKP_Silk_decoder_state      sDec; // Local Decoder state to avoid interfering with running decoder */
+    SKP_Silk_decoder_state      sDec; // Local Decoder state to avoid interfering with running Coder */
     SKP_Silk_decoder_control    sDecCtrl;
     SKP_int TempQ[ MAX_FRAME_LENGTH ];
 

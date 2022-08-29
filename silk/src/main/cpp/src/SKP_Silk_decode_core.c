@@ -39,7 +39,7 @@ SKP_int		subfr_length
 
 
 /**********************************************************/
-/* Core decoder. Performs inverse NSQ operation LTP + LPC */
+/* Core Coder. Performs inverse NSQ operation LTP + LPC */
 /**********************************************************/
 void SKP_Silk_decode_core(
     SKP_Silk_decoder_state      *psDec,                             /* I/O  Decoder state               */

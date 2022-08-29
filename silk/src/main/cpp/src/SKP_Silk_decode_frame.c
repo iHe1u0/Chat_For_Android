@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* Decode frame */
 /****************/
 SKP_int SKP_Silk_decode_frame(
-    SKP_Silk_decoder_state          *psDec,             /* I/O  Pointer to Silk decoder state               */
+    SKP_Silk_decoder_state          *psDec,             /* I/O  Pointer to Silk Coder state               */
     SKP_int16                       pOut[],             /* O    Pointer to output speech frame              */
     SKP_int16                       *pN,                /* O    Pointer to size of output frame             */
     const SKP_uint8                 pCode[],            /* I    Pointer to payload                          */
@@ -59,11 +59,11 @@ SKP_int SKP_Silk_decode_frame(
     *decBytes = 0;
     if( action == 0 ) {
         /********************************************/
-        /* Initialize arithmetic coder              */
+        /* Initialize arithmetic Coder              */
         /********************************************/
         fs_Khz_old    = psDec->fs_kHz;
         if( psDec->nFramesDecoded == 0 ) {
-            /* Initialize range decoder state */
+            /* Initialize range Coder state */
             SKP_Silk_range_dec_init( &psDec->sRC, pCode, nBytes );
         }
 
@@ -147,7 +147,7 @@ SKP_int SKP_Silk_decode_frame(
     /********************************************/
     *pN = ( SKP_int16 )L;
 
-    /* Update some decoder state variables */
+    /* Update some Coder state variables */
     psDec->lagPrev = sDecCtrl.pitchL[ NB_SUBFR - 1 ];
 
 

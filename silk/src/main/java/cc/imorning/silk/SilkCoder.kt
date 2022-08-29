@@ -1,32 +1,68 @@
 package cc.imorning.silk
 
-object SilkCoder {
+import cc.imorning.common.utils.FileUtils
+import cc.imorning.common.utils.MD5Utils
+import java.io.File
 
-    private val silk16 = Silk16()
+class SilkCoder private constructor() {
 
-    external fun getVersion(): String
+    private external fun nativeGetSilkVersion(): String
+
+    private external fun nativeEncode(input: String, output: String): Int
+
+    private external fun nativeDecode(input: String, output: String): Int
+
 
     init {
         System.loadLibrary("silk")
     }
 
-    object Silk {
+    fun getVersion(): String {
+        return nativeGetSilkVersion()
+    }
 
-        fun open(compression: Int): Int {
-            return silk16.open(compression)
+    /**
+     * Encode a file with silk
+     *
+     * @param input the path of file
+     *
+     * @return a path of file has been encoded
+     */
+    fun encode(input: String): String? {
+        val inputFile = File(input)
+        if (inputFile.exists()) {
+            val output = FileUtils.instance.getAudioMessagePath(MD5Utils.digest(input).orEmpty())
+            nativeEncode(input, output.absolutePath.plus(".slk"))
+            return output.absolutePath.plus(".slk")
         }
+        return null
+    }
 
-        fun decode(encoded: ByteArray, line: ShortArray, size: Int): Int {
-            return silk16.decode(encoded, line, size)
+    /**
+     * Decode a file with silk
+     *
+     * @param input the path of file
+     *
+     * @return a path of file has been decoded
+     */
+    fun decode(input: String): String? {
+        val inputFile = File(input)
+        if (inputFile.exists()) {
+            val output = FileUtils.instance.getAudioMessagePath(MD5Utils.digest(input).orEmpty())
+            nativeDecode(input, output.absolutePath.plus(".pcm"))
+            return output.absolutePath.plus(".pcm")
         }
+        return null
+    }
 
-        fun encode(line: ShortArray, offset: Int, encoded: ByteArray, size: Int): Int {
-            return silk16.encode(line, offset, encoded, size)
+    private object InnerClass {
+        val silkCoder = SilkCoder()
+    }
+
+    companion object {
+
+        fun getInstance(): SilkCoder {
+            return InnerClass.silkCoder
         }
-
-        fun close() {
-            silk16.close()
-        }
-
     }
 }
