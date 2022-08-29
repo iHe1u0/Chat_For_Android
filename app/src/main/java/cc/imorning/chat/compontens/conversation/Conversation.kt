@@ -28,6 +28,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.StarPurple500
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.VoiceChat
 import androidx.compose.material3.*
@@ -35,6 +37,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
@@ -42,16 +45,16 @@ import androidx.compose.ui.layout.LastBaseline
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cc.imorning.chat.view.ui.ComposeDialogUtils.FunctionalityNotAvailablePopup
-import cc.imorning.common.CommonApp
+import cc.imorning.common.action.UserAction
 import cc.imorning.common.entity.MessageBody
 import cc.imorning.common.entity.MessageEntity
 import cc.imorning.common.utils.AvatarUtils
 import com.example.compose.jetchat.conversation.JumpToBottom
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
 
 /**
  * Entry point for a conversation screen.
@@ -198,9 +201,8 @@ fun Messages(
             state = scrollState,
             // Add content padding so that the content can be scrolled (y-axis)
             // below the status bar + app bar
-            // TODO: Get height from somewhere
-            contentPadding =
-            WindowInsets.statusBars.add(WindowInsets(top = 90.dp)).asPaddingValues(),
+            contentPadding = WindowInsets.statusBars.add(WindowInsets(top = 90.dp))
+                .asPaddingValues(),
             modifier = Modifier.fillMaxSize()
         ) {
             for (index in messages.indices) {
@@ -211,18 +213,18 @@ fun Messages(
                 val isLastMessageByAuthor = nextAuthor != content.sender
 
                 // Hardcode day dividers for simplicity
-                if (index == messages.size - 1) {
-                    item {
-                        DayHeader(
-                            DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
-                                .parseDateTime("2018-09-27 11:11:11")
-                        )
-                    }
-                } else if (index == 2) {
-                    item {
-                        DayHeader(DateTime.now())
-                    }
-                }
+                // if (index == messages.size - 1) {
+                //     item {
+                //         DayHeader(
+                //             DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
+                //                 .parseDateTime("2018-09-27 11:11:11")
+                //         )
+                //     }
+                // } else if (index == 2) {
+                //     item {
+                //         DayHeader(DateTime.now())
+                //     }
+                // }
                 item {
                     Message(
                         onAuthorClick = { name -> navigateToProfile(name) },
@@ -339,7 +341,7 @@ private fun AuthorNameTimestamp(msg: MessageEntity) {
     // Combine author and timestamp for a11y.
     Row(modifier = Modifier.semantics(mergeDescendants = true) {}) {
         Text(
-            text = msg.sender,
+            text = UserAction.getNickName(msg.sender),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier
                 .alignBy(LastBaseline)
@@ -350,7 +352,9 @@ private fun AuthorNameTimestamp(msg: MessageEntity) {
             text = DateTime(msg.sendTime).toString("HH:mm:ss"),
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.alignBy(LastBaseline),
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
@@ -415,20 +419,20 @@ fun ChatItemBubble(
             )
         }
 
-        // message.messageBody.image?.let {
-        //     Spacer(modifier = Modifier.height(4.dp))
-        //     Surface(
-        //         color = backgroundBubbleColor,
-        //         shape = ChatBubbleShape
-        //     ) {
-        //         Image(
-        //             painter = painterResource(it),
-        //             contentScale = ContentScale.Fit,
-        //             modifier = Modifier.size(160.dp),
-        //             contentDescription = "跳转到最新消息"
-        //         )
-        //     }
-        // }
+        message.messageBody.image?.let {
+            Spacer(modifier = Modifier.height(4.dp))
+            Surface(
+                color = backgroundBubbleColor,
+                shape = ChatBubbleShape
+            ) {
+                Image(
+                    imageVector = Icons.Filled.Favorite,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.size(160.dp),
+                    contentDescription = "图片消息"
+                )
+            }
+        }
     }
 }
 
