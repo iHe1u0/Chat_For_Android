@@ -87,7 +87,7 @@ dependencies {
     // Material Design
     // api "androidx.compose.material:material:$compose_version"
     // Material3 Design
-    implementation "androidx.compose.material3:material3:1.0.0-beta01"
+    implementation "androidx.compose.material3:material3:1.0.0-alpha16"
     // Material Design 的图标
     implementation "androidx.compose.material:material-icons-core:$compose_version"
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
