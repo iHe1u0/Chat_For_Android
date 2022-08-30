@@ -2,6 +2,7 @@ package cc.imorning.chat.activity.ui.contact
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +24,7 @@ import cc.imorning.chat.App
 import cc.imorning.chat.R
 import cc.imorning.chat.activity.SearchActivity
 import cc.imorning.chat.compontens.ContactItem
+import cc.imorning.chat.compontens.NewUserCard
 import cc.imorning.chat.compontens.SearchBar
 import cc.imorning.chat.ui.theme.ChatTheme
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -100,6 +102,15 @@ fun ContactScreen(viewModel: ContactViewModel) {
 
     Column {
         SearchBar(modifier = Modifier.fillMaxWidth())
+        NewUserCard(
+            jidString = "admin@chat.catcompany.cn",
+            onAccept = {
+                Log.i(TAG, "ContactScreen: accept")
+            },
+            onReject = {
+                Log.i(TAG, "ContactScreen: reject")
+            }
+        )
         SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = isRefreshing.value),
             indicator = { state, trigger ->
                 SwipeRefreshIndicator(
