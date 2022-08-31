@@ -29,7 +29,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.StarPurple500
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.VoiceChat
 import androidx.compose.material3.*
@@ -76,7 +75,7 @@ fun ConversationContent(
 
     val scrollState = rememberLazyListState()
     val topBarState = rememberTopAppBarState()
-    val scrollBehavior = remember { TopAppBarDefaults.pinnedScrollBehavior(topBarState) }
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topBarState)
     val scope = rememberCoroutineScope()
 
     Surface(modifier = modifier) {
@@ -425,11 +424,11 @@ fun ChatItemBubble(
                 color = backgroundBubbleColor,
                 shape = ChatBubbleShape
             ) {
-                Image(
+                Icon(
                     imageVector = Icons.Filled.Favorite,
-                    contentScale = ContentScale.Fit,
                     modifier = Modifier.size(160.dp),
-                    contentDescription = "图片消息"
+                    contentDescription = "图片消息",
+                    tint = Color.Red.copy(0.5f)
                 )
             }
         }

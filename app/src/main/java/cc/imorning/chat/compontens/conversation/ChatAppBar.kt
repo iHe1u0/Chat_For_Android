@@ -16,20 +16,20 @@
 
 package cc.imorning.chat.compontens.conversation
 
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,34 +41,42 @@ fun ChatAppBar(
     title: @Composable () -> Unit,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
-    val backgroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors()
-    val backgroundColor = lerp(
-        backgroundColors.containerColor(colorTransitionFraction = 0f).value,
-        backgroundColors.containerColor(colorTransitionFraction = 1f).value,
-        FastOutLinearInEasing.transform(scrollBehavior?.state?.overlappedFraction ?: 0f)
+    CenterAlignedTopAppBar(
+        modifier = modifier,
+        actions = actions,
+        title = title,
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            ChatAppBarIcon(
+                contentDescription = "返回",
+                modifier = Modifier
+                    .size(64.dp)
+                    .clickable(onClick = onNavIconPressed)
+                    .padding(16.dp)
+            )
+        }
     )
+}
 
-    val foregroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-        containerColor = Color.Transparent,
-        scrolledContainerColor = Color.Transparent
-    )
-    Box(modifier = Modifier.background(backgroundColor)) {
-        CenterAlignedTopAppBar(
-            modifier = modifier,
-            actions = actions,
-            title = title,
-            scrollBehavior = scrollBehavior,
-            colors = foregroundColors,
-            navigationIcon = {
-                Icon(
-                    imageVector = Icons.Outlined.ArrowBack,
-                    contentDescription = "返回",
-                    modifier = Modifier
-                        .size(64.dp)
-                        .clickable(onClick = onNavIconPressed)
-                        .padding(16.dp)
-                )
-            }
+@Composable
+fun ChatAppBarIcon(
+    contentDescription: String?,
+    modifier: Modifier = Modifier
+) {
+    val semantics = if (contentDescription != null) {
+        Modifier.semantics {
+            this.contentDescription = contentDescription
+            this.role = Role.Image
+        }
+    } else {
+        Modifier
+    }
+    Box(modifier = modifier.then(semantics)) {
+        Icon(
+            imageVector = Icons.Filled.ArrowBack,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurface
         )
     }
 }
+
