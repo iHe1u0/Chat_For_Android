@@ -29,7 +29,7 @@ public class AudioMessageUtils {
 
     private static final int RECORD_AUDIO_BUFFER_TIMES = 1;
     private static final int PLAY_AUDIO_BUFFER_TIMES = 1;
-    private static final int AUDIO_FREQUENCY = 44100;
+    private static final int AUDIO_FREQUENCY = 64000;
 
     private static final int RECORD_CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_STEREO;
     private static final int PLAY_CHANNEL_CONFIG = AudioFormat.CHANNEL_OUT_STEREO;
@@ -105,13 +105,13 @@ public class AudioMessageUtils {
     /**
      * play pcm file
      *
-     * @param result PCM file path
+     * @param path PCM file path
      */
-    public synchronized void startPlayPCM(String result) {
+    public synchronized void startPlayPCM(String path) {
         if (!isIdle()) {
             return;
         }
-        new AudioTrackPlayThread(new File(result)).start();
+        new AudioTrackPlayThread(new File(path)).start();
     }
 
     public synchronized void stopPlay() {

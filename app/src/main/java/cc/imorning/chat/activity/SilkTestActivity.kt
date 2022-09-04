@@ -27,7 +27,8 @@ class SilkTestActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ChatTheme {
-                var result by remember { mutableStateOf("") }
+                // var result by remember { mutableStateOf("/sdcard/pcm16k.pcm") }
+                var result by remember { mutableStateOf("/sdcard/download/test.mp3") }
                 var recordStatus by remember { mutableStateOf("Record") }
                 Column(modifier = Modifier.fillMaxSize()) {
                     Row(modifier = Modifier.fillMaxWidth()) {
