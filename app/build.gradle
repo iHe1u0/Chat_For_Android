@@ -68,6 +68,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.3.0"
     }
+    namespace 'cc.imorning.chat'
 }
 
 dependencies {
@@ -75,9 +76,9 @@ dependencies {
         exclude module: "xpp3"
     }
     // Hilt
-    implementation "com.google.dagger:hilt-android:2.43.2"
+    implementation 'com.google.dagger:hilt-android:2.44'
     implementation project(path: ':silk')
-    kapt 'com.google.dagger:hilt-android-compiler:2.43.2'
+    kapt 'com.google.dagger:hilt-android-compiler:2.44'
     // Compose
     implementation "androidx.compose.ui:ui:$compose_version"
     // UI工具包
@@ -87,14 +88,14 @@ dependencies {
     // Material Design
     // api "androidx.compose.material:material:$compose_version"
     // Material3 Design
-    implementation "androidx.compose.material3:material3:1.0.0-beta01"
+    implementation 'androidx.compose.material3:material3:1.0.0-rc01'
     // Material Design 的图标
     implementation "androidx.compose.material:material-icons-core:$compose_version"
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
     // Google字体
     implementation "androidx.compose.ui:ui-text-google-fonts:$compose_version"
     // 与Activity结合使用
-    implementation 'androidx.activity:activity-compose:1.5.1'
+    implementation 'androidx.activity:activity-compose:1.6.0'
     // 与ViewModel结合使用
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
     // 与livedata 结合使用
@@ -103,15 +104,15 @@ dependencies {
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.25.1"
     implementation "com.google.accompanist:accompanist-swiperefresh:0.25.1"
 
-    implementation 'io.coil-kt:coil-compose:2.2.0'
-    implementation "androidx.appcompat:appcompat:1.5.0"
-    implementation "androidx.core:core-ktx:1.8.0"
+    implementation 'io.coil-kt:coil-compose:2.2.2'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'androidx.core:core-ktx:1.9.0'
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
-    implementation "androidx.navigation:navigation-fragment-ktx:2.5.1"
-    implementation "androidx.navigation:navigation-ui-ktx:2.5.1"
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.2'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.5.2'
     implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation "com.google.android.material:material:1.6.1"
 

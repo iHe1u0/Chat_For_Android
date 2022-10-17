@@ -21,6 +21,7 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17
     }
+    namespace 'cc.imorning.common'
 }
 
 configurations {
@@ -53,15 +54,15 @@ dependencies {
     api "org.igniterealtime.smack:smack-tcp:$smack_version"
     api "org.igniterealtime.smack:smack-im:$smack_version"
     // Joda Time
-    api 'joda-time:joda-time:2.11.1'
+    api 'joda-time:joda-time:2.12.0'
     // Gson
     api "com.google.code.gson:gson:2.9.1"
     // Zxing
     api "com.google.zxing:core:3.5.0"
 
 
-    implementation "androidx.core:core-ktx:1.8.0"
-    implementation "androidx.appcompat:appcompat:1.5.0"
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
     // implementation "com.google.android.material:material:1.6.1"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
 
