@@ -70,6 +70,6 @@ fun VCardItem(key: String, value: String?) {
 )
 @Composable
 fun VCardPreview() {
-    val jidString = "admin@chat.catcompany.cn"
+    val jidString = "admin@curkay.catcompany.cn"
     VCardDialog(jidString = jidString)
 }

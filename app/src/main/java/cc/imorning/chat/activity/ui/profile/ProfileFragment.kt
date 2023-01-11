@@ -31,7 +31,7 @@ import cc.imorning.chat.App
 import cc.imorning.chat.R
 import cc.imorning.chat.compontens.Avatar
 import cc.imorning.chat.ui.theme.ChatTheme
-import cc.imorning.chat.view.ui.ComposeDialogUtils
+import cc.imorning.chat.ui.view.ComposeDialogUtils
 
 private const val TAG = "ProfileFragment"
 
@@ -132,7 +132,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                     ),
                     style = MaterialTheme.typography.bodyLarge,
                     onClick = {
-                        Toast.makeText(context, phoneNumber.value, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "${phoneNumber.value}", Toast.LENGTH_SHORT).show()
                     }
                 )
                 ClickableText(

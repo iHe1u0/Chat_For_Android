@@ -36,7 +36,7 @@ import cc.imorning.chat.activity.SearchActivity
 import cc.imorning.chat.compontens.RecentMessageItem
 import cc.imorning.chat.network.ConnectionLiveData
 import cc.imorning.chat.ui.theme.ChatTheme
-import cc.imorning.chat.view.ui.ComposeDialogUtils
+import cc.imorning.chat.ui.view.ComposeDialogUtils
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
@@ -184,7 +184,7 @@ fun TopBar(messageViewModel: MessageViewModel) {
                         }
                         is AsyncImagePainter.State.Error -> {
                             if (BuildConfig.DEBUG) {
-                                Log.w(TAG, "on error for get avatar: ${avatarPath.value}")
+                                Log.w(TAG, "on error when get avatar: ${avatarPath.value}")
                             }
                             Icon(imageVector = Icons.Filled.Person, contentDescription = null)
                         }

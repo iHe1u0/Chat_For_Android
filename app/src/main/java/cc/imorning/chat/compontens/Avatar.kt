@@ -37,7 +37,7 @@ fun Avatar(avatarPath: String) {
                 CircularProgressIndicator()
             }
             is AsyncImagePainter.State.Error -> {
-                Log.w(TAG, "on error for get avatar: $avatarPath")
+                Log.w(TAG, "on error when get avatar: $avatarPath")
                 Icon(imageVector = Icons.Filled.Person, contentDescription = null)
             }
             is AsyncImagePainter.State.Empty -> {

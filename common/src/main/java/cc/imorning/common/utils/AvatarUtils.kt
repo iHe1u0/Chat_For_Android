@@ -4,6 +4,8 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
 import cc.imorning.common.R
@@ -98,7 +100,9 @@ class AvatarUtils private constructor() {
                 return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
             }
         }
-        return BitmapFactory.decodeResource(Resources.getSystem(), R.drawable.ic_avatar)
+        val drawable=ContextCompat.getDrawable(CommonApp.getContext(), R.drawable.ic_avatar)
+        return drawable!!.toBitmap()
+        // return BitmapFactory.decodeResource(Resources.getSystem(), R.drawable.ic_avatar)
     }
 
     companion object {

@@ -103,7 +103,7 @@ fun ContactScreen(viewModel: ContactViewModel) {
     Column {
         SearchBar(modifier = Modifier.fillMaxWidth())
         NewUserCard(
-            jidString = "admin@chat.catcompany.cn",
+            jidString = "admin@curkay.catcompany.cn",
             onAccept = {
                 Log.i(TAG, "ContactScreen: accept")
             },

@@ -29,7 +29,7 @@ import cc.imorning.chat.R
 import cc.imorning.chat.compontens.BottomSheetListItem
 import cc.imorning.chat.compontens.RegisterDialog
 import cc.imorning.chat.ui.theme.ChatTheme
-import cc.imorning.chat.view.ui.ComposeDialogUtils
+import cc.imorning.chat.ui.view.ComposeDialogUtils
 import cc.imorning.chat.viewmodel.LoginViewModel
 
 private const val TAG = "LoginActivity"

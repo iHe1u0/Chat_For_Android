@@ -56,7 +56,7 @@ object MessageManager {
     /**
      * send message to contact
      *
-     * @param jidString jid like 'admin@chat.catcompany.cn'
+     * @param jidString jid like 'admin@curkay.catcompany.cn'
      * @param message message text
      *
      * @return true if send success

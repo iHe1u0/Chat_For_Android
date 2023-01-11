@@ -57,13 +57,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cc.imorning.chat.R
-import cc.imorning.chat.view.ui.ComposeDialogUtils.FunctionalityNotAvailablePopup
+import cc.imorning.chat.ui.view.ComposeDialogUtils.FunctionalityNotAvailablePopup
 
 enum class InputSelector {
     NONE,
     DM,
     EMOJI,
-    Record,
+    RECORD,
     PICTURE,
 }
 
@@ -179,7 +179,7 @@ private fun SelectorExpanded(
             InputSelector.EMOJI -> EmojiSelector(onTextAdded, focusRequester)
             InputSelector.DM -> NotAvailablePopup(onCloseRequested)
             InputSelector.PICTURE -> FunctionalityNotAvailablePanel()
-            InputSelector.Record -> FunctionalityNotAvailablePanel()
+            InputSelector.RECORD -> FunctionalityNotAvailablePanel()
             else -> {
                 throw NotImplementedError()
             }
@@ -243,9 +243,9 @@ private fun UserInputSelector(
             description = "@"
         )
         InputSelectorButton(
-            onClick = { onSelectorChange(InputSelector.Record) },
+            onClick = { onSelectorChange(InputSelector.RECORD) },
             icon = Icons.Outlined.RecordVoiceOver,
-            selected = currentInputSelector == InputSelector.Record,
+            selected = currentInputSelector == InputSelector.RECORD,
             description = "@"
         )
         InputSelectorButton(

@@ -1,4 +1,4 @@
-package cc.imorning.chat.view.ui
+package cc.imorning.chat.ui.view
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory

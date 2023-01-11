@@ -46,7 +46,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import cc.imorning.chat.view.ui.ComposeDialogUtils.FunctionalityNotAvailablePopup
+import cc.imorning.chat.ui.view.ComposeDialogUtils.FunctionalityNotAvailablePopup
 import cc.imorning.common.action.UserAction
 import cc.imorning.common.entity.MessageBody
 import cc.imorning.common.entity.MessageEntity
@@ -71,7 +71,7 @@ fun ConversationContent(
     modifier: Modifier = Modifier,
     onNavIconPressed: () -> Unit = { }
 ) {
-    val authorMe = "imorning@chat.catcompany.cn"
+    val authorMe = "imorning@curkay.catcompany.cn"
 
     val scrollState = rememberLazyListState()
     val topBarState = rememberTopAppBarState()
