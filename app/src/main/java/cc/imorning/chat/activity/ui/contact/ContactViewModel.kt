@@ -47,7 +47,6 @@ class ContactViewModel @Inject constructor(
     val newContacts: StateFlow<List<Contact>>
         get() = _newContacts.asStateFlow()
 
-
     init {
         refresh()
     }

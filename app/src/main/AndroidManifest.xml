@@ -56,10 +56,6 @@
             android:name=".activity.SearchActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".activity.SilkTestActivity"
-            android:exported="true" />
-
         <service
             android:name=".service.NetworkService"
             android:enabled="true"
