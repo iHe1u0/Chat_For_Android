@@ -101,36 +101,49 @@ fun ContactScreen(viewModel: ContactViewModel) {
     val contacts = viewModel.contacts.collectAsState()
 
     Column {
+        // search bar
         SearchBar(modifier = Modifier.fillMaxWidth())
-        NewUserCard(
-            jidString = "admin@curkay.catcompany.cn",
-            onAccept = {
-                Log.i(TAG, "ContactScreen: accept")
-            },
-            onReject = {
-                Log.i(TAG, "ContactScreen: reject")
-            }
-        )
-        SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = isRefreshing.value),
-            indicator = { state, trigger ->
-                SwipeRefreshIndicator(
-                    state = state,
-                    refreshTriggerDistance = trigger,
-                    scale = true,
-                    shape = MaterialTheme.shapes.extraLarge,
-                )
-            },
-            onRefresh = { viewModel.refresh() }) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                if (contacts.value.isNotEmpty()) {
-                    item {
-                        Column {
-                            contacts.value.forEach { contact ->
-                                ContactItem(contact = contact)
+        // Show this content if have new friend
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            item {
+                Column {
+                    contacts.value.forEach { newContact ->
+                        NewUserCard(
+                            contact = newContact,
+                            onAccept = {
+                                Log.i(TAG, "ContactScreen: accept")
+                            },
+                            onReject = {
+                                Log.i(TAG, "ContactScreen: reject")
                             }
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = isRefreshing.value),
+        indicator = { state, trigger ->
+            SwipeRefreshIndicator(
+                state = state,
+                refreshTriggerDistance = trigger,
+                scale = true,
+                shape = MaterialTheme.shapes.extraLarge,
+            )
+        },
+        onRefresh = { viewModel.refresh() }) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            if (contacts.value.isNotEmpty()) {
+                item {
+                    Column {
+                        contacts.value.forEach { contact ->
+                            ContactItem(contact = contact)
                         }
                     }
                 }

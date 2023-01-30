@@ -118,7 +118,7 @@ fun MessageScreen(viewModel: MessageViewModel) {
                 textAlign = TextAlign.Center,
                 color = Color.White
             )
-        } else if (connectionStatus != null && connectionStatus) {
+        } else if ((connectionStatus != null) && connectionStatus) {
             viewModel.addListener()
         }
         SwipeRefresh(

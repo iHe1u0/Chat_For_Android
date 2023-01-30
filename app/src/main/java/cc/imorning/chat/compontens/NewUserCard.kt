@@ -10,11 +10,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import cc.imorning.common.action.UserAction
+import cc.imorning.chat.model.Contact
 
 @Composable
 fun NewUserCard(
-    jidString: String,
+    contact: Contact,
     onAccept: () -> Unit,
     onReject: () -> Unit,
 ) {
@@ -27,9 +27,9 @@ fun NewUserCard(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Avatar(avatarPath = jidString)
+            Avatar(avatarPath = contact.jid)
             Text(
-                text = UserAction.getNickName(jidString),
+                text = contact.nickName,
                 modifier = Modifier.align(Alignment.CenterVertically),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

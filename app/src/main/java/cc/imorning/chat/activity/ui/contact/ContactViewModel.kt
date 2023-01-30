@@ -35,12 +35,18 @@ class ContactViewModel @Inject constructor(
     val isRefreshing: StateFlow<Boolean>
         get() = _isRefreshing.asStateFlow()
 
+    // list of all contacts
     private val _contacts = MutableStateFlow<List<Contact>>(emptyList())
     val contacts: StateFlow<List<Contact>>
         get() = _contacts.asStateFlow()
-
     internal val allContacts: LiveData<List<UserInfoEntity>> =
         database.appDatabaseDao().getAllContact()
+
+    // list of all new contacts
+    private val _newContacts = MutableStateFlow<List<Contact>>(emptyList())
+    val newContacts: StateFlow<List<Contact>>
+        get() = _newContacts.asStateFlow()
+
 
     init {
         refresh()
