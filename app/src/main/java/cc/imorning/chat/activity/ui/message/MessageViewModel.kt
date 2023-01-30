@@ -22,6 +22,7 @@ import org.jivesoftware.smack.chat2.OutgoingChatMessageListener
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.roster.Roster
 import javax.inject.Inject
+import kotlin.math.log
 
 class MessageViewModel @Inject constructor(
     private val databaseDao: AppDatabaseDao

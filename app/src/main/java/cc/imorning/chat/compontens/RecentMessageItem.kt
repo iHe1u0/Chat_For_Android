@@ -1,6 +1,7 @@
 package cc.imorning.chat.compontens
 
 import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
@@ -16,6 +17,8 @@ import cc.imorning.chat.model.RecentMessage
 import cc.imorning.common.constant.ChatType
 import cc.imorning.common.constant.Config
 import cc.imorning.common.utils.AvatarUtils
+
+private const val TAG = "RecentMessageItem"
 
 @Composable
 fun RecentMessageItem(message: RecentMessage) {

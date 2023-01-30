@@ -4,10 +4,14 @@ import android.app.Activity
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
+import android.util.Log
 import cc.imorning.common.constant.ServerConfig
 import cc.imorning.common.database.AppDatabase
 import cc.imorning.common.manager.ConnectionManager
 import cc.imorning.common.utils.NetworkUtils
+import com.microsoft.appcenter.AppCenter
+import com.microsoft.appcenter.analytics.Analytics
+import com.microsoft.appcenter.crashes.Crashes
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
@@ -32,6 +36,15 @@ open class CommonApp : Application() {
     override fun onCreate() {
         super.onCreate()
         application = this
+
+        AppCenter.start(
+            application,
+            "51915e37-24c4-4064-848b-cc16667c2f9c",
+            Analytics::class.java,
+            Crashes::class.java
+        )
+        AppCenter.setLogLevel(Log.VERBOSE)
+        AppCenter.setEnabled(BuildConfig.DEBUG)
 
         val formatStrategy = PrettyFormatStrategy.newBuilder()
             .showThreadInfo(true)
@@ -60,7 +73,7 @@ open class CommonApp : Application() {
     }
 
     companion object {
-        private const val TAG = "ChatApp_LOG"
+        private const val TAG = "CommonApp"
 
         private var application: Application? = null
         private var xmppTcpConnection: XMPPTCPConnection? = null

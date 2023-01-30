@@ -72,11 +72,11 @@ class MessageFragment : Fragment() {
                         topBar = {
                             TopBar(messageViewModel)
                         },
-                        content = {
+                        content = { paddingValues ->
                             Surface(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(it),
+                                    .padding(paddingValues),
                                 color = MaterialTheme.colorScheme.background
                             ) {
                                 MessageScreen(messageViewModel)
@@ -136,17 +136,22 @@ fun MessageScreen(viewModel: MessageViewModel) {
                 viewModel.refresh(true)
             }) {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(
                     start = 8.dp,
                     end = 8.dp
                 ),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
+                // if recent messages is not null, then show them.
                 if (messages.value != null && messages.value!!.size > 0) {
+                    val lastMessage: MutableSet<String> = mutableSetOf()
                     items(messages.value!!) { message ->
-                        RecentMessageItem(message)
+                        // sort by same message.sender
+                        if (!lastMessage.contains(message.sender)) {
+                            RecentMessageItem(message)
+                            lastMessage.add(message.sender)
+                        }
                     }
                 }
             }
