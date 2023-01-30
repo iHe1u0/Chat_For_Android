@@ -50,9 +50,10 @@ class ChatActivity : ComponentActivity() {
                     val uiState = ConversationUiState(
                         initialMessages = initialMessages,
                         channelName = viewModel.getUserOrGroupName(),
-                        channelMembers = 42
+                        channelMembers = 2
                     )
                     ConversationContent(
+                        chatUid = chatUserJid,
                         uiState = uiState,
                         navigateToProfile = { /*Action when click user avatar */ },
                         onNavIconPressed = { this@ChatActivity.finish() },

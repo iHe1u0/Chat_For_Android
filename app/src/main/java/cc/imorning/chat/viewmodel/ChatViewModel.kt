@@ -57,13 +57,9 @@ class ChatViewModel @Inject constructor(
 
     fun getUserOrGroupName(): String {
         if (_chatUserId.value == null || _chatUserId.value.isNullOrEmpty()) {
-            return ""
+            return "陌生人"
         }
         return UserAction.getNickName(_chatUserId.value!!)
-    }
-
-    companion object {
-        private const val TAG = "ChatViewModel"
     }
 }
 

@@ -47,13 +47,17 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cc.imorning.chat.ui.view.ComposeDialogUtils.FunctionalityNotAvailablePopup
+import cc.imorning.common.CommonApp
 import cc.imorning.common.action.UserAction
+import cc.imorning.common.action.message.MessageManager
 import cc.imorning.common.entity.MessageBody
 import cc.imorning.common.entity.MessageEntity
 import cc.imorning.common.utils.AvatarUtils
 import com.example.compose.jetchat.conversation.JumpToBottom
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
+
+private const val TAG = "Conversation"
 
 /**
  * Entry point for a conversation screen.
@@ -66,12 +70,13 @@ import org.joda.time.DateTime
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConversationContent(
+    chatUid: String,
     uiState: ConversationUiState,
     navigateToProfile: (String) -> Unit,
     modifier: Modifier = Modifier,
     onNavIconPressed: () -> Unit = { }
 ) {
-    val authorMe = "imorning@curkay.catcompany.cn"
+    val authorMe = CommonApp.vCard?.from
 
     val scrollState = rememberLazyListState()
     val topBarState = rememberTopAppBarState()
@@ -93,10 +98,12 @@ fun ConversationContent(
                 )
                 UserInput(
                     onMessageSent = { content ->
+                        MessageManager.sendMessage(chatUid, content)
+                        // Add message in UI
                         uiState.addMessage(
                             MessageEntity(
-                                sender = authorMe,
-                                receiver = "sb@im.com",
+                                sender = authorMe.toString(),
+                                receiver = chatUid,
                                 messageBody = MessageBody(
                                     text = content,
                                 )
@@ -152,12 +159,15 @@ fun ChannelNameBar(
                     text = channelName,
                     style = MaterialTheme.typography.titleMedium
                 )
-                // Number of members
-                Text(
-                    text = String.format("%d 名成员", channelStatus),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                // If this is a group
+                if (channelStatus > 2) {
+                    // Number of members
+                    Text(
+                        text = String.format("%d 名成员", channelStatus),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         },
         actions = {

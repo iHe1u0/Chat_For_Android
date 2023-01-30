@@ -118,6 +118,7 @@ fun UserInput(
                 },
                 focusState = textFieldFocusState
             )
+            // send button
             UserInputSelector(
                 onSelectorChange = {
                     currentInputSelector = it

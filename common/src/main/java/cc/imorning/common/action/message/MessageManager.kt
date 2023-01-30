@@ -71,7 +71,6 @@ object MessageManager {
         val newChat = chatManager.chatWith(JidCreate.entityBareFrom(jidString))
         try {
             newChat.send(message)
-            Log.i(TAG, "sendMessage success.")
             return true
         } catch (exception: Exception) {
             if (BuildConfig.DEBUG) {

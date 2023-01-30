@@ -22,6 +22,9 @@ import cc.imorning.common.utils.AvatarUtils
 
 private const val TAG = "ContactItem"
 
+/**
+ * 联系人列表条目
+ */
 @Composable
 fun ContactItem(
     contact: Contact
