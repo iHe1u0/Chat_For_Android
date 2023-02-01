@@ -43,7 +43,7 @@ open class CommonApp : Application() {
             Analytics::class.java,
             Crashes::class.java
         )
-        AppCenter.setLogLevel(Log.VERBOSE)
+        AppCenter.setLogLevel(Log.ERROR)
         AppCenter.setEnabled(BuildConfig.DEBUG)
 
         val formatStrategy = PrettyFormatStrategy.newBuilder()

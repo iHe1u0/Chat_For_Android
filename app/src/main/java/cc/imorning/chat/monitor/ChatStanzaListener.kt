@@ -1,5 +1,6 @@
 package cc.imorning.chat.monitor
 
+import android.util.Log
 import cc.imorning.chat.model.OnlineMessage
 import cc.imorning.chat.utils.ChatNotificationManager
 import cc.imorning.common.BuildConfig
@@ -26,9 +27,6 @@ class ChatStanzaListener private constructor() : StanzaListener {
         if (packet == null) {
             return
         }
-        if (BuildConfig.DEBUG) {
-            Logger.xml("${packet.toXML()}")
-        }
         val message = packet as Message
         MessageHelper.processMessage(
             from = message.from.asUnescapedString(),
@@ -53,7 +51,6 @@ class ChatStanzaListener private constructor() : StanzaListener {
                 }
                 return field
             }
-
         fun get(): ChatStanzaListener {
             return listener!!
         }

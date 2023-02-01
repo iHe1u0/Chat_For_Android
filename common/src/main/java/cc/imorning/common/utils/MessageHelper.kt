@@ -30,9 +30,6 @@ object MessageHelper {
         from: String? = null,
         chat: Chat? = null
     ) {
-        if (BuildConfig.DEBUG){
-            Log.i(TAG, "from:$from type:${message.type} body:${message.body} bodies:${message.bodies}")
-        }
         RingUtils.playNewMessage(
             context = CommonApp.getContext(),
             type = message.type
@@ -124,6 +121,7 @@ object MessageHelper {
             lastMessage = message.body,
             lastMessageTime = dateTime,
         )
+        // update database
         MainScope().launch(Dispatchers.IO) { databaseDao.insertRecentMessage(recentMessage) }
     }
 

@@ -23,21 +23,21 @@ val initialMessages = listOf(
     MessageEntity(
         sender = "admin@curkay.catcompany.cn",
         receiver = "imorning@curkay.catcompany.cn",
-        messageBody = MessageBody(text = "谁爱孤单、谁再平淡、昨夜的抱怨会让谁不安"),
+        messageBody = MessageBody(text = "message 1"),
     ),
     MessageEntity(
         sender = "admin@curkay.catcompany.cn",
         receiver = "imorning@curkay.catcompany.cn",
-        messageBody = MessageBody(text = "谁想孤单、谁再平凡、明天的祝愿会不会再留下遗憾"),
+        messageBody = MessageBody(text = "message 10"),
     ),
     MessageEntity(
         sender = "admin@curkay.catcompany.cn",
         receiver = "imorning@curkay.catcompany.cn",
-        messageBody = MessageBody(text = "是谁把我丢在路旁都没有留下一句话"),
+        messageBody = MessageBody(text = "message 11"),
     ),
     MessageEntity(
         sender = "admin@curkay.catcompany.cn",
         receiver = "imorning@curkay.catcompany.cn",
-        messageBody = MessageBody(text = "我向前看有些凄凉是否该留下一丝幻想"),
+        messageBody = MessageBody(text = "message 100"),
     )
 )

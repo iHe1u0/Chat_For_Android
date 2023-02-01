@@ -36,11 +36,11 @@ class User(private val jidString: String) {
      *
      * @see VCard.getEmailHome
      */
-    var email: String? = null
+    var email: String? = ""
 
-    var homeAddress: String? = null
+    var homeAddress: String? = ""
 
-    var workAddress: String? = null
+    var workAddress: String? = ""
 
     var isFriend: Boolean = false
 
@@ -73,6 +73,8 @@ class User(private val jidString: String) {
                 } else {
                     isFriend = false
                 }
+                val presence=roster.getPresence(rosterEntry.jid)
+                Log.i(TAG, "${presence.from} is online?: ${presence.isAvailable}")
             } catch (e: Exception) {
                 if (BuildConfig.DEBUG) {
                     Log.e(TAG, "construct User failed: ${e.localizedMessage}", e)

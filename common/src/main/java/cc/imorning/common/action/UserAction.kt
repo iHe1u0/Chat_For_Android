@@ -174,7 +174,7 @@ object UserAction {
      *
      * @return true if add success
      */
-    fun addContact(jid: String, nickName: String, groups: List<String>?): Boolean {
+    fun addRoster(jid: String, nickName: String, groups: List<String>?): Boolean {
         if (!ConnectionManager.isConnectionAuthenticated(connection)) {
             return false
         }
@@ -190,7 +190,7 @@ object UserAction {
                 roster.createItem(
                     JidCreate.entityBareFrom(jid),
                     nickName,
-                    null
+                    arrayOf("我的好友")
                 )
             }
             return true
@@ -203,7 +203,7 @@ object UserAction {
     /**
      * delete a contact
      */
-    fun removeContact(roster: Roster, jid: String): Boolean {
+    fun removeRoster(roster: Roster, jid: String): Boolean {
         try {
             val entry = roster.getEntry(JidCreate.entityBareFrom(jid))
             roster.removeEntry(entry)

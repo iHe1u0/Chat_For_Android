@@ -1,5 +1,6 @@
 package cc.imorning.chat.monitor
 
+import android.util.Log
 import cc.imorning.chat.model.OnlineMessage
 import cc.imorning.chat.utils.ChatNotificationManager
 import cc.imorning.common.CommonApp
@@ -16,7 +17,6 @@ class IncomingMessageListener private constructor() : IncomingChatMessageListene
     private val connection = CommonApp.getTCPConnection()
 
     override fun newIncomingMessage(from: EntityBareJid?, message: Message?, chat: Chat?) {
-
         val fromJidString = from?.asUnescapedString()
         if (message != null) {
             MessageHelper.processMessage(

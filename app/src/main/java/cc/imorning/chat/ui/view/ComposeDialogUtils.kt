@@ -202,8 +202,10 @@ object ComposeDialogUtils {
                             name = jidString.split("@")[0]
                         }
                         scope.launch(Dispatchers.IO) {
-                            val result = UserAction.addContact(jidString, name, null)
-                            Looper.prepare()
+                            val result = UserAction.addRoster(jidString, name, null)
+                            if (Looper.myLooper() == null) {
+                                Looper.prepare()
+                            }
                             if (result) {
                                 Toast.makeText(context, "请求已发送", Toast.LENGTH_LONG).show()
                                 sendRequest = false

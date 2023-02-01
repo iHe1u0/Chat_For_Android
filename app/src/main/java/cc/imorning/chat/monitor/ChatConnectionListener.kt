@@ -48,9 +48,6 @@ class ChatConnectionListener : ConnectionListener {
      * org.jivesoftware.smack.XMPPException$StreamErrorException  >>> Close cause sign in elsewhere
      */
     override fun connectionClosedOnError(e: Exception?) {
-        if (BuildConfig.DEBUG) {
-            Log.e(TAG, "connection closed with error: ${e?.localizedMessage}", e)
-        }
         context.stopService(messageMonitor)
         messageMonitor = null
         if (e is XMPPException.StreamErrorException) {
@@ -61,9 +58,6 @@ class ChatConnectionListener : ConnectionListener {
                 Toast.makeText(context, "登录过期，请重新登录", Toast.LENGTH_LONG).show()
             }
         } else {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "connection closed and reconnecting...")
-            }
             reconnect(CommonApp.getContext())
         }
         super.connectionClosedOnError(e)
@@ -71,7 +65,7 @@ class ChatConnectionListener : ConnectionListener {
 
     private fun reconnect(context: Context) {
         val constraints: Constraints = Constraints.Builder()
-            .setRequiresCharging(true)
+            .setRequiresCharging(false)
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
         val reconnectionWorkerRequest: WorkRequest =
