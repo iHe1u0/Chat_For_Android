@@ -40,7 +40,7 @@ fun RecentMessageItem(message: RecentMessage) {
         Avatar(avatarPath = avatarPath)
         Column(modifier = Modifier.padding(start = 8.dp)) {
             Text(
-                text = message.nickName,
+                text = message.sender,
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

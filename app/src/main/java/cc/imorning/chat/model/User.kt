@@ -73,8 +73,6 @@ class User(private val jidString: String) {
                 } else {
                     isFriend = false
                 }
-                val presence=roster.getPresence(rosterEntry.jid)
-                Log.i(TAG, "${presence.from} is online?: ${presence.isAvailable}")
             } catch (e: Exception) {
                 if (BuildConfig.DEBUG) {
                     Log.e(TAG, "construct User failed: ${e.localizedMessage}", e)
