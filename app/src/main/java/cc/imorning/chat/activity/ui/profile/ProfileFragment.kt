@@ -1,6 +1,7 @@
 package cc.imorning.chat.activity.ui.profile
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,8 +31,10 @@ import androidx.fragment.app.viewModels
 import cc.imorning.chat.App
 import cc.imorning.chat.R
 import cc.imorning.chat.compontens.Avatar
+import cc.imorning.chat.service.MessageMonitorService
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.ui.view.ComposeDialogUtils
+import cc.imorning.common.CommonApp
 
 private const val TAG = "ProfileFragment"
 

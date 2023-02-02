@@ -8,6 +8,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.core.app.NotificationCompat
 import androidx.core.app.Person
@@ -69,7 +70,6 @@ class ChatNotificationManager private constructor(val context: Context) {
 
     @TargetApi(Build.VERSION_CODES.O)
     fun setUpAppRunningNotificationChannels() {
-
         if (notificationManager.getNotificationChannel(CHANNEL_APP_RUNNING) != null) {
             return
         }
@@ -198,9 +198,12 @@ class ChatNotificationManager private constructor(val context: Context) {
     /**
      * build an app running notification for Android O+
      */
-    fun showAppRunningNotification(): Notification {
+    fun buildAppRunningNotification(): Notification {
         return NotificationCompat.Builder(context, CHANNEL_NEW_MESSAGES)
-            .setContentTitle(context.getString(R.string.app_name))
+            .setContentTitle(
+                context.getString(R.string.app_name)
+                    .plus(context.getString(R.string.app_is_running))
+            )
             .setSmallIcon(R.mipmap.ic_launcher)
             .setCategory(Notification.CATEGORY_SERVICE)
             .setShowWhen(true)

@@ -62,7 +62,6 @@ object ConnectionManager {
                     Log.e(TAG, "TCP connect failed", throwable)
                 }
             }
-
         }
     }
 

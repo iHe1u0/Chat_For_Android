@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import cc.imorning.chat.App
 import cc.imorning.chat.R
 import cc.imorning.chat.action.message.MessageHelper
@@ -23,7 +22,6 @@ import org.jivesoftware.smack.filter.MessageTypeFilter
 import org.jivesoftware.smack.filter.StanzaTypeFilter
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Presence
-import kotlin.system.exitProcess
 
 class MessageMonitorService : Service() {
 
@@ -51,15 +49,12 @@ class MessageMonitorService : Service() {
             chatNotificationManager.setUpAppRunningNotificationChannels()
             startForeground(
                 ChatNotificationManager.CHANNEL_APP_RUNNING_ID,
-                chatNotificationManager.showAppRunningNotification()
+                chatNotificationManager.buildAppRunningNotification()
             )
         }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (!connection.isAuthenticated) {
-            exitProcess(0)
-        }
         processOfflineMessage()
         if (ConnectionManager.isConnectionAuthenticated(connection)) {
             addMessageListener()
@@ -120,7 +115,6 @@ class MessageMonitorService : Service() {
     }
 
     companion object {
-
         private const val TAG = "MessageMonitorService"
         private const val Notification_New_Message = R.string.app_name
     }
@@ -128,5 +122,4 @@ class MessageMonitorService : Service() {
     inner class MessageServiceBinder : Binder() {
         fun getService(): MessageMonitorService = this@MessageMonitorService
     }
-
 }

@@ -1,8 +1,10 @@
 package cc.imorning.chat
 
+import android.content.Intent
 import cc.imorning.chat.monitor.ActivityMonitor
 import cc.imorning.chat.monitor.ChatConnectionListener
 import cc.imorning.chat.network.ConnectionManager
+import cc.imorning.chat.service.MessageMonitorService
 import cc.imorning.chat.utils.ChatNotificationManager
 import cc.imorning.common.CommonApp
 import cc.imorning.common.utils.NetworkUtils
@@ -44,6 +46,12 @@ class App : CommonApp(), ImageLoaderFactory {
     companion object {
         private const val TAG = "App"
         fun exitApp(status: Int = 0) {
+            getContext().stopService(
+                Intent(
+                    getContext(),
+                    MessageMonitorService::class.java
+                )
+            )
             ConnectionManager.disconnect()
             CommonApp.exitApp(status)
         }
