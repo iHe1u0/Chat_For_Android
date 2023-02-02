@@ -12,7 +12,7 @@ import cc.imorning.chat.activity.LoginActivity
 import cc.imorning.chat.service.MessageMonitorService
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
-import cc.imorning.common.connection.ReconnectionWorker
+import cc.imorning.chat.network.ReconnectionWorker
 import org.jivesoftware.smack.ConnectionListener
 import org.jivesoftware.smack.XMPPConnection
 import org.jivesoftware.smack.XMPPException

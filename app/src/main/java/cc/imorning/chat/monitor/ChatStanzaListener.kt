@@ -1,19 +1,16 @@
 package cc.imorning.chat.monitor
 
-import android.util.Log
+import cc.imorning.chat.App
+import cc.imorning.chat.action.message.MessageHelper
 import cc.imorning.chat.model.OnlineMessage
 import cc.imorning.chat.utils.ChatNotificationManager
-import cc.imorning.common.BuildConfig
-import cc.imorning.common.CommonApp
-import cc.imorning.common.utils.MessageHelper
-import com.orhanobut.logger.Logger
 import org.jivesoftware.smack.StanzaListener
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
 
 class ChatStanzaListener private constructor() : StanzaListener {
 
-    private val connection = CommonApp.getTCPConnection()
+    private val connection = App.getTCPConnection()
 
     /**
      * Process the next stanza sent to this stanza listener.
@@ -51,6 +48,7 @@ class ChatStanzaListener private constructor() : StanzaListener {
                 }
                 return field
             }
+
         fun get(): ChatStanzaListener {
             return listener!!
         }

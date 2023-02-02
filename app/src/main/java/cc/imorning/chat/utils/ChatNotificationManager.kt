@@ -15,6 +15,7 @@ import androidx.core.app.RemoteInput
 import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.net.toUri
+import cc.imorning.chat.App
 import cc.imorning.chat.R
 import cc.imorning.chat.activity.ChatActivity
 import cc.imorning.chat.activity.MainActivity
@@ -97,7 +98,7 @@ class ChatNotificationManager private constructor(val context: Context) {
         update: Boolean = false
     ) {
         val user =
-            Person.Builder().setName(CommonApp.getTCPConnection().user.asEntityBareJid().toString())
+            Person.Builder().setName(App.getTCPConnection().user.asEntityBareJid().toString())
                 .build()
         val icon = IconCompat.createWithResource(context, R.drawable.ic_default_avatar)
         val person = Person.Builder().setName(from).setIcon(icon).build()

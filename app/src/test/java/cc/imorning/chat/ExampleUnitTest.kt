@@ -1,6 +1,5 @@
 package cc.imorning.chat
 
-import cc.imorning.common.utils.MessageHelper
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

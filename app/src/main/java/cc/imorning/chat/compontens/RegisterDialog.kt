@@ -12,7 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import cc.imorning.common.CommonApp
-import cc.imorning.common.action.account.RegisterAction
+import cc.imorning.chat.action.account.RegisterAction
 import cc.imorning.common.constant.ResultCode
 
 @OptIn(ExperimentalMaterial3Api::class)

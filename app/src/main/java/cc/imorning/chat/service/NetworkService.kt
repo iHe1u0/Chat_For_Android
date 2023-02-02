@@ -9,6 +9,7 @@ import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
+import cc.imorning.chat.App
 import cc.imorning.common.CommonApp
 import cc.imorning.common.utils.NetworkUtils
 
@@ -24,7 +25,7 @@ class NetworkService : Service() {
             val action = intent.action
             if (action.equals(CONNECTIVITY_ACTION)) {
                 if (NetworkUtils.isNetworkConnected(CommonApp.getContext())) {
-                    val connection = CommonApp.getTCPConnection()
+                    val connection = App.getTCPConnection()
                     if ((!connection.isAuthenticated || !connection.isConnected) &&
                         NetworkUtils.isNetworkConnected(context)
                     ) {

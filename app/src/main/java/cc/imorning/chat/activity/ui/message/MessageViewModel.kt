@@ -1,16 +1,16 @@
 package cc.imorning.chat.activity.ui.message
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import cc.imorning.chat.App
 import cc.imorning.chat.model.RecentMessage
 import cc.imorning.chat.utils.StatusHelper
 import cc.imorning.common.CommonApp
-import cc.imorning.common.database.dao.AppDatabaseDao
-import cc.imorning.common.manager.ConnectionManager
-import cc.imorning.common.utils.AvatarUtils
+import cc.imorning.database.dao.AppDatabaseDao
+import cc.imorning.chat.network.ConnectionManager
+import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.common.utils.NetworkUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,13 +22,12 @@ import org.jivesoftware.smack.chat2.OutgoingChatMessageListener
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.roster.Roster
 import javax.inject.Inject
-import kotlin.math.log
 
 class MessageViewModel @Inject constructor(
     private val databaseDao: AppDatabaseDao
 ) : ViewModel() {
 
-    private val connection = CommonApp.getTCPConnection()
+    private val connection = App.getTCPConnection()
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean>

@@ -4,17 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cc.imorning.common.CommonApp
-import cc.imorning.common.action.SearchResult
-import cc.imorning.common.action.UserAction
+import cc.imorning.chat.App
+import cc.imorning.chat.action.SearchResult
+import cc.imorning.chat.action.UserAction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
 class SearchViewModel : ViewModel() {
 
-    private val connection = CommonApp.getTCPConnection()
+    private val connection = App.getTCPConnection()
 
     private val _key = MutableLiveData("")
     val key: LiveData<String>

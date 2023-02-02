@@ -48,11 +48,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cc.imorning.chat.ui.view.ComposeDialogUtils.FunctionalityNotAvailablePopup
 import cc.imorning.common.CommonApp
-import cc.imorning.common.action.UserAction
-import cc.imorning.common.action.message.MessageManager
+import cc.imorning.chat.action.UserAction
+import cc.imorning.chat.action.message.MessageManager
 import cc.imorning.common.entity.MessageBody
 import cc.imorning.common.entity.MessageEntity
-import cc.imorning.common.utils.AvatarUtils
+import cc.imorning.chat.utils.AvatarUtils
 import com.example.compose.jetchat.conversation.JumpToBottom
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime

@@ -24,10 +24,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import cc.imorning.chat.App
 import cc.imorning.chat.R
 import cc.imorning.chat.compontens.VCardDialog
 import cc.imorning.common.CommonApp
-import cc.imorning.common.action.UserAction
+import cc.imorning.chat.action.UserAction
 import cc.imorning.common.utils.QrUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -236,7 +237,7 @@ object ComposeDialogUtils {
                 VCardDialog(jidString = jidString)
             },
             confirmButton = {
-                if (jidString == CommonApp.getTCPConnection().user.asBareJid().toString()) {
+                if (jidString == App.getTCPConnection().user.asBareJid().toString()) {
                     Button(onClick = {
                         showQrCode = true
                     }) {

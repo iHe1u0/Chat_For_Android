@@ -29,7 +29,7 @@ import cc.imorning.chat.compontens.Avatar
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.ui.view.ComposeDialogUtils
 import cc.imorning.chat.viewmodel.SearchViewModel
-import cc.imorning.common.utils.AvatarUtils
+import cc.imorning.chat.utils.AvatarUtils
 
 class SearchActivity : BaseActivity() {
 

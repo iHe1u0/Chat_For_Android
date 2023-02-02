@@ -2,9 +2,9 @@ package cc.imorning.chat.model
 
 import android.util.Log
 import cc.imorning.common.BuildConfig
-import cc.imorning.common.CommonApp.Companion.getTCPConnection
-import cc.imorning.common.manager.ConnectionManager.isConnectionAuthenticated
-import cc.imorning.common.utils.AvatarUtils
+import cc.imorning.chat.App.Companion.getTCPConnection
+import cc.imorning.chat.network.ConnectionManager.isConnectionAuthenticated
+import cc.imorning.chat.utils.AvatarUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch

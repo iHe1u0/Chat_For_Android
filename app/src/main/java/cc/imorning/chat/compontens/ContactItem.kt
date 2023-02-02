@@ -18,7 +18,7 @@ import cc.imorning.chat.activity.ChatActivity
 import cc.imorning.chat.model.Contact
 import cc.imorning.common.constant.ChatType
 import cc.imorning.common.constant.Config
-import cc.imorning.common.utils.AvatarUtils
+import cc.imorning.chat.utils.AvatarUtils
 
 private const val TAG = "ContactItem"
 

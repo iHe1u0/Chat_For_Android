@@ -4,17 +4,17 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import cc.imorning.chat.App
 import cc.imorning.chat.BuildConfig
+import cc.imorning.chat.network.ConnectionManager
+import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.chat.utils.StatusHelper
-import cc.imorning.common.CommonApp
-import cc.imorning.common.manager.ConnectionManager
-import cc.imorning.common.utils.AvatarUtils
 import org.jivesoftware.smack.roster.Roster
 import org.jivesoftware.smackx.vcardtemp.VCardManager
 
 class ProfileViewModel : ViewModel() {
 
-    private var connection = CommonApp.getTCPConnection()
+    private var connection = App.getTCPConnection()
 
     private val _avatarPath = MutableLiveData("")
     private val _nickName = MutableLiveData("")

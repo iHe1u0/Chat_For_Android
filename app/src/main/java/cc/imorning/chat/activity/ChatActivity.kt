@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
+import cc.imorning.chat.App
 import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.compontens.conversation.ConversationContent
 import cc.imorning.chat.compontens.conversation.ConversationUiState
@@ -22,7 +23,7 @@ import cc.imorning.chat.viewmodel.ChatViewModelFactory
 import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.ChatType
 import cc.imorning.common.constant.Config
-import cc.imorning.common.manager.ConnectionManager
+import cc.imorning.chat.network.ConnectionManager
 
 private const val TAG = "ChatActivity"
 
@@ -30,10 +31,10 @@ class ChatActivity : ComponentActivity() {
 
     private var chatUserJid: String = ""
     private var chatType: ChatType.Type = ChatType.Type.Unknown
-    private val connection = CommonApp.getTCPConnection()
+    private val connection = App.getTCPConnection()
 
     private val viewModel: ChatViewModel by viewModels {
-        ChatViewModelFactory(CommonApp().appDatabase.appDatabaseDao())
+        ChatViewModelFactory(App().appDatabase.appDatabaseDao())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

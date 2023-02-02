@@ -6,7 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import cc.imorning.chat.utils.ChatNotificationManager
-import cc.imorning.common.action.message.MessageManager
+import cc.imorning.chat.action.message.MessageManager
 import cc.imorning.common.constant.Config
 
 class ReplyReceiver : BroadcastReceiver() {

@@ -3,9 +3,9 @@ package cc.imorning.chat.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import cc.imorning.common.action.UserAction
+import cc.imorning.chat.action.UserAction
 import cc.imorning.common.constant.ChatType
-import cc.imorning.common.database.dao.AppDatabaseDao
+import cc.imorning.database.dao.AppDatabaseDao
 import javax.inject.Inject
 
 class ChatViewModel @Inject constructor(

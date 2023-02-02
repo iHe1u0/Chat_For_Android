@@ -6,9 +6,6 @@ import android.app.NotificationManager
 import android.content.Context
 import android.util.Log
 import cc.imorning.common.constant.ServerConfig
-import cc.imorning.common.database.AppDatabase
-import cc.imorning.common.manager.ConnectionManager
-import cc.imorning.common.utils.NetworkUtils
 import com.microsoft.appcenter.AppCenter
 import com.microsoft.appcenter.analytics.Analytics
 import com.microsoft.appcenter.crashes.Crashes
@@ -28,10 +25,6 @@ import kotlin.system.exitProcess
 
 
 open class CommonApp : Application() {
-
-    val appDatabase: AppDatabase by lazy {
-        AppDatabase.getInstance()
-    }
 
     override fun onCreate() {
         super.onCreate()
@@ -67,16 +60,14 @@ open class CommonApp : Application() {
         configurationBuilder.setSendPresence(false)
         configurationBuilder.setKeyManager(null)
         xmppTcpConnection = XMPPTCPConnection(configurationBuilder.build())
-        if (!ConnectionManager.isConnectionAuthenticated(getTCPConnection())) {
-            MainScope().launch(Dispatchers.IO) { getTCPConnection() }
-        }
+
     }
 
     companion object {
         private const val TAG = "CommonApp"
 
         private var application: Application? = null
-        private var xmppTcpConnection: XMPPTCPConnection? = null
+        var xmppTcpConnection: XMPPTCPConnection? = null
 
         var vCard: VCard? = null
 
@@ -84,25 +75,11 @@ open class CommonApp : Application() {
             return application!!
         }
 
-        @Synchronized
-        fun getTCPConnection(): XMPPTCPConnection {
-            xmppTcpConnection!!.apply {
-                if (!this.isConnected && NetworkUtils.isNetworkConnected(getContext())) {
-                    ConnectionManager.connect(xmppTcpConnection!!)
-                }
-                return this
-            }
-        }
-
         fun exitApp(status: Int = 0) {
             val notificationManager =
                 getContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val databaseDao = CommonApp().appDatabase.appDatabaseDao()
             notificationManager.cancelAll()
             MainScope().launch(Dispatchers.IO) {
-                ConnectionManager.disconnect()
-                databaseDao.deleteAllContact()
-                databaseDao.deleteAllRecentMessage()
                 withContext(Dispatchers.Main) {
                     ActivityCollector.finishAll()
                 }

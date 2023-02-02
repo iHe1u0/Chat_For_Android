@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cc.imorning.chat.App
 import cc.imorning.common.BuildConfig
-import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.Config
 import cc.imorning.common.utils.NetworkUtils
 import cc.imorning.common.utils.SessionManager
@@ -20,7 +20,7 @@ import org.joda.time.DateTime
 
 class LoginViewModel : ViewModel() {
 
-    private val connection = CommonApp.getTCPConnection()
+    private val connection = App.getTCPConnection()
     private val sessionManager = SessionManager(Config.LOGIN_INFO)
     private val account: MutableLiveData<String> by lazy {
         MutableLiveData("")

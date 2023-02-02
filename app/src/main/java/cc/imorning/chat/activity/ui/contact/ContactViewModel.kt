@@ -5,11 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import cc.imorning.chat.model.Contact
-import cc.imorning.common.action.UserAction
-import cc.imorning.common.database.AppDatabase
-import cc.imorning.common.database.dao.AppDatabaseDao
-import cc.imorning.common.database.table.UserInfoEntity
-import cc.imorning.common.utils.AvatarUtils
+import cc.imorning.chat.action.UserAction
+import cc.imorning.database.AppDatabase
+import cc.imorning.database.dao.AppDatabaseDao
+import cc.imorning.database.table.UserInfoEntity
+import cc.imorning.chat.utils.AvatarUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

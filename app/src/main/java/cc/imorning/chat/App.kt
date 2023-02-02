@@ -2,12 +2,23 @@ package cc.imorning.chat
 
 import cc.imorning.chat.monitor.ActivityMonitor
 import cc.imorning.chat.monitor.ChatConnectionListener
+import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.chat.utils.ChatNotificationManager
 import cc.imorning.common.CommonApp
+import cc.imorning.common.utils.NetworkUtils
+import cc.imorning.database.AppDatabase
 import coil.ImageLoader
 import coil.ImageLoaderFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import org.jivesoftware.smack.tcp.XMPPTCPConnection
 
 class App : CommonApp(), ImageLoaderFactory {
+
+    val appDatabase: AppDatabase by lazy {
+        AppDatabase.getInstance()
+    }
 
     private var connectionListener: ChatConnectionListener? = null
 
@@ -16,6 +27,10 @@ class App : CommonApp(), ImageLoaderFactory {
 
         // Setup notification
         ChatNotificationManager.manager.setUpNewMessageNotificationChannels()
+
+        if (!ConnectionManager.isConnectionAuthenticated(getTCPConnection())) {
+            MainScope().launch(Dispatchers.IO) { getTCPConnection() }
+        }
 
         if (connectionListener == null) {
             connectionListener = ChatConnectionListener()
@@ -29,7 +44,21 @@ class App : CommonApp(), ImageLoaderFactory {
     companion object {
         private const val TAG = "App"
         fun exitApp(status: Int = 0) {
+            ConnectionManager.disconnect()
             CommonApp.exitApp(status)
+        }
+
+        /**
+         * try to connect server
+         */
+        @Synchronized
+        fun getTCPConnection(): XMPPTCPConnection {
+            xmppTcpConnection!!.apply {
+                if (!this.isConnected && NetworkUtils.isNetworkConnected(getContext())) {
+                    ConnectionManager.connect(xmppTcpConnection!!)
+                }
+                return this
+            }
         }
     }
 
@@ -38,4 +67,5 @@ class App : CommonApp(), ImageLoaderFactory {
             .crossfade(true)
             .build()
     }
+
 }

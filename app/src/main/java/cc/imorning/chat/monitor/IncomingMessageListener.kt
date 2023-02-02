@@ -1,10 +1,9 @@
 package cc.imorning.chat.monitor
 
-import android.util.Log
+import cc.imorning.chat.App
+import cc.imorning.chat.action.message.MessageHelper
 import cc.imorning.chat.model.OnlineMessage
 import cc.imorning.chat.utils.ChatNotificationManager
-import cc.imorning.common.CommonApp
-import cc.imorning.common.utils.MessageHelper
 import org.jivesoftware.smack.chat2.Chat
 import org.jivesoftware.smack.chat2.IncomingChatMessageListener
 import org.jivesoftware.smack.packet.Message
@@ -14,7 +13,7 @@ private const val TAG = "IncomingMessageListener"
 
 class IncomingMessageListener private constructor() : IncomingChatMessageListener {
 
-    private val connection = CommonApp.getTCPConnection()
+    private val connection = App.getTCPConnection()
 
     override fun newIncomingMessage(from: EntityBareJid?, message: Message?, chat: Chat?) {
         val fromJidString = from?.asUnescapedString()
