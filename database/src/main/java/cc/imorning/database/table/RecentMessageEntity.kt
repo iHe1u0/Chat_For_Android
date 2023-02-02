@@ -3,10 +3,10 @@ package cc.imorning.database.table
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import cc.imorning.database.utils.DatabaseConstant
+import cc.imorning.database.utils.DatabaseHelper
 import org.joda.time.DateTime
 
-@Entity(tableName = DatabaseConstant.TABLE_RECENT_MESSAGE)
+@Entity(tableName = DatabaseHelper.TABLE_RECENT_MESSAGE)
 data class RecentMessageEntity(
 
     @PrimaryKey(autoGenerate = false)

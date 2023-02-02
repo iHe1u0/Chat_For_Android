@@ -33,6 +33,9 @@ object MessageHelper {
         from: String? = null,
         chat: Chat? = null
     ) {
+        if (message.body == null) {
+            return
+        }
         RingUtils.playNewMessage(
             context = CommonApp.getContext(),
             type = message.type

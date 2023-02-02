@@ -1,9 +1,8 @@
 package cc.imorning.chat.monitor
 
+import android.util.Log
 import cc.imorning.chat.App
-import cc.imorning.chat.action.message.MessageHelper
-import cc.imorning.chat.model.OnlineMessage
-import cc.imorning.chat.utils.ChatNotificationManager
+import com.orhanobut.logger.Logger
 import org.jivesoftware.smack.StanzaListener
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
@@ -24,19 +23,23 @@ class ChatStanzaListener private constructor() : StanzaListener {
         if (packet == null) {
             return
         }
-        val message = packet as Message
-        MessageHelper.processMessage(
-            from = message.from.asUnescapedString(),
-            message = message
-        )
-        ChatNotificationManager.manager.showNotification(
-            message = OnlineMessage(
-                from = message.from.asUnescapedString(),
-                receiver = connection.user.asUnescapedString(),
-                message = message.body
-            ),
-            from = message.from.asUnescapedString(),
-        )
+        // if this is a message,then return,we process Message in IncomingMessageListener.kt
+        if (packet is Message) {
+            return
+        }
+        val stanza = packet
+        // MessageHelper.processMessage(
+        //     from = stanza.from.asUnescapedString(),
+        //     message = stanza
+        // )
+        // ChatNotificationManager.manager.showNotification(
+        //     message = OnlineMessage(
+        //         from = stanza.from.asUnescapedString(),
+        //         receiver = connection.user.asUnescapedString(),
+        //         message = stanza.body
+        //     ),
+        //     from = stanza.from.asUnescapedString(),
+        // )
     }
 
     companion object {

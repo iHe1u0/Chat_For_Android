@@ -3,9 +3,9 @@ package cc.imorning.database.table
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import cc.imorning.database.utils.DatabaseConstant
+import cc.imorning.database.utils.DatabaseHelper
 
-@Entity(tableName = DatabaseConstant.TABLE_CONTACT_INFO)
+@Entity(tableName = DatabaseHelper.TABLE_CONTACT_INFO)
 data class UserInfoEntity(
 
     @PrimaryKey(autoGenerate = false)

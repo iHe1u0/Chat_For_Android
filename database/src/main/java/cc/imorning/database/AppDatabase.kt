@@ -1,5 +1,6 @@
 package cc.imorning.database
 
+import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -9,7 +10,7 @@ import cc.imorning.database.converters.DateTimeConverter
 import cc.imorning.database.dao.AppDatabaseDao
 import cc.imorning.database.table.RecentMessageEntity
 import cc.imorning.database.table.UserInfoEntity
-import cc.imorning.database.utils.DatabaseConstant
+import cc.imorning.database.utils.DatabaseHelper
 
 @Database(
     entities = [UserInfoEntity::class, RecentMessageEntity::class],
@@ -30,7 +31,8 @@ abstract class AppDatabase : RoomDatabase() {
                 appDatabase = Room.databaseBuilder(
                     CommonApp.getContext(),
                     AppDatabase::class.java,
-                    DatabaseConstant.DATABASE_NAME
+                    DatabaseHelper.DATABASE_NAME
+                    // DatabaseHelper.getDatabase(context, jid, DatabaseHelper.DATABASE_NAME)
                 ).build()
             }
             return appDatabase
