@@ -3,7 +3,6 @@ package cc.imorning.chat.activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -32,7 +31,6 @@ import cc.imorning.chat.compontens.RegisterDialog
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.ui.view.ComposeDialogUtils
 import cc.imorning.chat.viewmodel.LoginViewModel
-import cc.imorning.database.utils.DatabaseHelper
 
 private const val TAG = "LoginActivity"
 
@@ -44,7 +42,6 @@ class LoginActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i(TAG, "getInstance: ${DatabaseHelper.getDatabaseRootDir(this,"ad")}")
         setContent {
             LoginScreen(viewModel)
         }
