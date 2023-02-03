@@ -18,11 +18,14 @@ interface DataDatabaseDao {
      * update local database after adding a roster
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertContact(userInfoTable: UserInfoTable)
+    suspend fun insertUserInfo(userInfoTable: UserInfoTable)
 
+    /**
+     * remove [UserInfoTable] table when logout
+     */
     @Delete
-    suspend fun deleteContact(userInfoTable: UserInfoTable)
+    suspend fun deleteUserInfo(userInfoTable: UserInfoTable)
 
     @Update
-    suspend fun updateContact(userInfoTable: UserInfoTable)
+    suspend fun updateUserInfo(userInfoTable: UserInfoTable)
 }

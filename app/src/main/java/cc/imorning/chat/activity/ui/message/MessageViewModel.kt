@@ -6,11 +6,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import cc.imorning.chat.App
 import cc.imorning.chat.model.RecentMessage
-import cc.imorning.chat.utils.StatusHelper
-import cc.imorning.database.dao.RecentDatabaseDao
 import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.chat.utils.AvatarUtils
+import cc.imorning.chat.utils.StatusHelper
 import cc.imorning.common.utils.NetworkUtils
+import cc.imorning.database.dao.RecentDatabaseDao
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -86,8 +86,8 @@ class MessageViewModel @Inject constructor(
                         RecentMessage(
                             nickName = "${recentMessageEntity.nickName}",
                             sender = recentMessageEntity.sender,
-                            message = "${recentMessageEntity.lastMessage}",
-                            time = recentMessageEntity.lastMessageTime
+                            message = "${recentMessageEntity.message}",
+                            time = recentMessageEntity.time
                         )
                     )
                 }

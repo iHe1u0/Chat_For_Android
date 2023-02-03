@@ -61,7 +61,7 @@ class ContactViewModel @Inject constructor(
                         val jidString = member.jid.asUnescapedString()
                         val nickName = member.name
                         // insert contact into database
-                        databaseDao.insertContact(
+                        databaseDao.insertUserInfo(
                             UserInfoTable(
                                 jid = jidString,
                                 username = nickName

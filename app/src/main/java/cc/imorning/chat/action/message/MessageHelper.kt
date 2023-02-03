@@ -7,7 +7,6 @@ import cc.imorning.common.CommonApp
 import cc.imorning.common.entity.MessageBody
 import cc.imorning.common.entity.MessageEntity
 import cc.imorning.common.utils.Base64Utils
-import cc.imorning.common.utils.MD5Utils
 import cc.imorning.common.utils.RingUtils
 import cc.imorning.database.db.RecentDB
 import cc.imorning.database.table.RecentMessageTable
@@ -122,20 +121,18 @@ object MessageHelper {
 
     private fun processChatMessage(message: Message, from: String?, chat: Chat?) {
         val fromString = from ?: message.from.asUnescapedString()
-        val receiver = connection.user.asUnescapedString()
         val nickName = cc.imorning.chat.action.UserAction.getNickName(fromString)
         val dateTime: DateTime = DateTime.now()
-        val id = MD5Utils.digest(receiver.plus(from))!!
         val recentMessage = RecentMessageTable(
-            id = id,
-            nickName = nickName,
             sender = fromString,
-            receiver = receiver,
-            lastMessage = message.body,
-            lastMessageTime = dateTime,
+            nickName = nickName,
+            type = message.type,
+            message = message.body,
+            time = dateTime,
+            isShow = true
         )
         // update database
-        MainScope().launch(Dispatchers.IO) { databaseDao.insertRecentMessage(recentMessage) }
+        MainScope().launch(Dispatchers.IO) { databaseDao.insertOrReplaceMessage(recentMessage) }
     }
 
     private fun processGroupChatMessage(message: Message) {

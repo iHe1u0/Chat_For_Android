@@ -11,6 +11,8 @@ interface RecentDatabaseDao {
     fun queryRecentMessage(): List<RecentMessageTable>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertRecentMessage(recentMessage: RecentMessageTable)
+    fun insertOrReplaceMessage(recentMessage: RecentMessageTable)
 
+    @Delete
+    fun deleteMessage(jid: String)
 }
