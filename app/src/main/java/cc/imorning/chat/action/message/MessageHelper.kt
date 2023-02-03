@@ -9,8 +9,8 @@ import cc.imorning.common.entity.MessageEntity
 import cc.imorning.common.utils.Base64Utils
 import cc.imorning.common.utils.MD5Utils
 import cc.imorning.common.utils.RingUtils
-import cc.imorning.database.AppDatabase
-import cc.imorning.database.table.RecentMessageEntity
+import cc.imorning.database.db.RecentDB
+import cc.imorning.database.table.RecentMessageTable
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +25,11 @@ private const val TAG = "MessageHelper"
 
 object MessageHelper {
 
-    private val databaseDao = AppDatabase.getInstance().appDatabaseDao()
+    private val databaseDao =
+        RecentDB.getInstance(
+            CommonApp.getContext(),
+            App.getTCPConnection().user.asEntityBareJidString()
+        ).recentDatabaseDao()
     private val connection = App.getTCPConnection()
 
     fun processMessage(
@@ -122,7 +126,7 @@ object MessageHelper {
         val nickName = cc.imorning.chat.action.UserAction.getNickName(fromString)
         val dateTime: DateTime = DateTime.now()
         val id = MD5Utils.digest(receiver.plus(from))!!
-        val recentMessage = RecentMessageEntity(
+        val recentMessage = RecentMessageTable(
             id = id,
             nickName = nickName,
             sender = fromString,

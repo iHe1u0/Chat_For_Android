@@ -5,12 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import cc.imorning.chat.action.UserAction
 import cc.imorning.common.constant.ChatType
-import cc.imorning.database.dao.AppDatabaseDao
 import javax.inject.Inject
 
-class ChatViewModel @Inject constructor(
-    private val appDatabaseDao: AppDatabaseDao
-) : ViewModel() {
+class ChatViewModel @Inject constructor() : ViewModel() {
 
     private val _chatType = MutableLiveData(ChatType.Type.Unknown)
     val chatType: MutableLiveData<ChatType.Type>
@@ -63,14 +60,12 @@ class ChatViewModel @Inject constructor(
     }
 }
 
-class ChatViewModelFactory(
-    private val appDatabaseDao: AppDatabaseDao
-) : ViewModelProvider.Factory {
+class ChatViewModelFactory : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ChatViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ChatViewModel(appDatabaseDao) as T
+            return ChatViewModel() as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

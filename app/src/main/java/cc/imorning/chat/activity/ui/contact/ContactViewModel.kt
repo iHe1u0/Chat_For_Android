@@ -1,15 +1,13 @@
 package cc.imorning.chat.activity.ui.contact
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import cc.imorning.chat.model.Contact
 import cc.imorning.chat.action.UserAction
-import cc.imorning.database.AppDatabase
-import cc.imorning.database.dao.AppDatabaseDao
-import cc.imorning.database.table.UserInfoEntity
+import cc.imorning.chat.model.Contact
 import cc.imorning.chat.utils.AvatarUtils
+import cc.imorning.database.dao.DataDatabaseDao
+import cc.imorning.database.table.UserInfoTable
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -22,14 +20,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ContactViewModel @Inject constructor(
-    private val appDatabaseDao: AppDatabaseDao
+    private val databaseDao: DataDatabaseDao
 ) : ViewModel() {
 
     companion object {
         private const val TAG = "ContactViewModel"
     }
-
-    private val database = AppDatabase.getInstance()
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean>
@@ -39,8 +35,6 @@ class ContactViewModel @Inject constructor(
     private val _contacts = MutableStateFlow<List<Contact>>(emptyList())
     val contacts: StateFlow<List<Contact>>
         get() = _contacts.asStateFlow()
-    internal val allContacts: LiveData<List<UserInfoEntity>> =
-        database.appDatabaseDao().getAllContact()
 
     // list of all new contacts
     private val _newContacts = MutableStateFlow<List<Contact>>(emptyList())
@@ -67,8 +61,8 @@ class ContactViewModel @Inject constructor(
                         val jidString = member.jid.asUnescapedString()
                         val nickName = member.name
                         // insert contact into database
-                        appDatabaseDao.insertContact(
-                            UserInfoEntity(
+                        databaseDao.insertContact(
+                            UserInfoTable(
                                 jid = jidString,
                                 username = nickName
                             )
@@ -96,13 +90,13 @@ class ContactViewModel @Inject constructor(
 
 
 class ContactViewModelFactory(
-    private val appDatabaseDao: AppDatabaseDao
+    private val databaseDao: DataDatabaseDao
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ContactViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ContactViewModel(appDatabaseDao) as T
+            return ContactViewModel(databaseDao) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

@@ -7,7 +7,6 @@ import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
 import cc.imorning.common.exception.OfflineException
 import cc.imorning.common.utils.NetworkUtils
-import cc.imorning.database.AppDatabase
 import org.jivesoftware.smack.roster.Roster
 import org.jivesoftware.smack.roster.RosterEntry
 import org.jivesoftware.smack.roster.RosterGroup
@@ -23,7 +22,6 @@ private const val TAG = "UserAction"
 object UserAction {
 
     private val connection = App.getTCPConnection()
-    private val databaseDao = AppDatabase.getInstance().appDatabaseDao()
 
     /**
      * 获取好友列表

@@ -12,7 +12,7 @@ android {
         minSdk 24
         targetSdk 33
         versionCode 1
-        versionName "1.0.${releaseTime()}"
+        versionName "$versionCode.0.${gitVersion()}"
 
         ndk {
             // abiFilters "armeabi-v7a", "arm64-v8a", "x86"
@@ -82,10 +82,10 @@ dependencies {
     implementation(project(path: ":common")) {
         exclude module: "xpp3"
     }
+    implementation(project(path: ':database'))
     // Hilt
     implementation 'com.google.dagger:hilt-android:2.44.2'
     implementation 'androidx.core:core-ktx:1.9.0'
-    implementation project(path: ':database')
     kapt 'com.google.dagger:hilt-android-compiler:2.44.2'
     // Compose
     implementation "androidx.compose.ui:ui:1.3.3"

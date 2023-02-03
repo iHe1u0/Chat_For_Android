@@ -8,7 +8,7 @@ import cc.imorning.chat.service.MessageMonitorService
 import cc.imorning.chat.utils.ChatNotificationManager
 import cc.imorning.common.CommonApp
 import cc.imorning.common.utils.NetworkUtils
-import cc.imorning.database.AppDatabase
+import cc.imorning.database.db.RecentDB
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import kotlinx.coroutines.Dispatchers
@@ -17,10 +17,6 @@ import kotlinx.coroutines.launch
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 
 class App : CommonApp(), ImageLoaderFactory {
-
-    val appDatabase: AppDatabase by lazy {
-        AppDatabase.getInstance()
-    }
 
     private var connectionListener: ChatConnectionListener? = null
 

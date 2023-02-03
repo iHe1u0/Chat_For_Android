@@ -20,7 +20,6 @@ import cc.imorning.chat.data.initialMessages
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.viewmodel.ChatViewModel
 import cc.imorning.chat.viewmodel.ChatViewModelFactory
-import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.ChatType
 import cc.imorning.common.constant.Config
 import cc.imorning.chat.network.ConnectionManager
@@ -34,7 +33,7 @@ class ChatActivity : ComponentActivity() {
     private val connection = App.getTCPConnection()
 
     private val viewModel: ChatViewModel by viewModels {
-        ChatViewModelFactory(App().appDatabase.appDatabaseDao())
+        ChatViewModelFactory()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

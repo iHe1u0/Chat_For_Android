@@ -7,7 +7,7 @@ import cc.imorning.database.utils.DatabaseHelper
 import org.joda.time.DateTime
 
 @Entity(tableName = DatabaseHelper.TABLE_RECENT_MESSAGE)
-data class RecentMessageEntity(
+data class RecentMessageTable(
 
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "id")

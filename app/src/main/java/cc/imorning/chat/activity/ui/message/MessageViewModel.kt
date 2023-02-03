@@ -7,8 +7,7 @@ import androidx.lifecycle.viewModelScope
 import cc.imorning.chat.App
 import cc.imorning.chat.model.RecentMessage
 import cc.imorning.chat.utils.StatusHelper
-import cc.imorning.common.CommonApp
-import cc.imorning.database.dao.AppDatabaseDao
+import cc.imorning.database.dao.RecentDatabaseDao
 import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.common.utils.NetworkUtils
@@ -24,7 +23,7 @@ import org.jivesoftware.smack.roster.Roster
 import javax.inject.Inject
 
 class MessageViewModel @Inject constructor(
-    private val databaseDao: AppDatabaseDao
+    private val databaseDao: RecentDatabaseDao
 ) : ViewModel() {
 
     private val connection = App.getTCPConnection()
@@ -79,7 +78,7 @@ class MessageViewModel @Inject constructor(
             if (isFromUser) {
                 _isRefreshing.emit(true)
             }
-            val recentMessageEntities = databaseDao.getAllRecentMessages()
+            val recentMessageEntities = databaseDao.queryRecentMessage()
             val list = mutableListOf<RecentMessage>()
             if (recentMessageEntities.isNotEmpty()) {
                 for (recentMessageEntity in recentMessageEntities) {
@@ -135,13 +134,13 @@ class MessageViewModel @Inject constructor(
 }
 
 class MessageViewModelFactory(
-    private val appDatabaseDao: AppDatabaseDao
+    private val recentDatabaseDao: RecentDatabaseDao
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MessageViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return MessageViewModel(appDatabaseDao) as T
+            return MessageViewModel(recentDatabaseDao) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

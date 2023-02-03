@@ -29,7 +29,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import cc.imorning.chat.App
 import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.R
 import cc.imorning.chat.activity.SearchActivity
@@ -37,6 +36,8 @@ import cc.imorning.chat.compontens.RecentMessageItem
 import cc.imorning.chat.network.ConnectionLiveData
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.ui.view.ComposeDialogUtils
+import cc.imorning.common.CommonApp
+import cc.imorning.database.db.RecentDB
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
@@ -50,9 +51,11 @@ private const val TAG = "MessageFragment"
 class MessageFragment : Fragment() {
 
     private val messageViewModel: MessageViewModel by activityViewModels {
-        MessageViewModelFactory(
-            (activity?.application as App).appDatabase.appDatabaseDao()
+        val db = RecentDB.getInstance(
+            CommonApp.getContext(),
+            CommonApp.xmppTcpConnection!!.user.asEntityBareJidString()
         )
+        MessageViewModelFactory(db.recentDatabaseDao())
     }
 
     override fun onAttach(context: Context) {

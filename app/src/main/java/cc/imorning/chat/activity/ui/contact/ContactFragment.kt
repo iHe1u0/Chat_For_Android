@@ -20,13 +20,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import cc.imorning.chat.App
 import cc.imorning.chat.R
 import cc.imorning.chat.activity.SearchActivity
 import cc.imorning.chat.compontens.ContactItem
 import cc.imorning.chat.compontens.NewUserCard
 import cc.imorning.chat.compontens.SearchBar
 import cc.imorning.chat.ui.theme.ChatTheme
+import cc.imorning.common.CommonApp
+import cc.imorning.database.db.DataDB
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -37,9 +38,11 @@ private const val TAG = "ContactFragment"
 class ContactFragment : Fragment() {
 
     private val viewModel: ContactViewModel by activityViewModels {
-        ContactViewModelFactory(
-            (activity?.application as App).appDatabase.appDatabaseDao()
+        val db = DataDB.getInstance(
+            CommonApp.getContext(),
+            CommonApp.xmppTcpConnection!!.user.asEntityBareJidString()
         )
+        ContactViewModelFactory(db.databaseDao())
     }
 
     override fun onCreateView(

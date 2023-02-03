@@ -3,7 +3,6 @@ package cc.imorning.database.converters
 import androidx.room.TypeConverter
 import org.joda.time.DateTime
 
-
 class DateTimeConverter {
 
     @TypeConverter
