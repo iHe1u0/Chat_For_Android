@@ -8,11 +8,11 @@ import androidx.room.TypeConverters
 import cc.imorning.common.CommonApp
 import cc.imorning.database.converters.CommonConverter
 import cc.imorning.database.dao.RecentDatabaseDao
-import cc.imorning.database.table.RecentMessageTable
+import cc.imorning.database.entity.RecentMessageEntity
 import cc.imorning.database.utils.DatabaseHelper
 
 @Database(
-    entities = [RecentMessageTable::class],
+    entities = [RecentMessageEntity::class],
     version = 5,
     exportSchema = true
 )

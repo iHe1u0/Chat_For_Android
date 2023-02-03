@@ -1,4 +1,4 @@
-package cc.imorning.database.table
+package cc.imorning.database.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -8,7 +8,7 @@ import org.jivesoftware.smack.packet.Message.Type
 import org.joda.time.DateTime
 
 @Entity(tableName = DatabaseHelper.TABLE_RECENT_MESSAGE)
-data class RecentMessageTable(
+data class RecentMessageEntity(
 
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "sender_jid")

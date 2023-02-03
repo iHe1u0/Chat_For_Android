@@ -9,7 +9,7 @@ import cc.imorning.common.entity.MessageEntity
 import cc.imorning.common.utils.Base64Utils
 import cc.imorning.common.utils.RingUtils
 import cc.imorning.database.db.RecentDB
-import cc.imorning.database.table.RecentMessageTable
+import cc.imorning.database.entity.RecentMessageEntity
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.Dispatchers
@@ -123,7 +123,7 @@ object MessageHelper {
         val fromString = from ?: message.from.asUnescapedString()
         val nickName = cc.imorning.chat.action.UserAction.getNickName(fromString)
         val dateTime: DateTime = DateTime.now()
-        val recentMessage = RecentMessageTable(
+        val recentMessage = RecentMessageEntity(
             sender = fromString,
             nickName = nickName,
             type = message.type,
@@ -131,6 +131,7 @@ object MessageHelper {
             time = dateTime,
             isShow = true
         )
+        // val messageEntity = MessageEntity()
         // update database
         MainScope().launch(Dispatchers.IO) { databaseDao.insertOrReplaceMessage(recentMessage) }
     }

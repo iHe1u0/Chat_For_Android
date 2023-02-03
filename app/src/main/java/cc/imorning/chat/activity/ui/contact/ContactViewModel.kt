@@ -7,7 +7,7 @@ import cc.imorning.chat.action.UserAction
 import cc.imorning.chat.model.Contact
 import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.database.dao.DataDatabaseDao
-import cc.imorning.database.table.UserInfoTable
+import cc.imorning.database.entity.UserInfoEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -62,7 +62,7 @@ class ContactViewModel @Inject constructor(
                         val nickName = member.name
                         // insert contact into database
                         databaseDao.insertUserInfo(
-                            UserInfoTable(
+                            UserInfoEntity(
                                 jid = jidString,
                                 username = nickName
                             )

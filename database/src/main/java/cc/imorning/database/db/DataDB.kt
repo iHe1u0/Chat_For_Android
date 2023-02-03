@@ -9,12 +9,12 @@ import cc.imorning.common.CommonApp
 import cc.imorning.database.converters.CommonConverter
 import cc.imorning.database.converters.RosterConverter
 import cc.imorning.database.dao.DataDatabaseDao
-import cc.imorning.database.table.RosterTable
-import cc.imorning.database.table.UserInfoTable
+import cc.imorning.database.entity.RosterEntity
+import cc.imorning.database.entity.UserInfoEntity
 import cc.imorning.database.utils.DatabaseHelper
 
 @Database(
-    entities = [UserInfoTable::class, RosterTable::class],
+    entities = [UserInfoEntity::class, RosterEntity::class],
     version = 1,
     exportSchema = true
 )

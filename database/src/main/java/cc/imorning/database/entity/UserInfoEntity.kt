@@ -1,4 +1,4 @@
-package cc.imorning.database.table
+package cc.imorning.database.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import cc.imorning.database.utils.DatabaseHelper
 
 @Entity(tableName = DatabaseHelper.TABLE_USER_INFO)
-data class UserInfoTable(
+data class UserInfoEntity(
 
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "jid", typeAffinity = ColumnInfo.TEXT)

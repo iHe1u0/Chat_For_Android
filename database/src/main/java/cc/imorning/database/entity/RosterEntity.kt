@@ -1,4 +1,4 @@
-package cc.imorning.database.table
+package cc.imorning.database.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -6,10 +6,10 @@ import androidx.room.PrimaryKey
 import cc.imorning.database.utils.DatabaseHelper
 
 /**
- * roster table
+ * roster entity
  */
 @Entity(tableName = DatabaseHelper.TABLE_ROSTER)
-data class RosterTable(
+data class RosterEntity(
 
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "jid", typeAffinity = ColumnInfo.TEXT)

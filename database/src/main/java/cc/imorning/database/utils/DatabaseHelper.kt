@@ -24,17 +24,17 @@ object DatabaseHelper {
     const val MESSAGE_DB = "message.db"
 
     /**
-     * contact info table name
+     * contact info entity name
      */
     const val TABLE_USER_INFO = "user_info"
 
     /**
-     * message table
+     * message entity
      */
     const val TABLE_RECENT_MESSAGE = "recent_message"
 
     /**
-     * message table
+     * message entity
      */
     const val TABLE_ROSTER = "roster"
 
