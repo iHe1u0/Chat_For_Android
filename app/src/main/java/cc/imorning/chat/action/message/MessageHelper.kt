@@ -2,6 +2,7 @@ package cc.imorning.chat.action.message
 
 import android.util.Log
 import cc.imorning.chat.App
+import cc.imorning.chat.action.UserAction
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
 import cc.imorning.common.entity.MessageBody
@@ -29,6 +30,7 @@ object MessageHelper {
             CommonApp.getContext(),
             App.getTCPConnection().user.asEntityBareJidString()
         ).recentDatabaseDao()
+
     private val connection = App.getTCPConnection()
 
     fun processMessage(
@@ -119,12 +121,14 @@ object MessageHelper {
         }
     }
 
-    private fun processChatMessage(message: Message, from: String?, chat: Chat?) {
-        val fromString = from ?: message.from.asUnescapedString()
-        val nickName = cc.imorning.chat.action.UserAction.getNickName(fromString)
-        val dateTime: DateTime = DateTime.now()
+    fun insertRecentMessage(
+        sender: String,
+        nickName: String,
+        message: Message,
+        dateTime: DateTime
+    ) {
         val recentMessage = RecentMessageEntity(
-            sender = fromString,
+            sender = sender,
             nickName = nickName,
             type = message.type,
             message = message.body,
@@ -132,8 +136,20 @@ object MessageHelper {
             isShow = true
         )
         // val messageEntity = MessageEntity()
-        // update database
-        MainScope().launch(Dispatchers.IO) { databaseDao.insertOrReplaceMessage(recentMessage) }
+        // update recent database
+        MainScope().launch(Dispatchers.IO) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, Log.getStackTraceString(Throwable(recentMessage.sender)))
+            }
+            databaseDao.insertOrReplaceMessage(recentMessage)
+        }
+    }
+
+    private fun processChatMessage(message: Message, from: String?, chat: Chat?) {
+        val fromString = from ?: message.from.asUnescapedString()
+        val nickName = UserAction.getNickName(fromString)
+        val dateTime: DateTime = DateTime.now()
+        insertRecentMessage(fromString, nickName, message, dateTime)
     }
 
     private fun processGroupChatMessage(message: Message) {

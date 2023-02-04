@@ -11,10 +11,10 @@ import cc.imorning.chat.action.message.MessageHelper
 import cc.imorning.chat.action.message.MessageManager
 import cc.imorning.chat.monitor.ChatStanzaListener
 import cc.imorning.chat.monitor.IncomingMessageListener
+import cc.imorning.chat.monitor.OutMessageListener
 import cc.imorning.chat.monitor.RosterListener
 import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.chat.utils.ChatNotificationManager
-import cc.imorning.database.db.RecentDB
 import org.jivesoftware.smack.chat2.ChatManager
 import org.jivesoftware.smack.chat2.IncomingChatMessageListener
 import org.jivesoftware.smack.filter.AndFilter
@@ -32,6 +32,7 @@ class MessageMonitorService : Service() {
 
     private lateinit var chatManager: ChatManager
     private lateinit var incomingMessageListener: IncomingChatMessageListener
+    private lateinit var outMessageListener: OutMessageListener
     private lateinit var chatStanzaListener: ChatStanzaListener
 
     private val chatNotificationManager = ChatNotificationManager.manager
@@ -81,12 +82,14 @@ class MessageMonitorService : Service() {
     private fun addMessageListener() {
         chatManager = ChatManager.getInstanceFor(connection)
         incomingMessageListener = IncomingMessageListener.get()
+        outMessageListener = OutMessageListener.get()
         chatStanzaListener = ChatStanzaListener.get()
         connection.addAsyncStanzaListener(
             chatStanzaListener,
             MessageTypeFilter.NORMAL_OR_CHAT_OR_HEADLINE
         )
         chatManager.addIncomingListener(incomingMessageListener)
+        chatManager.addOutgoingListener(outMessageListener)
     }
 
     /**
@@ -105,6 +108,7 @@ class MessageMonitorService : Service() {
     override fun onDestroy() {
         if (isRunning) {
             chatManager.removeIncomingListener(incomingMessageListener)
+            chatManager.removeOutgoingListener(outMessageListener)
             connection.removeStanzaListener(chatStanzaListener)
         }
         chatNotificationManager.cancelNotification(ChatNotificationManager.CHANNEL_APP_RUNNING_ID)

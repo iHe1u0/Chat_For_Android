@@ -4,6 +4,7 @@ import androidx.room.*
 import cc.imorning.database.entity.RecentMessageEntity
 import cc.imorning.database.utils.DatabaseHelper
 
+private const val TAG = "RecentDatabaseDao"
 @Dao
 interface RecentDatabaseDao {
 

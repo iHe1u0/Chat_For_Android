@@ -9,8 +9,6 @@ import org.jivesoftware.smack.chat2.IncomingChatMessageListener
 import org.jivesoftware.smack.packet.Message
 import org.jxmpp.jid.EntityBareJid
 
-private const val TAG = "IncomingMessageListener"
-
 class IncomingMessageListener private constructor() : IncomingChatMessageListener {
 
     private val connection = App.getTCPConnection()
