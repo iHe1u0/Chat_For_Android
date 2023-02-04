@@ -16,4 +16,5 @@ interface RecentDatabaseDao {
 
     @Delete
     fun deleteMessage(recentMessage: RecentMessageEntity)
+
 }

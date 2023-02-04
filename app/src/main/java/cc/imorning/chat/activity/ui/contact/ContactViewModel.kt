@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import cc.imorning.chat.action.UserAction
 import cc.imorning.chat.model.Contact
 import cc.imorning.chat.utils.AvatarUtils
+import cc.imorning.common.CommonApp
 import cc.imorning.database.dao.DataDatabaseDao
 import cc.imorning.database.entity.UserInfoEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,6 +27,8 @@ class ContactViewModel @Inject constructor(
     companion object {
         private const val TAG = "ContactViewModel"
     }
+
+    private val connection = CommonApp.xmppTcpConnection
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean>

@@ -69,25 +69,27 @@ class MessageViewModel @Inject constructor(
     }
 
     @Synchronized
-    fun refresh(isFromUser: Boolean = false) {
+    fun updateView(isFromUser: Boolean = false) {
         // return if isRefreshing
         if (_isRefreshing.value) {
             return
         }
         viewModelScope.launch(Dispatchers.IO) {
+            // if this update from user,then show the dialog
             if (isFromUser) {
                 _isRefreshing.emit(true)
             }
-            val recentMessageEntities = databaseDao.queryRecentMessage()
+
+            val messages = databaseDao.queryRecentMessage()
             val list = mutableListOf<RecentMessage>()
-            if (recentMessageEntities.isNotEmpty()) {
-                for (recentMessageEntity in recentMessageEntities) {
+            if (messages.isNotEmpty()) {
+                for (message in messages) {
                     list.add(
                         RecentMessage(
-                            nickName = "${recentMessageEntity.nickName}",
-                            sender = recentMessageEntity.sender,
-                            message = "${recentMessageEntity.message}",
-                            time = recentMessageEntity.time
+                            nickName = "${message.nickName}",
+                            sender = message.sender,
+                            message = "${message.message}",
+                            time = message.time
                         )
                     )
                 }
@@ -104,11 +106,11 @@ class MessageViewModel @Inject constructor(
             chatManager == null
         ) {
             chatManager = ChatManager.getInstanceFor(connection)
-            incomingChatMessageListener = IncomingChatMessageListener { from, message, chat ->
-                refresh(false)
+            incomingChatMessageListener = IncomingChatMessageListener { _, _, _ ->
+                updateView(false)
             }
-            outgoingChatMessageListener = OutgoingChatMessageListener { to, messageBuilder, chat ->
-                refresh(false)
+            outgoingChatMessageListener = OutgoingChatMessageListener { _, _, _ ->
+                updateView(false)
             }
         }
         if (chatManager != null) {

@@ -96,9 +96,8 @@ class MessageMonitorService : Service() {
      * process offline message
      */
     private fun processOfflineMessage() {
-        val offlineMessages: List<Message>
         if (ConnectionManager.isConnectionAuthenticated(connection = connection)) {
-            offlineMessages = MessageManager.getOfflineMessage()
+            val offlineMessages: List<Message> = MessageManager.getOfflineMessage()
             for (message in offlineMessages) {
                 MessageHelper.processMessage(message = message)
             }

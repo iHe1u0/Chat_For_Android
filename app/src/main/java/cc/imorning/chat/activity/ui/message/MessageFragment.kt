@@ -60,7 +60,7 @@ class MessageFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        messageViewModel.refresh(false)
+        messageViewModel.updateView(false)
     }
 
     override fun onCreateView(
@@ -136,7 +136,7 @@ fun MessageScreen(viewModel: MessageViewModel) {
             },
             onRefresh = {
                 viewModel.updateStatus()
-                viewModel.refresh(true)
+                viewModel.updateView(true)
             }) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),

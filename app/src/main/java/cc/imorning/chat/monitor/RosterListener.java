@@ -2,15 +2,19 @@ package cc.imorning.chat.monitor;
 
 import android.util.Log;
 
-import com.orhanobut.logger.Logger;
-
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.packet.Presence;
 
 import cc.imorning.chat.BuildConfig;
+import cc.imorning.common.CommonApp;
+import cc.imorning.database.dao.DataDatabaseDao;
+import cc.imorning.database.db.DataDB;
 
 public class RosterListener {
     private static final String TAG = "RosterListener";
+
+    private final DataDatabaseDao databaseDao = DataDB.Companion.getInstance(CommonApp.Companion.getContext(),
+            CommonApp.Companion.getXmppTcpConnection().getUser().asUnescapedString()).databaseDao();
     /**
      * listener for roster change
      */
@@ -22,7 +26,7 @@ public class RosterListener {
 
             if (presence.getType().equals(Presence.Type.subscribe)) {
                 // when get a new subscribe
-                if (BuildConfig.DEBUG){
+                if (BuildConfig.DEBUG) {
                     Log.d(TAG, fromId + "请求订阅");
                 }
                 // Write this request into database
