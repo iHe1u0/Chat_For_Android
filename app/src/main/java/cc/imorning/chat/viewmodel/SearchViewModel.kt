@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cc.imorning.chat.App
+import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.action.SearchResult
-import cc.imorning.chat.action.UserAction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -48,7 +48,7 @@ class SearchViewModel : ViewModel() {
     fun search() {
         _shouldShowWaitingDialog.value = true
         viewModelScope.launch(Dispatchers.IO) {
-            val searchResults = UserAction.search(_key.value)
+            val searchResults = RosterAction.search(_key.value)
             if (searchResults != null) {
                 withContext(Dispatchers.Main) {
                     _results.value = searchResults

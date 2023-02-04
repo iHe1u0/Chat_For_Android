@@ -6,6 +6,8 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import cc.imorning.chat.App
+import cc.imorning.chat.action.RosterAction
+import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
 import cc.imorning.common.R
@@ -35,13 +37,13 @@ class AvatarUtils private constructor() {
      * try to get and save avatar for user @param jid
      */
     fun saveAvatar(jidString: String) {
-        if (!cc.imorning.chat.network.ConnectionManager.isConnectionAuthenticated(connection)) {
+        if (!ConnectionManager.isConnectionAuthenticated(connection)) {
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "connection is not authenticated")
             }
             return
         }
-        val vCard = cc.imorning.chat.action.UserAction.getContactVCard(jidString)
+        val vCard = RosterAction.getContactVCard(jidString)
         if (vCard != null) {
             val avatarByte = vCard.avatar
             if (avatarByte != null) {

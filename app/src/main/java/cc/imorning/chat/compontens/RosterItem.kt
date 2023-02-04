@@ -15,10 +15,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import cc.imorning.chat.activity.ChatActivity
-import cc.imorning.chat.model.Contact
+import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.common.constant.ChatType
 import cc.imorning.common.constant.Config
-import cc.imorning.chat.utils.AvatarUtils
+import cc.imorning.database.entity.RosterEntity
 
 private const val TAG = "ContactItem"
 
@@ -26,12 +26,12 @@ private const val TAG = "ContactItem"
  * 联系人列表条目
  */
 @Composable
-fun ContactItem(
-    contact: Contact
+fun RosterItem(
+    roster: RosterEntity
 ) {
     val context = LocalContext.current
-    val jidString = contact.jid
-    val nickname = contact.nickName
+    val jidString = roster.jid
+    val nickname = roster.nick
     var avatarPath = AvatarUtils.instance.getAvatarPath(jidString)
     if (!AvatarUtils.instance.hasAvatarCache(jidString)) {
         avatarPath = AvatarUtils.instance.getOnlineAvatar(jidString)

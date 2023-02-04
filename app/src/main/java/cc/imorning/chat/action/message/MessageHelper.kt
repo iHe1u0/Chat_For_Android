@@ -2,7 +2,7 @@ package cc.imorning.chat.action.message
 
 import android.util.Log
 import cc.imorning.chat.App
-import cc.imorning.chat.action.UserAction
+import cc.imorning.chat.action.RosterAction
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
 import cc.imorning.common.entity.MessageBody
@@ -93,7 +93,7 @@ object MessageHelper {
             action = encodeAction
         )
         val messageEntity = MessageEntity(
-            sender = connection.user.asUnescapedString(),
+            sender = connection.user.asEntityBareJidString(),
             receiver = receiver,
             messageBody = messageBody,
         )
@@ -146,8 +146,8 @@ object MessageHelper {
     }
 
     private fun processChatMessage(message: Message, from: String?, chat: Chat?) {
-        val fromString = from ?: message.from.asUnescapedString()
-        val nickName = UserAction.getNickName(fromString)
+        val fromString = from ?: message.from.asBareJid().toString()
+        val nickName = RosterAction.getNickName(fromString)
         val dateTime: DateTime = DateTime.now()
         insertRecentMessage(fromString, nickName, message, dateTime)
     }

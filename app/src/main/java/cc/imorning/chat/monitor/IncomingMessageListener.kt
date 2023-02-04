@@ -14,7 +14,7 @@ class IncomingMessageListener private constructor() : IncomingChatMessageListene
     private val connection = App.getTCPConnection()
 
     override fun newIncomingMessage(from: EntityBareJid?, message: Message?, chat: Chat?) {
-        val fromJidString = from?.asUnescapedString()
+        val fromJidString = from?.asEntityBareJidString()
         if (message != null) {
             MessageHelper.processMessage(
                 from = fromJidString,
@@ -23,10 +23,10 @@ class IncomingMessageListener private constructor() : IncomingChatMessageListene
             )
         }
         // then let's make a notification
-        // val icon = AvatarUtils.instance.getAvatarPath(jid = from.asUnescapedString())
+        // val icon = AvatarUtils.instance.getAvatarPath(jid = from.asEntityBareJidString())
         val onlineMessage = OnlineMessage(
             from = fromJidString,
-            receiver = connection.user.asUnescapedString(),
+            receiver = connection.user.asEntityBareJidString(),
             message = message?.body
         )
         ChatNotificationManager.manager.showNotification(

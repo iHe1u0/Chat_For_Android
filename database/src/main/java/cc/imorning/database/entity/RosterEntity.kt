@@ -4,13 +4,14 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import cc.imorning.database.utils.DatabaseHelper
+import org.jivesoftware.smack.packet.Message
+import org.jivesoftware.smack.roster.packet.RosterPacket
 
 /**
  * roster entity
  */
 @Entity(tableName = DatabaseHelper.TABLE_ROSTER)
 data class RosterEntity(
-
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "jid", typeAffinity = ColumnInfo.TEXT)
     val jid: String,
@@ -19,11 +20,11 @@ data class RosterEntity(
     val nick: String,
 
     @ColumnInfo(name = "type")
-    val type: org.jivesoftware.smack.packet.Message.Type = org.jivesoftware.smack.packet.Message.Type.normal,
+    val type: Message.Type = Message.Type.normal,
 
     @ColumnInfo(name = "group", typeAffinity = ColumnInfo.TEXT)
     val group: String,
 
-    @ColumnInfo(name = "status")
-    val status: org.jivesoftware.smack.packet.Presence.Type = org.jivesoftware.smack.packet.Presence.Type.unsubscribe
+    @ColumnInfo(name = "item_type")
+    val item_type: RosterPacket.ItemType = RosterPacket.ItemType.none
 )

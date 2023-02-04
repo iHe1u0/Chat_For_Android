@@ -26,9 +26,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import cc.imorning.chat.App
 import cc.imorning.chat.R
+import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.compontens.VCardDialog
-import cc.imorning.common.CommonApp
-import cc.imorning.chat.action.UserAction
 import cc.imorning.common.utils.QrUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -188,7 +187,7 @@ object ComposeDialogUtils {
                 text = {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = "添加[${UserAction.getNickName(jidString)}]",
+                            text = "添加[${RosterAction.getNickName(jidString)}]",
                             modifier = Modifier.align(Alignment.CenterHorizontally)
                         )
                         OutlinedTextField(value = name,
@@ -203,7 +202,7 @@ object ComposeDialogUtils {
                             name = jidString.split("@")[0]
                         }
                         scope.launch(Dispatchers.IO) {
-                            val result = UserAction.addRoster(jidString, name, null)
+                            val result = RosterAction.addRoster(jidString, name, null)
                             if (Looper.myLooper() == null) {
                                 Looper.prepare()
                             }

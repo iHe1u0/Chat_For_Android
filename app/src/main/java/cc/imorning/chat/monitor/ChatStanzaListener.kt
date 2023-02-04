@@ -1,8 +1,6 @@
 package cc.imorning.chat.monitor
 
-import android.util.Log
 import cc.imorning.chat.App
-import com.orhanobut.logger.Logger
 import org.jivesoftware.smack.StanzaListener
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
@@ -29,16 +27,16 @@ class ChatStanzaListener private constructor() : StanzaListener {
         }
         val stanza = packet
         // MessageHelper.processMessage(
-        //     from = stanza.from.asUnescapedString(),
+        //     from = stanza.from.asEntityBareJidString(),
         //     message = stanza
         // )
         // ChatNotificationManager.manager.showNotification(
         //     message = OnlineMessage(
-        //         from = stanza.from.asUnescapedString(),
-        //         receiver = connection.user.asUnescapedString(),
+        //         from = stanza.from.asEntityBareJidString(),
+        //         receiver = connection.user.asEntityBareJidString(),
         //         message = stanza.body
         //     ),
-        //     from = stanza.from.asUnescapedString(),
+        //     from = stanza.from.asEntityBareJidString(),
         // )
     }
 

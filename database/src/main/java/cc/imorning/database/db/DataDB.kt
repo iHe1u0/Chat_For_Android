@@ -15,7 +15,7 @@ import cc.imorning.database.utils.DatabaseHelper
 
 @Database(
     entities = [UserInfoEntity::class, RosterEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 @TypeConverters(CommonConverter::class, RosterConverter::class)
@@ -32,8 +32,10 @@ abstract class DataDB : RoomDatabase() {
                 dataDB = Room.databaseBuilder(
                     CommonApp.getContext(),
                     DataDB::class.java,
-                    DatabaseHelper.getDatabase(context, jid, DatabaseHelper.RECENT_MESSAGE_DB)
-                ).build()
+                    DatabaseHelper.getDatabase(context, jid, DatabaseHelper.DATA_DB)
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
             }
             return dataDB
         }

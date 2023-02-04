@@ -3,7 +3,7 @@ package cc.imorning.chat.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import cc.imorning.chat.action.UserAction
+import cc.imorning.chat.action.RosterAction
 import cc.imorning.common.constant.ChatType
 import javax.inject.Inject
 
@@ -56,7 +56,7 @@ class ChatViewModel @Inject constructor() : ViewModel() {
         if (_chatUserId.value == null || _chatUserId.value.isNullOrEmpty()) {
             return "陌生人"
         }
-        return UserAction.getNickName(_chatUserId.value!!)
+        return RosterAction.getNickName(_chatUserId.value!!)
     }
 }
 

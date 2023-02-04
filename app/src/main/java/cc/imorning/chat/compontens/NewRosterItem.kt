@@ -10,11 +10,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import cc.imorning.chat.model.Contact
+import cc.imorning.database.entity.RosterEntity
 
 @Composable
-fun NewUserCard(
-    contact: Contact,
+fun NewRosterItem(
+    roster: RosterEntity,
     onAccept: () -> Unit,
     onReject: () -> Unit,
 ) {
@@ -27,9 +27,9 @@ fun NewUserCard(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Avatar(avatarPath = contact.jid)
+            Avatar(avatarPath = roster.jid)
             Text(
-                text = contact.nickName,
+                text = roster.jid,
                 modifier = Modifier.align(Alignment.CenterVertically),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

@@ -46,13 +46,13 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import cc.imorning.chat.ui.view.ComposeDialogUtils.FunctionalityNotAvailablePopup
-import cc.imorning.common.CommonApp
-import cc.imorning.chat.action.UserAction
+import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.action.message.MessageManager
+import cc.imorning.chat.ui.view.ComposeDialogUtils.FunctionalityNotAvailablePopup
+import cc.imorning.chat.utils.AvatarUtils
+import cc.imorning.common.CommonApp
 import cc.imorning.common.entity.MessageBody
 import cc.imorning.common.entity.MessageEntity
-import cc.imorning.chat.utils.AvatarUtils
 import com.example.compose.jetchat.conversation.JumpToBottom
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
@@ -350,7 +350,7 @@ private fun AuthorNameTimestamp(msg: MessageEntity) {
     // Combine author and timestamp for a11y.
     Row(modifier = Modifier.semantics(mergeDescendants = true) {}) {
         Text(
-            text = UserAction.getNickName(msg.sender),
+            text = RosterAction.getNickName(msg.sender),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier
                 .alignBy(LastBaseline)

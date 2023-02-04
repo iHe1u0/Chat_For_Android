@@ -22,8 +22,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import cc.imorning.chat.R
 import cc.imorning.chat.activity.SearchActivity
-import cc.imorning.chat.compontens.ContactItem
-import cc.imorning.chat.compontens.NewUserCard
+import cc.imorning.chat.compontens.NewRosterItem
+import cc.imorning.chat.compontens.RosterItem
 import cc.imorning.chat.compontens.SearchBar
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.common.CommonApp
@@ -101,7 +101,8 @@ fun TopBar() {
 fun ContactScreen(viewModel: ContactViewModel) {
 
     val isRefreshing = viewModel.isRefreshing.collectAsState()
-    val contacts = viewModel.contacts.collectAsState()
+    val rosters = viewModel.contacts.collectAsState()
+    val newRoster = viewModel.newContacts.collectAsState()
 
     Column {
         // search bar
@@ -112,9 +113,9 @@ fun ContactScreen(viewModel: ContactViewModel) {
         ) {
             item {
                 Column {
-                    contacts.value.forEach { newContact ->
-                        NewUserCard(
-                            contact = newContact,
+                    rosters.value.forEach { newRoster ->
+                        NewRosterItem(
+                            roster = newRoster,
                             onAccept = {
                                 Log.i(TAG, "ContactScreen: accept")
                             },
@@ -126,27 +127,26 @@ fun ContactScreen(viewModel: ContactViewModel) {
                 }
             }
         }
-    }
-
-    SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = isRefreshing.value),
-        indicator = { state, trigger ->
-            SwipeRefreshIndicator(
-                state = state,
-                refreshTriggerDistance = trigger,
-                scale = true,
-                shape = MaterialTheme.shapes.extraLarge,
-            )
-        },
-        onRefresh = { viewModel.refresh() }) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            if (contacts.value.isNotEmpty()) {
-                item {
-                    Column {
-                        contacts.value.forEach { contact ->
-                            ContactItem(contact = contact)
+        SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = isRefreshing.value),
+            indicator = { state, trigger ->
+                SwipeRefreshIndicator(
+                    state = state,
+                    refreshTriggerDistance = trigger,
+                    scale = true,
+                    shape = MaterialTheme.shapes.extraLarge,
+                )
+            },
+            onRefresh = { viewModel.getRostersFromServer() }) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                if (rosters.value.isNotEmpty()) {
+                    item {
+                        Column {
+                            rosters.value.forEach { roster ->
+                                RosterItem(roster = roster)
+                            }
                         }
                     }
                 }

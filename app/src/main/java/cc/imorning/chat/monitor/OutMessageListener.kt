@@ -1,7 +1,7 @@
 package cc.imorning.chat.monitor
 
 import cc.imorning.chat.App
-import cc.imorning.chat.action.UserAction
+import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.action.message.MessageHelper
 import org.jivesoftware.smack.chat2.Chat
 import org.jivesoftware.smack.chat2.OutgoingChatMessageListener
@@ -18,8 +18,8 @@ class OutMessageListener private constructor() : OutgoingChatMessageListener {
         messageBuilder: MessageBuilder?,
         chat: Chat?
     ) {
-        val fromString = to!!.asUnescapedString()
-        val nickName = UserAction.getNickName(fromString)
+        val fromString = to!!.asEntityBareJidString()
+        val nickName = RosterAction.getNickName(fromString)
         val dateTime: DateTime = DateTime.now()
         val message = messageBuilder!!.build()
         MessageHelper.insertRecentMessage(fromString, nickName, message, dateTime)

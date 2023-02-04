@@ -2,6 +2,7 @@ package cc.imorning.database.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import cc.imorning.database.entity.RosterEntity
 import cc.imorning.database.entity.UserInfoEntity
 import cc.imorning.database.utils.DatabaseHelper
 
@@ -9,10 +10,19 @@ import cc.imorning.database.utils.DatabaseHelper
 interface DataDatabaseDao {
 
     /**
-     * query all rosters
+     * insert roster
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertRoster(rosterEntity: RosterEntity)
+
+    @Query("select * from ${DatabaseHelper.TABLE_ROSTER}")
+    fun queryRosters(): List<RosterEntity>
+
+    /**
+     * query all user information
      */
     @Query("select * from ${DatabaseHelper.TABLE_USER_INFO}")
-    fun queryRoster(): LiveData<List<UserInfoEntity>>
+    fun queryUserInfo(): LiveData<List<UserInfoEntity>>
 
     /**
      * update local database after adding a roster

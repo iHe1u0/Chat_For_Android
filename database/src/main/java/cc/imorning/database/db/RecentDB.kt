@@ -32,6 +32,7 @@ abstract class RecentDB : RoomDatabase() {
                     RecentDB::class.java,
                     DatabaseHelper.getDatabase(context, jid, DatabaseHelper.RECENT_MESSAGE_DB)
                 )
+                    .fallbackToDestructiveMigration()
                     .build()
             }
             return recentDB

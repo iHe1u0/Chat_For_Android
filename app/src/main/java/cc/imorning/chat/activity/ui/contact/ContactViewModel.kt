@@ -3,12 +3,11 @@ package cc.imorning.chat.activity.ui.contact
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import cc.imorning.chat.action.UserAction
-import cc.imorning.chat.model.Contact
+import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.common.CommonApp
 import cc.imorning.database.dao.DataDatabaseDao
-import cc.imorning.database.entity.UserInfoEntity
+import cc.imorning.database.entity.RosterEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -17,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.jivesoftware.smack.packet.Message
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,55 +35,62 @@ class ContactViewModel @Inject constructor(
         get() = _isRefreshing.asStateFlow()
 
     // list of all contacts
-    private val _contacts = MutableStateFlow<List<Contact>>(emptyList())
-    val contacts: StateFlow<List<Contact>>
-        get() = _contacts.asStateFlow()
+    private val _rosters = MutableStateFlow<List<RosterEntity>>(emptyList())
+    val contacts: StateFlow<List<RosterEntity>>
+        get() = _rosters.asStateFlow()
 
     // list of all new contacts
-    private val _newContacts = MutableStateFlow<List<Contact>>(emptyList())
-    val newContacts: StateFlow<List<Contact>>
-        get() = _newContacts.asStateFlow()
+    private val _newRosters = MutableStateFlow<List<RosterEntity>>(emptyList())
+    val newContacts: StateFlow<List<RosterEntity>>
+        get() = _newRosters.asStateFlow()
 
     init {
-        refresh()
+        viewModelScope.launch {
+            getRostersFromServer()
+        }
+    }
+
+    private fun updateView() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val rosterList = databaseDao.queryRosters()
+            withContext(Dispatchers.Main) {
+                if (rosterList.isNotEmpty()) {
+                    _rosters.value = rosterList
+                }
+            }
+        }
+
     }
 
     @Synchronized
-    fun refresh() {
+    fun getRostersFromServer() {
         // return if isRefreshing
         if (_isRefreshing.value) {
             return
         }
         viewModelScope.launch(Dispatchers.IO) {
             _isRefreshing.emit(true)
-            val members = UserAction.getContactList()
-            val contactList = ArrayList<Contact>()
-            if ((members != null) && members.isNotEmpty()) {
-                for (member in members) {
+            val rosterList = RosterAction.getRosterList()
+            if (rosterList != null && rosterList.isNotEmpty()) {
+                for (roster in rosterList) {
                     withContext(Dispatchers.IO) {
-                        val jidString = member.jid.asUnescapedString()
-                        val nickName = member.name
-                        // insert contact into database
-                        databaseDao.insertUserInfo(
-                            UserInfoEntity(
+                        val jidString = roster.jid.asBareJid().toString()
+                        // insert roster into database
+                        databaseDao.insertRoster(
+                            RosterEntity(
                                 jid = jidString,
-                                username = nickName
+                                nick = roster.name,
+                                group = roster.groups[0].name,
+                                type = Message.Type.chat,
+                                item_type = roster.type,
                             )
                         )
-                        // save contact's avatar
+                        // save avatar
                         AvatarUtils.instance.saveAvatar(jidString)
-                        // show for ui
-                        contactList.add(
-                            Contact(
-                                nickName = nickName,
-                                jid = jidString,
-                                status = 0
-                            )
-                        )
                     }
                 }
+                updateView()
             }
-            _contacts.emit(contactList)
             delay(1000)
             _isRefreshing.emit(false)
         }

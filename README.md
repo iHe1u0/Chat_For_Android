@@ -17,15 +17,15 @@ This is IM app for Android based on [Openfire](https://www.igniterealtime.org/pr
 * [x] Add Chat UI.
 * [ ] Add Chat Function.
 * [x] Function for create a user.
-* [ ] Remove a contact from server.
+* [ ] Remove a roster from server.
 * [x] Add function for showing user's vCard.
 * [ ] Add function for modify user's vCard.
-* [ ] Add scanning and generating QR to add contact.
+* [ ] Add scanning and generating QR to add roster.
 * [ ] Add function for feedback.
 * [ ] Show more information when shou AboutDialog.
-* [x] Add function for query contact on server.
-* [ ] Add function for removing a contact from list.
-* [x] Add function for adding a contact into contact's list.
+* [x] Add function for query roster on server.
+* [ ] Add function for removing a roster from list.
+* [x] Add function for adding a roster into roster's list.
 * [ ] Add group chat function.
 * [ ] use gzip to compress MessageEntity.
 * [ ] Silk Coder.

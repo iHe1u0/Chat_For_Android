@@ -12,9 +12,6 @@ import cc.imorning.database.db.DataDB;
 
 public class RosterListener {
     private static final String TAG = "RosterListener";
-
-    private final DataDatabaseDao databaseDao = DataDB.Companion.getInstance(CommonApp.Companion.getContext(),
-            CommonApp.Companion.getXmppTcpConnection().getUser().asUnescapedString()).databaseDao();
     /**
      * listener for roster change
      */
@@ -22,7 +19,7 @@ public class RosterListener {
 
         if (packet instanceof Presence presence) {
 
-            String fromId = presence.getFrom().asUnescapedString();
+            String fromId = presence.getFrom().asBareJid().toString();
 
             if (presence.getType().equals(Presence.Type.subscribe)) {
                 // when get a new subscribe
@@ -44,4 +41,6 @@ public class RosterListener {
             }
         }
     };
+    private final DataDatabaseDao databaseDao = DataDB.Companion.getInstance(CommonApp.Companion.getContext(),
+            CommonApp.Companion.getXmppTcpConnection().getUser().asEntityBareJidString()).databaseDao();
 }

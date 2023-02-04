@@ -13,10 +13,10 @@
     <string name="remember_password">Remember Password</string>
     <string name="account">Account</string>
     <string name="password">Password</string>
-    <string name="search_contact">Search in contact</string>
+    <string name="search_contact">Search in roster</string>
 
     <string name="desc_contact_item_avatar">Avatar</string>
-    <string name="desc_add_contact">Add new contact</string>
+    <string name="desc_add_contact">Add new roster</string>
     <string name="new_message">New message</string>
     <string name="send">Send</string>
 

@@ -17,9 +17,9 @@ import org.jivesoftware.smackx.xdata.form.Form
 import org.jxmpp.jid.impl.JidCreate
 
 
-private const val TAG = "UserAction"
+private const val TAG = "RosterAction"
 
-object UserAction {
+object RosterAction {
 
     private val connection = App.getTCPConnection()
 
@@ -70,7 +70,7 @@ object UserAction {
      * @return 好友列表
      */
     @Synchronized
-    fun getContactList(): List<RosterEntry>? {
+    fun getRosterList(): List<RosterEntry>? {
         if (NetworkUtils.isNetworkNotConnected(CommonApp.getContext())) {
             return null
         }
@@ -88,10 +88,10 @@ object UserAction {
         if (!roster.isLoaded) {
             roster.reloadAndWait()
         }
-        val entriesGroup = roster.groups
+        val rosterGroups = roster.groups
         val members: MutableList<RosterEntry> = ArrayList()
         // 遍历群组
-        for (group in entriesGroup) {
+        for (group in rosterGroups) {
             val entries: Collection<RosterEntry> = group.entries
             // 遍历群组里面的联系人
             for (rosterEntry in entries) {
@@ -153,12 +153,16 @@ object UserAction {
         ) {
             return null
         }
+        var jid = jidString
+        if (jidString.contains("/")) {
+            jid = jidString.split("/")[0]
+        }
         try {
-            val user = JidCreate.entityBareFrom(jidString)
+            val user = JidCreate.entityBareFrom(jid)
             return VCardManager.getInstanceFor(connection).loadVCard(user)
         } catch (e: Exception) {
             if (BuildConfig.DEBUG) {
-                Log.e(TAG, "get user[$jidString] vCard failed", e)
+                Log.w(TAG, "get user[$jid] vCard failed", e)
             }
         }
         return null
