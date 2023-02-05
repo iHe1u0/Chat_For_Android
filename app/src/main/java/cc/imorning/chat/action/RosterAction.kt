@@ -5,6 +5,7 @@ import cc.imorning.chat.App
 import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
+import cc.imorning.common.constant.Config
 import cc.imorning.common.exception.OfflineException
 import cc.imorning.common.utils.NetworkUtils
 import org.jivesoftware.smack.roster.Roster
@@ -193,12 +194,12 @@ object RosterAction {
                 roster.createItem(
                     JidCreate.entityBareFrom(jid),
                     nickName,
-                    arrayOf("我的好友")
+                    arrayOf(Config.DEFAULT_GROUP)
                 )
             }
             return true
         } catch (e: Exception) {
-            Log.e(TAG, "add user failed", e)
+            Log.e(TAG, "add roster failed", e)
         }
         return false
     }
