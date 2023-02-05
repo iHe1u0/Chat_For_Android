@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.database.entity.RosterEntity
 
 @Composable
@@ -23,11 +24,11 @@ fun NewRosterItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(64.dp)
-                .padding(start = 4.dp),
+                .padding(start = 8.dp),
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Avatar(avatarPath = roster.jid)
+            Avatar(avatarPath = AvatarUtils.instance.getAvatarPath(roster.jid))
             Text(
                 text = roster.jid,
                 modifier = Modifier.align(Alignment.CenterVertically),
@@ -38,6 +39,7 @@ fun NewRosterItem(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(start = 8.dp)
                 .height(64.dp),
             contentAlignment = Alignment.CenterEnd
         ) {

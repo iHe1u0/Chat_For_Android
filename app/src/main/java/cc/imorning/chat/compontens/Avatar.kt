@@ -1,6 +1,5 @@
 package cc.imorning.chat.compontens
 
-import android.util.Log
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -37,7 +36,6 @@ fun Avatar(avatarPath: String) {
                 CircularProgressIndicator()
             }
             is AsyncImagePainter.State.Error -> {
-                Log.w(TAG, "on error when get avatar: $avatarPath")
                 Icon(imageVector = Icons.Filled.Person, contentDescription = null)
             }
             is AsyncImagePainter.State.Empty -> {

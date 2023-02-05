@@ -57,7 +57,7 @@ class AvatarUtils private constructor() {
     }
 
     fun getAvatarPath(jidString: String): String {
-        if (cc.imorning.chat.network.ConnectionManager.isConnectionAuthenticated(connection)) {
+        if (ConnectionManager.isConnectionAuthenticated(connection)) {
             if (!hasAvatarCache(jidString)) {
                 saveAvatar(jidString)
             }

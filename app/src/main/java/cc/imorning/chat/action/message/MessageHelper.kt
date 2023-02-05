@@ -138,9 +138,6 @@ object MessageHelper {
         // val messageEntity = MessageEntity()
         // update recent database
         MainScope().launch(Dispatchers.IO) {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, Log.getStackTraceString(Throwable(recentMessage.sender)))
-            }
             databaseDao.insertOrReplaceMessage(recentMessage)
         }
     }

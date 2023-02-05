@@ -15,6 +15,9 @@ interface DataDatabaseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertRoster(rosterEntity: RosterEntity)
 
+    @Update
+    fun updateRoster(rosterEntity: RosterEntity)
+
     @Query("select * from ${DatabaseHelper.TABLE_ROSTER}")
     fun queryRosters(): List<RosterEntity>
 

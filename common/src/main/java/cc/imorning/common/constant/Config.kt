@@ -1,7 +1,5 @@
 package cc.imorning.common.constant
 
-import java.util.*
-
 object Config {
 
     object Intent {
@@ -22,4 +20,5 @@ object Config {
     const val DEFAULT_CONFIG = "default_info"
     const val LOGIN_INFO = "login_info"
 
+    const val DEFAULT_GROUP = "Friends"
 }

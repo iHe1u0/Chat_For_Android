@@ -1,8 +1,8 @@
 package cc.imorning.chat.activity.ui.contact
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,6 +43,11 @@ class ContactFragment : Fragment() {
             CommonApp.xmppTcpConnection!!.user.asEntityBareJidString()
         )
         ContactViewModelFactory(db.databaseDao())
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        viewModel.updateRosterView()
     }
 
     override fun onCreateView(
@@ -101,32 +106,12 @@ fun TopBar() {
 fun ContactScreen(viewModel: ContactViewModel) {
 
     val isRefreshing = viewModel.isRefreshing.collectAsState()
-    val rosters = viewModel.contacts.collectAsState()
-    val newRoster = viewModel.newContacts.collectAsState()
+    val rosters = viewModel.rosters.collectAsState()
+    val newRoster = viewModel.newRosters.collectAsState()
 
     Column {
         // search bar
         SearchBar(modifier = Modifier.fillMaxWidth())
-        // Show this content if have new friend
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            item {
-                Column {
-                    rosters.value.forEach { newRoster ->
-                        NewRosterItem(
-                            roster = newRoster,
-                            onAccept = {
-                                Log.i(TAG, "ContactScreen: accept")
-                            },
-                            onReject = {
-                                Log.i(TAG, "ContactScreen: reject")
-                            }
-                        )
-                    }
-                }
-            }
-        }
         SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = isRefreshing.value),
             indicator = { state, trigger ->
                 SwipeRefreshIndicator(
@@ -141,8 +126,23 @@ fun ContactScreen(viewModel: ContactViewModel) {
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                if (rosters.value.isNotEmpty()) {
-                    item {
+                item {
+                    if (newRoster.value.isNotEmpty()) {
+                        Column {
+                            newRoster.value.forEach { newRoster ->
+                                NewRosterItem(
+                                    roster = newRoster,
+                                    onAccept = {
+                                        viewModel.acceptSubscribe(newRoster.jid)
+                                    },
+                                    onReject = {
+                                        viewModel.rejectSubscribe(newRoster.jid)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    if (rosters.value.isNotEmpty()) {
                         Column {
                             rosters.value.forEach { roster ->
                                 RosterItem(roster = roster)

@@ -13,9 +13,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cc.imorning.chat.activity.ChatActivity
 import cc.imorning.chat.model.RecentMessage
+import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.common.constant.ChatType
 import cc.imorning.common.constant.Config
-import cc.imorning.chat.utils.AvatarUtils
 
 private const val TAG = "RecentMessageItem"
 
@@ -39,7 +39,7 @@ fun RecentMessageItem(message: RecentMessage) {
         Avatar(avatarPath = avatarPath)
         Column(modifier = Modifier.padding(start = 8.dp)) {
             Text(
-                text = message.sender,
+                text = message.nickName,
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
