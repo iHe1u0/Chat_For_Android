@@ -28,6 +28,7 @@ import cc.imorning.chat.App
 import cc.imorning.chat.R
 import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.compontens.VCardDialog
+import cc.imorning.common.constant.Config
 import cc.imorning.common.utils.QrUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -202,7 +203,7 @@ object ComposeDialogUtils {
                             name = jidString.split("@")[0]
                         }
                         scope.launch(Dispatchers.IO) {
-                            val result = RosterAction.addRoster(jidString, name, null)
+                            val result = RosterAction.addRoster(jidString, name, arrayOf(Config.DEFAULT_GROUP))
                             if (Looper.myLooper() == null) {
                                 Looper.prepare()
                             }

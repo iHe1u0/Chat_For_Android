@@ -37,19 +37,19 @@ class ContactViewModel @Inject constructor(
         get() = _isRefreshing.asStateFlow()
 
     // list of all contacts
-    private val _rosters = MutableStateFlow<List<RosterEntity>>(emptyList())
+    private val _friends = MutableStateFlow<List<RosterEntity>>(emptyList())
     val rosters: StateFlow<List<RosterEntity>>
-        get() = _rosters.asStateFlow()
+        get() = _friends.asStateFlow()
 
     // list of all new contacts
-    private val _newRosters = MutableStateFlow<List<RosterEntity>>(emptyList())
+    private val _strangers = MutableStateFlow<List<RosterEntity>>(emptyList())
     val newRosters: StateFlow<List<RosterEntity>>
-        get() = _newRosters.asStateFlow()
+        get() = _strangers.asStateFlow()
 
     init {
         viewModelScope.launch {
             getRostersFromServer()
-            // updateRosterView()
+            updateRosterView()
         }
     }
 
@@ -59,18 +59,18 @@ class ContactViewModel @Inject constructor(
             withContext(Dispatchers.Main) {
                 if (rosterList.isNotEmpty()) {
                     // _rosters.value = rosterList
-                    val bothRosters = mutableListOf<RosterEntity>()
-                    val singleRosters = mutableListOf<RosterEntity>()
+                    val friends = mutableListOf<RosterEntity>()
+                    val strangers = mutableListOf<RosterEntity>()
                     for (roster in rosterList) {
                         // if user and roster is both friend
-                        if (roster.item_type == RosterPacket.ItemType.both) {
-                            bothRosters.add(roster)
+                        if (roster.is_friend) {
+                            friends.add(roster)
                         } else {
-                            singleRosters.add(roster)
+                            strangers.add(roster)
                         }
                     }
-                    _rosters.value = bothRosters
-                    _newRosters.value = singleRosters
+                    _friends.value = friends
+                    _strangers.value = strangers
                 }
             }
         }
@@ -97,21 +97,20 @@ class ContactViewModel @Inject constructor(
                                 group = roster.groups[0].name,
                                 type = Message.Type.chat,
                                 item_type = roster.type,
+                                is_friend = roster.isSubscriptionPending
                             )
                         )
-                        Log.d(TAG, "$jidString > ${roster.type} > ${roster.isSubscriptionPending}")
                         // save avatar
                         AvatarUtils.instance.saveAvatar(jidString)
                     }
                 }
             }
-            delay(1000)
+            delay(500)
             _isRefreshing.emit(false)
         }
     }
 
     fun acceptSubscribe(jidString: String) {
-
         if ((connection != null) && connection.isConnected && connection.isAuthenticated) {
             val subscribed = connection.stanzaFactory.buildPresenceStanza()
                 .to(jidString)
@@ -125,11 +124,14 @@ class ContactViewModel @Inject constructor(
                         nick = RosterAction.getNickName(jidString),
                         type = Message.Type.chat,
                         group = Config.DEFAULT_GROUP,
-                        item_type = RosterPacket.ItemType.both
+                        item_type = RosterPacket.ItemType.to,
+                        is_friend = true
                     )
                 )
+                withContext(Dispatchers.Main) {
+                    updateRosterView()
+                }
             }
-            updateRosterView()
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "acceptSubscribe: $jidString")
             }

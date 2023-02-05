@@ -17,7 +17,7 @@ class CommonConverter {
 
     @TypeConverter
     fun revertBoolean(value: Int): Boolean {
-        return value == 0
+        return value == 1
     }
 
     @TypeConverter

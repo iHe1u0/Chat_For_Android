@@ -26,5 +26,8 @@ data class RosterEntity(
     val group: String,
 
     @ColumnInfo(name = "item_type")
-    val item_type: RosterPacket.ItemType = RosterPacket.ItemType.none
+    val item_type: RosterPacket.ItemType = RosterPacket.ItemType.none,
+
+    @ColumnInfo(name = "is_friend")
+    val is_friend: Boolean = false
 )

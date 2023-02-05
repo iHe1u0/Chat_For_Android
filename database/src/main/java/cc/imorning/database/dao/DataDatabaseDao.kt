@@ -15,11 +15,14 @@ interface DataDatabaseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertRoster(rosterEntity: RosterEntity)
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateRoster(rosterEntity: RosterEntity)
 
     @Query("select * from ${DatabaseHelper.TABLE_ROSTER}")
     fun queryRosters(): List<RosterEntity>
+
+    @Delete
+    fun deleteRoster(rosterEntity: RosterEntity)
 
     /**
      * query all user information

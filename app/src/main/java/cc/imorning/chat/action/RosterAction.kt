@@ -15,6 +15,7 @@ import org.jivesoftware.smackx.search.UserSearchManager
 import org.jivesoftware.smackx.vcardtemp.VCardManager
 import org.jivesoftware.smackx.vcardtemp.packet.VCard
 import org.jivesoftware.smackx.xdata.form.Form
+import org.jxmpp.jid.BareJid
 import org.jxmpp.jid.impl.JidCreate
 
 
@@ -178,25 +179,18 @@ object RosterAction {
      *
      * @return true if add success
      */
-    fun addRoster(jid: String, nickName: String, groups: List<String>?): Boolean {
+    fun addRoster(
+        jid: String,
+        nickName: String,
+        groups: Array<String>? = arrayOf(Config.DEFAULT_GROUP)
+    ): Boolean {
         if (!ConnectionManager.isConnectionAuthenticated(connection)) {
             return false
         }
         val roster = Roster.getInstanceFor(connection)
         try {
-            if (groups != null) {
-                roster.createItemAndRequestSubscription(
-                    JidCreate.entityBareFrom(jid),
-                    nickName,
-                    groups.toTypedArray()
-                )
-            } else {
-                roster.createItem(
-                    JidCreate.entityBareFrom(jid),
-                    nickName,
-                    arrayOf(Config.DEFAULT_GROUP)
-                )
-            }
+            val bareJid = JidCreate.bareFrom(jid)
+            roster.createItemAndRequestSubscription(bareJid, nickName, groups)
             return true
         } catch (e: Exception) {
             Log.e(TAG, "add roster failed", e)
@@ -248,7 +242,6 @@ object RosterAction {
                         for (supportFieldName in searchDataForm.fields) {
                             supportName.append("${supportFieldName.fieldName} ")
                         }
-                        Log.d(TAG, "service [$service] support [$supportName]")
                     }
                     requestForm.setAnswer("search", key)
                     requestForm.setAnswer("Username", true)
@@ -280,6 +273,18 @@ object RosterAction {
         }
         return null
     }
+
+    /**
+     * return if fromId is user's friend
+     */
+    fun isFriend(fromId: BareJid): Boolean {
+        if (fromId.isEmpty()) {
+            return false
+        }
+        val roster = Roster.getInstanceFor(connection)
+        return roster.isSubscribedToMyPresence(fromId)
+    }
+
 }
 
 /**

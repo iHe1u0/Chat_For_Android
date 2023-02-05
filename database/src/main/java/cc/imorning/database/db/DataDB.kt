@@ -15,7 +15,7 @@ import cc.imorning.database.utils.DatabaseHelper
 
 @Database(
     entities = [UserInfoEntity::class, RosterEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = true
 )
 @TypeConverters(CommonConverter::class, RosterConverter::class)

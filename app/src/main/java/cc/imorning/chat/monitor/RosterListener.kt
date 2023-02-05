@@ -1,71 +1,98 @@
-package cc.imorning.chat.monitor;
+package cc.imorning.chat.monitor
 
-import android.util.Log;
+import android.util.Log
+import cc.imorning.chat.BuildConfig
+import cc.imorning.chat.action.RosterAction.getNickName
+import cc.imorning.common.CommonApp.Companion.getContext
+import cc.imorning.common.CommonApp.Companion.xmppTcpConnection
+import cc.imorning.common.constant.Config
+import cc.imorning.database.db.DataDB.Companion.getInstance
+import cc.imorning.database.entity.RosterEntity
+import org.jivesoftware.smack.StanzaListener
+import org.jivesoftware.smack.packet.Message
+import org.jivesoftware.smack.packet.Presence
+import org.jivesoftware.smack.packet.Stanza
+import org.jivesoftware.smack.roster.packet.RosterPacket
 
-import org.jivesoftware.smack.StanzaListener;
-import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.roster.packet.RosterPacket;
-import org.jxmpp.jid.BareJid;
+object RosterListener {
+    private const val TAG = "RosterListener"
+    private val databaseDao = getInstance(
+        getContext(),
+        xmppTcpConnection!!.user.asEntityBareJidString()
+    ).databaseDao()
 
-import cc.imorning.chat.BuildConfig;
-import cc.imorning.chat.action.RosterAction;
-import cc.imorning.common.CommonApp;
-import cc.imorning.common.constant.Config;
-import cc.imorning.database.dao.DataDatabaseDao;
-import cc.imorning.database.db.DataDB;
-import cc.imorning.database.entity.RosterEntity;
-
-public class RosterListener {
-    private static final String TAG = "RosterListener";
-    private static final DataDatabaseDao databaseDao = DataDB.Companion.getInstance(
-            CommonApp.Companion.getContext(),
-            CommonApp.Companion.getXmppTcpConnection().getUser().asEntityBareJidString()
-    ).databaseDao();
     /**
      * listener for roster change,for more information:
-     * <a href="https://www.yashinu.com/shili/show-269932.html">xmpp之添加好友请求报文</a>
+     *
+     *
+     * [xmpp之添加好友请求报文](https://www.yashinu.com/shili/show-269932.html)
      */
-    public static StanzaListener rosterListener = packet -> {
-
-        if (packet instanceof Presence presence) {
-
-            BareJid fromId = presence.getFrom().asBareJid();
-
-            switch (presence.getType()) {
-                case subscribe:
-                    if (BuildConfig.DEBUG) {
-                        Log.d(TAG, fromId.toString() + "请求加为好友");
-                    }
+    val rosterListener = StanzaListener { packet: Stanza? ->
+        if (packet is Presence) {
+            val fromId = packet.from.asBareJid()
+            when (packet.type) {
+                Presence.Type.subscribe -> {
                     // Write this request into database
-                    RosterEntity roster = new RosterEntity(fromId.toString(),
-                            RosterAction.INSTANCE.getNickName(fromId.toString()),
-                            Message.Type.normal,
-                            Config.DEFAULT_GROUP,
-                            RosterPacket.ItemType.from);
-                    databaseDao.insertRoster(roster);
-                    break;
-                case subscribed:
+                    val roster = RosterEntity(
+                        fromId.toString(),
+                        getNickName(fromId.toString()),
+                        Message.Type.normal,
+                        Config.DEFAULT_GROUP,
+                        RosterPacket.ItemType.from,
+                        false
+                    )
+                    databaseDao.insertRoster(roster)
                     if (BuildConfig.DEBUG) {
-                        Log.d(TAG, fromId.asBareJid().toString() + "同意了好友请求");
+                        Log.d(TAG, "$fromId 请求加为好友")
                     }
-                    break;
-                case unsubscribe:
+                }
+                Presence.Type.subscribed -> {
+                    val roster = RosterEntity(
+                        fromId.toString(),
+                        getNickName(fromId.toString()),
+                        Message.Type.normal,
+                        Config.DEFAULT_GROUP,
+                        RosterPacket.ItemType.from,
+                        true
+                    )
+                    databaseDao.insertRoster(roster)
                     if (BuildConfig.DEBUG) {
-                        Log.d(TAG, fromId.asBareJid().toString() + "拒绝了好友请求");
+                        Log.d(TAG, "$fromId 同意了好友请求")
                     }
-                    break;
-                case unavailable:
+                }
+                Presence.Type.unsubscribed -> {
                     if (BuildConfig.DEBUG) {
-                        Log.d(TAG, fromId.asBareJid().toString() + "下线");
+                        Log.d(TAG, "$fromId 拒绝了好友请求")
                     }
-                    break;
-                case available:
+                }
+                Presence.Type.unsubscribe -> {
+                    val roster = RosterEntity(
+                        fromId.toString(),
+                        getNickName(fromId.toString()),
+                        Message.Type.normal,
+                        Config.DEFAULT_GROUP,
+                        RosterPacket.ItemType.from,
+                        false
+                    )
+                    databaseDao.deleteRoster(roster)
                     if (BuildConfig.DEBUG) {
-                        Log.d(TAG, fromId.asBareJid().toString() + "上线");
+                        Log.d(TAG, "$fromId 删除了好友")
                     }
-                    break;
+                }
+                Presence.Type.unavailable -> {
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "$fromId 下线")
+                    }
+                }
+                Presence.Type.available -> {
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "$fromId 上线")
+                    }
+                }
+                else -> {
+                    Log.d(TAG, "unknown type:${packet.type}")
+                }
             }
         }
-    };
+    }
 }
