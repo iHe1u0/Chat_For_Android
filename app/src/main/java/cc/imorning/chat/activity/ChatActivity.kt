@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import cc.imorning.chat.App
@@ -17,18 +18,18 @@ import cc.imorning.chat.compontens.conversation.ConversationContent
 import cc.imorning.chat.compontens.conversation.ConversationUiState
 import cc.imorning.chat.compontens.conversation.LocalBackPressedDispatcher
 import cc.imorning.chat.data.initialMessages
+import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.viewmodel.ChatViewModel
 import cc.imorning.chat.viewmodel.ChatViewModelFactory
 import cc.imorning.common.constant.ChatType
 import cc.imorning.common.constant.Config
-import cc.imorning.chat.network.ConnectionManager
 
 private const val TAG = "ChatActivity"
 
 class ChatActivity : ComponentActivity() {
 
-    private var chatUserJid: String = ""
+    // private var chatUserJid: String = ""
     private var chatType: ChatType.Type = ChatType.Type.Unknown
     private val connection = App.getTCPConnection()
 
@@ -42,18 +43,26 @@ class ChatActivity : ComponentActivity() {
         // including IME animations
         WindowCompat.setDecorFitsSystemWindows(window, true)
         handleIntent(intent)
+        viewModel.addStatusListener()
+        viewModel.init()
         setContent {
             CompositionLocalProvider(
                 LocalBackPressedDispatcher provides this@ChatActivity.onBackPressedDispatcher
             ) {
                 ChatTheme {
+
+                    val jidString=viewModel.chatUserId.collectAsState()
+                    val name = viewModel.userOrGroupName.collectAsState()
+                    val rosterStatus = viewModel.status.collectAsState()
+
                     val uiState = ConversationUiState(
                         initialMessages = initialMessages,
-                        channelName = viewModel.getUserOrGroupName(),
-                        channelMembers = 2
+                        nickName = name.value,
+                        friendStatus = rosterStatus.value
                     )
+
                     ConversationContent(
-                        chatUid = chatUserJid,
+                        chatUid = jidString.value,
                         uiState = uiState,
                         navigateToProfile = { /*Action when click user avatar */ },
                         onNavIconPressed = { this@ChatActivity.finish() },
@@ -79,14 +88,14 @@ class ChatActivity : ComponentActivity() {
                         startActivity(loginActivity)
                         this.finish()
                     }
-                    chatUserJid =
+                    viewModel.chatUserId.value =
                         intent.data?.getQueryParameter(Config.Intent.Key.START_CHAT_JID).toString()
                     chatType = ChatType.from(
                         intent.data?.getQueryParameter(Config.Intent.Key.START_CHAT_TYPE).toString()
                     )
                 }
                 Config.Intent.Action.START_CHAT_FROM_APP -> {
-                    chatUserJid = intent.getStringExtra(Config.Intent.Key.START_CHAT_JID).toString()
+                    viewModel.chatUserId.value = intent.getStringExtra(Config.Intent.Key.START_CHAT_JID).toString()
                     chatType = ChatType.from(
                         intent.getStringExtra(Config.Intent.Key.START_CHAT_JID).toString()
                     )
@@ -99,7 +108,7 @@ class ChatActivity : ComponentActivity() {
                 }
             }
         }
-        if (chatUserJid.isEmpty()) {
+        if (viewModel.chatUserId.value.isEmpty()) {
             if (BuildConfig.DEBUG) {
                 Log.w(TAG, "chat user name is null or empty")
                 return
@@ -108,7 +117,8 @@ class ChatActivity : ComponentActivity() {
             this.finish()
             return
         }
-        viewModel.setChatUserId(chatUserJid)
+        // viewModel.chatUserId.value = viewModel.chatUserId.value
+        // viewModel.setChatUserId(chatUserJid)
     }
 
 }

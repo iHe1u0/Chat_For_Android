@@ -9,6 +9,7 @@ import cc.imorning.common.constant.Config
 import cc.imorning.common.exception.OfflineException
 import cc.imorning.common.utils.NetworkUtils
 import org.jivesoftware.smack.packet.Presence
+import org.jivesoftware.smack.packet.Presence.Mode
 import org.jivesoftware.smack.roster.Roster
 import org.jivesoftware.smack.roster.RosterEntry
 import org.jivesoftware.smack.roster.RosterGroup
@@ -218,11 +219,19 @@ object RosterAction {
      * get contact's nick name by jid like im@test.com
      */
     fun getNickName(jidString: String): String {
-        val vCard = getContactVCard(jidString)
-        if (vCard == null || vCard.nickName == null) {
-            return jidString.split("@")[0]
+        val rosterEntry = Roster.getInstanceFor(connection)
+        if (rosterEntry != null) {
+            val roster = rosterEntry.getEntry(JidCreate.bareFrom(jidString))
+            if (roster != null) {
+                return roster.name
+            }
         }
-        return vCard.nickName.orEmpty()
+        val vCard = getContactVCard(jidString)
+        if (vCard != null && !vCard.nickName.isNullOrEmpty()) {
+            return vCard.nickName.orEmpty()
+        }
+        return JidCreate.bareFrom(jidString).localpartOrNull.toString()
+
     }
 
     /**
@@ -318,6 +327,16 @@ object RosterAction {
                 Log.d(TAG, "reject: $jidString")
             }
         }
+    }
+
+    fun getRosterStatus(jidString: String?): Mode {
+        if (jidString.isNullOrEmpty()) {
+            return Mode.xa
+        }
+        val roster = Roster.getInstanceFor(connection)
+        val presence: Presence = roster.getPresence(JidCreate.bareFrom(jidString))
+        return presence.mode
+
     }
 
 }

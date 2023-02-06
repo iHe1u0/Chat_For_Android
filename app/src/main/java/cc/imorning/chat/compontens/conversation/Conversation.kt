@@ -1,19 +1,3 @@
-/*
- * Copyright 2020 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package cc.imorning.chat.compontens.conversation
 
 import androidx.compose.foundation.Image
@@ -50,14 +34,18 @@ import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.action.message.MessageManager
 import cc.imorning.chat.ui.view.ComposeDialogUtils.FunctionalityNotAvailablePopup
 import cc.imorning.chat.utils.AvatarUtils
+import cc.imorning.chat.utils.StatusHelper
 import cc.imorning.common.CommonApp
 import cc.imorning.common.entity.MessageBody
 import cc.imorning.common.entity.MessageEntity
 import com.example.compose.jetchat.conversation.JumpToBottom
 import kotlinx.coroutines.launch
+import org.jivesoftware.smack.packet.Presence
 import org.joda.time.DateTime
 
 private const val TAG = "Conversation"
+
+private val connection = CommonApp.xmppTcpConnection
 
 /**
  * Entry point for a conversation screen.
@@ -100,6 +88,7 @@ fun ConversationContent(
                     onMessageSent = { content ->
                         MessageManager.sendMessage(chatUid, content)
                         // Add message in UI
+                        // TODO: handle insert message into database,then update view
                         uiState.addMessage(
                             MessageEntity(
                                 sender = authorMe.toString(),
@@ -124,8 +113,8 @@ fun ConversationContent(
             }
             // Channel name bar floats above the messages
             ChannelNameBar(
-                channelName = uiState.channelName,
-                channelStatus = uiState.channelMembers,
+                nickName = uiState.nickName,
+                friendStatus = uiState.friendStatus,
                 onNavIconPressed = onNavIconPressed,
                 scrollBehavior = scrollBehavior,
                 // Use statusBarsPadding() to move the app bar content below the status bar
@@ -138,8 +127,8 @@ fun ConversationContent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChannelNameBar(
-    channelName: String,
-    channelStatus: Int,
+    nickName: String,
+    friendStatus: Presence.Mode,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     onNavIconPressed: () -> Unit = { }
@@ -156,18 +145,14 @@ fun ChannelNameBar(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 // Channel name
                 Text(
-                    text = channelName,
+                    text = nickName,
                     style = MaterialTheme.typography.titleMedium
                 )
-                // If this is a group
-                if (channelStatus > 2) {
-                    // Number of members
-                    Text(
-                        text = String.format("%d 名成员", channelStatus),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+                Text(
+                    text = StatusHelper(friendStatus).toString(),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         },
         actions = {
