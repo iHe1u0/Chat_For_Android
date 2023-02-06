@@ -44,7 +44,8 @@ fun RosterItem(
             chatActivity.putExtra(Config.Intent.Key.START_CHAT_TYPE, ChatType.Type.Single)
             context.startActivity(chatActivity)
         },
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        longc
     ) {
         Avatar(avatarPath)
         Column(

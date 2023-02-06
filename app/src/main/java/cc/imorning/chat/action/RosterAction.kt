@@ -8,6 +8,7 @@ import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.Config
 import cc.imorning.common.exception.OfflineException
 import cc.imorning.common.utils.NetworkUtils
+import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.roster.Roster
 import org.jivesoftware.smack.roster.RosterEntry
 import org.jivesoftware.smack.roster.RosterGroup
@@ -86,6 +87,7 @@ object RosterAction {
             return null
         }
         val roster: Roster = Roster.getInstanceFor(connection)
+        roster.subscriptionMode = Roster.SubscriptionMode.manual
         // 刷新列表
         if (!roster.isLoaded) {
             roster.reloadAndWait()
@@ -201,9 +203,9 @@ object RosterAction {
     /**
      * delete a contact
      */
-    fun removeRoster(roster: Roster, jid: String): Boolean {
+    fun removeRoster(roster: Roster, jid: BareJid): Boolean {
         try {
-            val entry = roster.getEntry(JidCreate.entityBareFrom(jid))
+            val entry = roster.getEntry(jid)
             roster.removeEntry(entry)
             return true
         } catch (e: Exception) {
@@ -283,6 +285,39 @@ object RosterAction {
         }
         val roster = Roster.getInstanceFor(connection)
         return roster.isSubscribedToMyPresence(fromId)
+    }
+
+    fun isFriend(fromId: String): Boolean {
+        if (fromId.isEmpty()) {
+            return false
+        }
+        return isFriend(JidCreate.bareFrom(fromId))
+    }
+
+    suspend fun accept(jidString: String) {
+        if (connection.isConnected && connection.isAuthenticated) {
+            val subscribed = connection.stanzaFactory.buildPresenceStanza()
+                .to(jidString)
+                .ofType(Presence.Type.subscribed)
+                .build()
+            connection.sendStanza(subscribed)
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "acceptSubscribe: $jidString")
+            }
+        }
+    }
+
+    suspend fun reject(jidString: String) {
+        if (connection.isConnected && connection.isAuthenticated) {
+            val subscribed = connection.stanzaFactory.buildPresenceStanza()
+                .to(jidString)
+                .ofType(Presence.Type.unsubscribe)
+                .build()
+            connection.sendStanza(subscribed)
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "reject: $jidString")
+            }
+        }
     }
 
 }

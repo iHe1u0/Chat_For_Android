@@ -1,14 +1,11 @@
 package cc.imorning.chat.activity.ui.contact
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.common.CommonApp
-import cc.imorning.common.constant.Config
 import cc.imorning.database.dao.DataDatabaseDao
 import cc.imorning.database.entity.RosterEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +14,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.jivesoftware.smack.packet.Message
-import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.roster.packet.RosterPacket
 import javax.inject.Inject
 
@@ -48,8 +44,7 @@ class ContactViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            getRostersFromServer()
-            updateRosterView()
+            getRostersFromServer(true)
         }
     }
 
@@ -63,9 +58,11 @@ class ContactViewModel @Inject constructor(
                     val strangers = mutableListOf<RosterEntity>()
                     for (roster in rosterList) {
                         // if user and roster is both friend
-                        if (roster.is_friend) {
+                        if (roster.item_type == RosterPacket.ItemType.both) {
                             friends.add(roster)
-                        } else {
+                        } else if (roster.item_type == RosterPacket.ItemType.from
+                            || roster.item_type == RosterPacket.ItemType.to
+                        ) {
                             strangers.add(roster)
                         }
                     }
@@ -77,7 +74,7 @@ class ContactViewModel @Inject constructor(
     }
 
     @Synchronized
-    fun getRostersFromServer() {
+    fun getRostersFromServer(isNeedUpdateView: Boolean = false) {
         // return if isRefreshing
         if (_isRefreshing.value) {
             return
@@ -86,8 +83,8 @@ class ContactViewModel @Inject constructor(
             _isRefreshing.emit(true)
             val rosterList = RosterAction.getRosterList()
             if (rosterList != null && rosterList.isNotEmpty()) {
-                for (roster in rosterList) {
-                    withContext(Dispatchers.IO) {
+                withContext(Dispatchers.IO) {
+                    for (roster in rosterList) {
                         val jidString = roster.jid.asBareJid().toString()
                         // insert roster into database
                         databaseDao.insertRoster(
@@ -97,11 +94,16 @@ class ContactViewModel @Inject constructor(
                                 group = roster.groups[0].name,
                                 type = Message.Type.chat,
                                 item_type = roster.type,
-                                is_friend = roster.isSubscriptionPending
+                                is_friend = RosterAction.isFriend(jidString)
                             )
                         )
                         // save avatar
                         AvatarUtils.instance.saveAvatar(jidString)
+                    }
+                    if (isNeedUpdateView) {
+                        with(Dispatchers.Main) {
+                            updateRosterView()
+                        }
                     }
                 }
             }
@@ -111,34 +113,21 @@ class ContactViewModel @Inject constructor(
     }
 
     fun acceptSubscribe(jidString: String) {
-        if ((connection != null) && connection.isConnected && connection.isAuthenticated) {
-            val subscribed = connection.stanzaFactory.buildPresenceStanza()
-                .to(jidString)
-                .ofType(Presence.Type.subscribed)
-                .build()
-            connection.sendStanza(subscribed)
-            MainScope().launch(Dispatchers.IO) {
-                databaseDao.updateRoster(
-                    RosterEntity(
-                        jid = jidString,
-                        nick = RosterAction.getNickName(jidString),
-                        type = Message.Type.chat,
-                        group = Config.DEFAULT_GROUP,
-                        item_type = RosterPacket.ItemType.to,
-                        is_friend = true
-                    )
-                )
-                withContext(Dispatchers.Main) {
-                    updateRosterView()
-                }
-            }
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "acceptSubscribe: $jidString")
+        MainScope().launch(Dispatchers.IO) {
+            RosterAction.accept(jidString)
+            withContext(Dispatchers.Main) {
+                getRostersFromServer(true)
             }
         }
     }
 
     fun rejectSubscribe(jidString: String) {
+        MainScope().launch(Dispatchers.IO) {
+            RosterAction.reject(jidString)
+            withContext(Dispatchers.Main) {
+                getRostersFromServer(true)
+            }
+        }
     }
 }
 

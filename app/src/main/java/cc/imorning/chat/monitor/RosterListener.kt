@@ -15,7 +15,9 @@ import org.jivesoftware.smack.packet.Stanza
 import org.jivesoftware.smack.roster.packet.RosterPacket
 
 object RosterListener {
+
     private const val TAG = "RosterListener"
+
     private val databaseDao = getInstance(
         getContext(),
         xmppTcpConnection!!.user.asEntityBareJidString()
@@ -52,17 +54,12 @@ object RosterListener {
                         getNickName(fromId.toString()),
                         Message.Type.normal,
                         Config.DEFAULT_GROUP,
-                        RosterPacket.ItemType.from,
+                        RosterPacket.ItemType.both,
                         true
                     )
                     databaseDao.insertRoster(roster)
                     if (BuildConfig.DEBUG) {
                         Log.d(TAG, "$fromId 同意了好友请求")
-                    }
-                }
-                Presence.Type.unsubscribed -> {
-                    if (BuildConfig.DEBUG) {
-                        Log.d(TAG, "$fromId 拒绝了好友请求")
                     }
                 }
                 Presence.Type.unsubscribe -> {
@@ -71,7 +68,21 @@ object RosterListener {
                         getNickName(fromId.toString()),
                         Message.Type.normal,
                         Config.DEFAULT_GROUP,
-                        RosterPacket.ItemType.from,
+                        RosterPacket.ItemType.none,
+                        false
+                    )
+                    databaseDao.deleteRoster(roster)
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "$fromId 拒绝了好友请求")
+                    }
+                }
+                Presence.Type.unsubscribed -> {
+                    val roster = RosterEntity(
+                        fromId.toString(),
+                        getNickName(fromId.toString()),
+                        Message.Type.normal,
+                        Config.DEFAULT_GROUP,
+                        RosterPacket.ItemType.none,
                         false
                     )
                     databaseDao.deleteRoster(roster)

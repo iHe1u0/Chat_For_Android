@@ -25,8 +25,20 @@ data class RosterEntity(
     @ColumnInfo(name = "group", typeAffinity = ColumnInfo.TEXT)
     val group: String,
 
+    /**
+     * both: both user and sender is friend
+     *
+     *
+     * from: user receive request
+     *
+     *
+     * to: user send request
+     *
+     *
+     * none: not friend
+     */
     @ColumnInfo(name = "item_type")
-    val item_type: RosterPacket.ItemType = RosterPacket.ItemType.none,
+    val item_type: RosterPacket.ItemType,
 
     @ColumnInfo(name = "is_friend")
     val is_friend: Boolean = false

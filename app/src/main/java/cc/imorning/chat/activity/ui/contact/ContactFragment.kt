@@ -121,7 +121,10 @@ fun ContactScreen(viewModel: ContactViewModel) {
                     shape = MaterialTheme.shapes.extraLarge,
                 )
             },
-            onRefresh = { viewModel.getRostersFromServer() }) {
+            onRefresh = {
+                viewModel.getRostersFromServer()
+                viewModel.updateRosterView()
+            }) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
