@@ -117,8 +117,6 @@ class ChatActivity : ComponentActivity() {
             this.finish()
             return
         }
-        // viewModel.chatUserId.value = viewModel.chatUserId.value
-        // viewModel.setChatUserId(chatUserJid)
     }
 
 }

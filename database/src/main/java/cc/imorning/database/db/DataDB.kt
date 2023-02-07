@@ -5,7 +5,6 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import cc.imorning.common.CommonApp
 import cc.imorning.database.converters.CommonConverter
 import cc.imorning.database.converters.RosterConverter
 import cc.imorning.database.dao.DataDatabaseDao
@@ -28,9 +27,9 @@ abstract class DataDB : RoomDatabase() {
         private lateinit var dataDB: DataDB
         fun getInstance(context: Context, jid: String): DataDB {
             if (!this::dataDB.isInitialized) {
-                //创建的数据库的实例
+                // Create new instance for database
                 dataDB = Room.databaseBuilder(
-                    CommonApp.getContext(),
+                    context,
                     DataDB::class.java,
                     DatabaseHelper.getDatabase(context, jid, DatabaseHelper.DATA_DB)
                 )

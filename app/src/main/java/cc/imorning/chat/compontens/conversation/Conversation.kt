@@ -1,5 +1,6 @@
 package cc.imorning.chat.compontens.conversation
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.border
@@ -25,20 +26,23 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.LastBaseline
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import cc.imorning.chat.R
 import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.action.message.MessageManager
 import cc.imorning.chat.ui.view.ComposeDialogUtils.FunctionalityNotAvailablePopup
 import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.chat.utils.StatusHelper
 import cc.imorning.common.CommonApp
-import cc.imorning.common.entity.MessageBody
-import cc.imorning.common.entity.MessageEntity
+import cc.imorning.database.entity.MessageBody
+import cc.imorning.database.entity.MessageEntity
 import com.example.compose.jetchat.conversation.JumpToBottom
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import org.jivesoftware.smack.packet.Presence
 import org.joda.time.DateTime
@@ -64,6 +68,7 @@ fun ConversationContent(
     modifier: Modifier = Modifier,
     onNavIconPressed: () -> Unit = { }
 ) {
+    val context = LocalContext.current
     val authorMe = CommonApp.vCard?.from
 
     val scrollState = rememberLazyListState()
@@ -86,7 +91,24 @@ fun ConversationContent(
                 )
                 UserInput(
                     onMessageSent = { content ->
-                        MessageManager.sendMessage(chatUid, content)
+                        if (connection == null || (!connection.isConnected) && (!connection.isAuthenticated)) {
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.network_is_unavailable),
+                                Toast.LENGTH_LONG
+                            ).show()
+                            return@UserInput
+                        }
+                        // Send message
+                        val message = MessageEntity(
+                            sender = connection.user.asEntityBareJidString(),
+                            receiver = chatUid,
+                            messageBody = MessageBody(
+                                text = content
+                            )
+                        )
+                        val gson = Gson()
+                        MessageManager.sendMessage(chatUid, message = gson.toJson(message))
                         // Add message in UI
                         // TODO: handle insert message into database,then update view
                         uiState.addMessage(

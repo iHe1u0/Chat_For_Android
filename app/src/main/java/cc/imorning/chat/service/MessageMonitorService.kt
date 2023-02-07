@@ -15,6 +15,8 @@ import cc.imorning.chat.monitor.OutMessageListener
 import cc.imorning.chat.monitor.RosterListener
 import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.chat.utils.ChatNotificationManager
+import cc.imorning.database.entity.MessageEntity
+import com.google.gson.Gson
 import org.jivesoftware.smack.chat2.ChatManager
 import org.jivesoftware.smack.chat2.IncomingChatMessageListener
 import org.jivesoftware.smack.filter.AndFilter
@@ -98,8 +100,10 @@ class MessageMonitorService : Service() {
     private fun processOfflineMessage() {
         if (ConnectionManager.isConnectionAuthenticated(connection = connection)) {
             val offlineMessages: List<Message> = MessageManager.getOfflineMessage()
+            val gson = Gson()
             for (message in offlineMessages) {
-                MessageHelper.processMessage(message = message)
+                val messageEntity = gson.fromJson(message.body, MessageEntity::class.java)
+                MessageHelper.processMessage(messageEntity = messageEntity)
             }
         }
     }

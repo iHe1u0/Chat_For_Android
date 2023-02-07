@@ -1,9 +1,7 @@
 package cc.imorning.chat.compontens.conversation
 
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.toMutableStateList
-import cc.imorning.chat.R
-import cc.imorning.common.entity.MessageEntity
+import cc.imorning.database.entity.MessageEntity
 import org.jivesoftware.smack.packet.Presence.Mode
 
 class ConversationUiState(
@@ -19,11 +17,11 @@ class ConversationUiState(
     }
 }
 
-@Immutable
-data class Message(
-    val author: String,
-    val content: String,
-    val timestamp: String,
-    val image: Int? = null,
-    val authorImage: Int = if (author == "me") R.drawable.ic_default_avatar else R.drawable.ic_nick
-)
+//@Immutable
+//data class Message(
+//    val author: String,
+//    val content: String,
+//    val timestamp: String,
+//    val image: Int? = null,
+//    val authorImage: Int = if (author == "me") R.drawable.ic_default_avatar else R.drawable.ic_nick
+//)

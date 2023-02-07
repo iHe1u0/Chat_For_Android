@@ -2,9 +2,8 @@ package cc.imorning.chat.action.message
 
 import android.util.Log
 import cc.imorning.chat.App
-import cc.imorning.common.BuildConfig
-import cc.imorning.common.CommonApp
 import cc.imorning.chat.network.ConnectionManager
+import cc.imorning.common.BuildConfig
 import org.jivesoftware.smack.chat2.ChatManager
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Presence
@@ -56,19 +55,19 @@ object MessageManager {
     /**
      * send message to contact
      *
-     * @param jidString jid like 'admin@curkay.catcompany.cn'
+     * @param receiver jid like 'admin@curkay.catcompany.cn'
      * @param message message text
      *
      * @return true if send success
      */
     fun sendMessage(
-        jidString: String,
+        receiver: String,
         message: String
     ): Boolean {
         if (!ConnectionManager.isConnectionAuthenticated(connection)) {
             return false
         }
-        val newChat = chatManager.chatWith(JidCreate.entityBareFrom(jidString))
+        val newChat = chatManager.chatWith(JidCreate.entityBareFrom(receiver))
         try {
             newChat.send(message)
             return true

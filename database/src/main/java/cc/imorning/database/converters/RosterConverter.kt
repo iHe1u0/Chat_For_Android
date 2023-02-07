@@ -1,16 +1,17 @@
 package cc.imorning.database.converters
 
 import androidx.room.TypeConverter
+import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Presence.Mode
 
 class RosterConverter {
     @TypeConverter
-    fun rosterTypeToString(type: String): org.jivesoftware.smack.packet.Message.Type {
-        return org.jivesoftware.smack.packet.Message.Type.fromString(type)
+    fun rosterTypeToString(type: String): Message.Type {
+        return Message.Type.fromString(type)
     }
 
     @TypeConverter
-    fun rosterStringToType(type: org.jivesoftware.smack.packet.Message.Type): String {
+    fun rosterStringToType(type: Message.Type): String {
         return type.name
     }
 

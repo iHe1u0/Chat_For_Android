@@ -1,16 +1,19 @@
-package cc.imorning.common.entity
+package cc.imorning.database.entity
 
 import com.google.gson.annotations.SerializedName
+import org.jivesoftware.smack.packet.Message.Type
 import org.joda.time.DateTime
 
 /**
  * This is an entity for message will be sent or received.
- * It should be decoded by Base64
+ * It should be decoded by Base64(Maybe)
  *
  * @param sender who sent the message
  * @param receiver the user who will receive the message
  * @param sendTime a joda DateTime object
  * @param messageBody the message body
+ * @param isShow the message is delete by user?
+ * @param isRecall the message is recall by sender?
  *
  */
 data class MessageEntity(
@@ -21,12 +24,22 @@ data class MessageEntity(
     @SerializedName("receiver")
     val receiver: String,
 
-    @SerializedName("content")
+    @SerializedName("message_type")
+    val messageType: Type = Type.chat,
+
+    @SerializedName("body")
     val messageBody: MessageBody,
 
-    @SerializedName("sendTime")
+    @SerializedName("send_time")
     val sendTime: String = DateTime.now().toString(),
+
+    @SerializedName("is_show")
+    val isShow: Boolean = true,
+
+    @SerializedName("is_recall")
+    val isRecall: Boolean = false
 )
+
 /**
  * This data class will include message body
  *

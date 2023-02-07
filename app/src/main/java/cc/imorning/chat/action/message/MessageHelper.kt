@@ -5,11 +5,12 @@ import cc.imorning.chat.App
 import cc.imorning.chat.action.RosterAction
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
-import cc.imorning.common.entity.MessageBody
-import cc.imorning.common.entity.MessageEntity
 import cc.imorning.common.utils.Base64Utils
 import cc.imorning.common.utils.RingUtils
+import cc.imorning.database.db.MessageDB
 import cc.imorning.database.db.RecentDB
+import cc.imorning.database.entity.MessageBody
+import cc.imorning.database.entity.MessageEntity
 import cc.imorning.database.entity.RecentMessageEntity
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -18,14 +19,16 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.jivesoftware.smack.chat2.Chat
 import org.jivesoftware.smack.packet.Message
+import org.jivesoftware.smack.packet.Message.Type
 import org.joda.time.DateTime
+import org.joda.time.DateTimeZone
 import java.io.File
 
 private const val TAG = "MessageHelper"
 
 object MessageHelper {
 
-    private val databaseDao =
+    private val recentDatabaseDao =
         RecentDB.getInstance(
             CommonApp.getContext(),
             App.getTCPConnection().user.asEntityBareJidString()
@@ -34,31 +37,27 @@ object MessageHelper {
     private val connection = App.getTCPConnection()
 
     fun processMessage(
-        message: Message,
-        from: String? = null,
+        messageEntity: MessageEntity,
         chat: Chat? = null
     ) {
-        if (message.body == null) {
-            return
-        }
         RingUtils.playNewMessage(
             context = CommonApp.getContext(),
-            type = message.type
+            type = messageEntity.messageType
         )
-        when (message.type) {
-            Message.Type.chat -> {
-                processChatMessage(message, from, chat)
+        when (messageEntity.messageType) {
+            Type.chat -> {
+                processChatMessage(messageEntity, chat)
             }
-            Message.Type.groupchat -> {
+            Type.groupchat -> {
 
             }
-            Message.Type.headline -> {
+            Type.headline -> {
 
             }
-            Message.Type.normal -> {
+            Type.normal -> {
 
             }
-            Message.Type.error -> {
+            Type.error -> {
 
             }
             else -> {}
@@ -121,33 +120,64 @@ object MessageHelper {
         }
     }
 
+    /**
+     * Process received message,insert message into database
+     */
+    private fun processChatMessage(messageEntity: MessageEntity, chat: Chat?) {
+        val fromString = messageEntity.sender
+        val nickName = RosterAction.getNickName(fromString)
+        with(messageEntity) {
+            insertRecentMessage(
+                sender = receiver,
+                nickName = nickName,
+                messageBody = messageBody.text,
+                messageType = messageType,
+                dateTime = DateTime(sendTime).withZone(DateTimeZone.getDefault())
+            )
+            // insert into message database
+            insertMessage(messageEntity)
+        }
+    }
+
     fun insertRecentMessage(
         sender: String,
         nickName: String,
-        message: Message,
+        messageBody: String,
+        messageType: Type,
         dateTime: DateTime
     ) {
         val recentMessage = RecentMessageEntity(
             sender = sender,
             nickName = nickName,
-            type = message.type,
-            message = message.body,
+            type = messageType,
+            message = messageBody,
             time = dateTime,
             isShow = true
         )
         // val messageEntity = MessageEntity()
         // update recent database
         MainScope().launch(Dispatchers.IO) {
-            databaseDao.insertOrReplaceMessage(recentMessage)
+            recentDatabaseDao.insertOrReplaceMessage(recentMessage)
         }
     }
 
-    private fun processChatMessage(message: Message, from: String?, chat: Chat?) {
-        val fromString = from ?: message.from.asBareJid().toString()
-        val nickName = RosterAction.getNickName(fromString)
-        val dateTime: DateTime = DateTime.now()
-        insertRecentMessage(fromString, nickName, message, dateTime)
-        // insertMessage()
+    fun insertMessage(messageEntity: MessageEntity) {
+        // if connection is not connect or authenticated,then return
+        if (connection.isConnected && connection.isAuthenticated) {
+            val sender = messageEntity.sender
+            val receiver = messageEntity.receiver
+             val messageDatabaseDao = MessageDB.getInstance(
+                 context = CommonApp.getContext(),
+                 user = sender,
+                 receiver = receiver
+             ).databaseDao()
+            messageEntity.let {
+                Log.d(TAG, "insertMessage:[$sender]>[$receiver]: ${it.messageBody.text}")
+            }
+            MainScope().launch(Dispatchers.IO) {
+
+            }
+        }
     }
 
     private fun processGroupChatMessage(message: Message) {

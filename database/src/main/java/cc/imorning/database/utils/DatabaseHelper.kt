@@ -5,7 +5,7 @@ import cc.imorning.common.utils.MD5Utils
 import java.io.File
 
 /**
- * 用户数据库常亮
+ * 用户数据库常量
  */
 object DatabaseHelper {
     /**
@@ -19,22 +19,23 @@ object DatabaseHelper {
     const val RECENT_MESSAGE_DB = "recent_message.db"
 
     /**
-     * message database
+     * message table
      */
-    const val MESSAGE_DB = "message.db"
+    const val TABLE_MESSAGE = "message"
+
 
     /**
-     * contact info entity name
+     * user info table name
      */
     const val TABLE_USER_INFO = "user_info"
 
     /**
-     * message entity
+     * recent message table
      */
     const val TABLE_RECENT_MESSAGE = "recent_message"
 
     /**
-     * message entity
+     * roster table
      */
     const val TABLE_ROSTER = "roster"
 
@@ -49,9 +50,13 @@ object DatabaseHelper {
 
     /**
      * get a database path
+     * @param context The context
+     * @param user current login user
+     * @param dbName database name
+     *
      */
-    fun getDatabase(context: Context, jid: String, dbName: String): String {
-        val rootDir = getDatabaseRootDir(context, jid)
+    fun getDatabase(context: Context, user: String, dbName: String): String {
+        val rootDir = getDatabaseRootDir(context, user)
         if (dbName.endsWith(".db")) {
             return rootDir.plus(File.separator).plus(dbName)
         }

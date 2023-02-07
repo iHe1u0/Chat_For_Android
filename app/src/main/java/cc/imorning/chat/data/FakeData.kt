@@ -16,8 +16,8 @@
 
 package cc.imorning.chat.data
 
-import cc.imorning.common.entity.MessageBody
-import cc.imorning.common.entity.MessageEntity
+import cc.imorning.database.entity.MessageBody
+import cc.imorning.database.entity.MessageEntity
 
 val initialMessages = listOf(
     MessageEntity(
