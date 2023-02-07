@@ -1,6 +1,7 @@
 package cc.imorning.database.converters
 
 import androidx.room.TypeConverter
+import org.jivesoftware.smack.packet.Presence.Mode
 
 class RosterConverter {
     @TypeConverter
@@ -21,6 +22,16 @@ class RosterConverter {
     @TypeConverter
     fun rosterStringToStatus(type: org.jivesoftware.smack.packet.Presence.Type): String {
         return type.name
+    }
+
+    @TypeConverter
+    fun rosterModeToString(modeString: String): Mode {
+        return Mode.fromString(modeString)
+    }
+
+    @TypeConverter
+    fun rosterModeToStatus(mode: Mode): String {
+        return mode.name
     }
 
 }

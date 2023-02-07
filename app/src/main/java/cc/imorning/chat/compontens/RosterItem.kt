@@ -11,11 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import cc.imorning.chat.activity.ChatActivity
 import cc.imorning.chat.utils.AvatarUtils
+import cc.imorning.chat.utils.StatusHelper
 import cc.imorning.common.constant.ChatType
 import cc.imorning.common.constant.Config
 import cc.imorning.database.entity.RosterEntity
@@ -44,7 +44,7 @@ fun RosterItem(
             chatActivity.putExtra(Config.Intent.Key.START_CHAT_TYPE, ChatType.Type.Single)
             context.startActivity(chatActivity)
         },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
     ) {
         Avatar(avatarPath)
         Column(
@@ -74,7 +74,7 @@ fun RosterItem(
                 val canvasWidth = size.width
                 val canvasHeight = size.height
                 drawCircle(
-                    color = Color.Red,
+                    color = StatusHelper(roster.mode).getStatusColor(),
                     center = Offset(x = canvasWidth / 2, y = canvasHeight / 2),
                     radius = size.minDimension / 4
                 )

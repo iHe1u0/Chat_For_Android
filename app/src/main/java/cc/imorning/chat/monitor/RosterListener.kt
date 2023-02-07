@@ -2,6 +2,7 @@ package cc.imorning.chat.monitor
 
 import android.util.Log
 import cc.imorning.chat.BuildConfig
+import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.action.RosterAction.getNickName
 import cc.imorning.common.CommonApp.Companion.getContext
 import cc.imorning.common.CommonApp.Companion.xmppTcpConnection
@@ -38,6 +39,7 @@ object RosterListener {
                     val roster = RosterEntity(
                         fromId.toString(),
                         getNickName(fromId.toString()),
+                        mode = RosterAction.getRosterStatus(fromId.toString()),
                         Message.Type.normal,
                         Config.DEFAULT_GROUP,
                         RosterPacket.ItemType.from,
@@ -52,6 +54,7 @@ object RosterListener {
                     val roster = RosterEntity(
                         fromId.toString(),
                         getNickName(fromId.toString()),
+                        mode = RosterAction.getRosterStatus(fromId.toString()),
                         Message.Type.normal,
                         Config.DEFAULT_GROUP,
                         RosterPacket.ItemType.both,
@@ -66,6 +69,7 @@ object RosterListener {
                     val roster = RosterEntity(
                         fromId.toString(),
                         getNickName(fromId.toString()),
+                        mode = RosterAction.getRosterStatus(fromId.toString()),
                         Message.Type.normal,
                         Config.DEFAULT_GROUP,
                         RosterPacket.ItemType.none,
@@ -80,6 +84,7 @@ object RosterListener {
                     val roster = RosterEntity(
                         fromId.toString(),
                         getNickName(fromId.toString()),
+                        mode = RosterAction.getRosterStatus(fromId.toString()),
                         Message.Type.normal,
                         Config.DEFAULT_GROUP,
                         RosterPacket.ItemType.none,
@@ -91,11 +96,31 @@ object RosterListener {
                     }
                 }
                 Presence.Type.unavailable -> {
+                    val roster = RosterEntity(
+                        fromId.toString(),
+                        getNickName(fromId.toString()),
+                        mode = Presence.Mode.xa,
+                        Message.Type.normal,
+                        Config.DEFAULT_GROUP,
+                        RosterPacket.ItemType.both,
+                        is_friend = true
+                    )
+                    databaseDao.updateRoster(roster)
                     if (BuildConfig.DEBUG) {
                         Log.d(TAG, "$fromId 下线")
                     }
                 }
                 Presence.Type.available -> {
+                    val roster = RosterEntity(
+                        fromId.toString(),
+                        getNickName(fromId.toString()),
+                        mode = Presence.Mode.available,
+                        Message.Type.normal,
+                        Config.DEFAULT_GROUP,
+                        RosterPacket.ItemType.both,
+                        is_friend = true
+                    )
+                    databaseDao.updateRoster(roster)
                     if (BuildConfig.DEBUG) {
                         Log.d(TAG, "$fromId 上线")
                     }

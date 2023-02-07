@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -21,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import cc.imorning.chat.R
+import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.activity.SearchActivity
 import cc.imorning.chat.compontens.NewRosterItem
 import cc.imorning.chat.compontens.RosterItem
@@ -102,8 +105,11 @@ fun TopBar() {
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContactScreen(viewModel: ContactViewModel) {
+
+    val context = LocalContext.current
 
     val isRefreshing = viewModel.isRefreshing.collectAsState()
     val rosters = viewModel.rosters.collectAsState()
@@ -136,7 +142,7 @@ fun ContactScreen(viewModel: ContactViewModel) {
                                 NewRosterItem(
                                     roster = newRoster,
                                     onAccept = {
-                                        viewModel.acceptSubscribe(newRoster.jid)
+                                        viewModel.acceptSubscribe(context, newRoster.jid)
                                     },
                                     onReject = {
                                         viewModel.rejectSubscribe(newRoster.jid)
@@ -148,7 +154,26 @@ fun ContactScreen(viewModel: ContactViewModel) {
                     if (rosters.value.isNotEmpty()) {
                         Column {
                             rosters.value.forEach { roster ->
-                                RosterItem(roster = roster)
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .combinedClickable(
+                                            onClick = {},
+                                            onLongClick = {
+                                                val dialog = androidx.appcompat.app.AlertDialog
+                                                    .Builder(context)
+                                                    .setTitle("个人信息")
+                                                    .setMessage(RosterAction.getNickName(roster.jid))
+                                                    .setPositiveButton(
+                                                        context.getText(R.string.ok),
+                                                        null
+                                                    )
+                                                    .create()
+                                                dialog.show()
+                                            }),
+                                ) {
+                                    RosterItem(roster = roster)
+                                }
                             }
                         }
                     }

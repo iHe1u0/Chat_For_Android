@@ -219,16 +219,16 @@ object RosterAction {
      * get contact's nick name by jid like im@test.com
      */
     fun getNickName(jidString: String): String {
+        val vCard = getContactVCard(jidString)
+        if (vCard != null && !vCard.nickName.isNullOrEmpty()) {
+            return vCard.nickName.orEmpty()
+        }
         val rosterEntry = Roster.getInstanceFor(connection)
         if (rosterEntry != null) {
             val roster = rosterEntry.getEntry(JidCreate.bareFrom(jidString))
             if (roster != null) {
                 return roster.name
             }
-        }
-        val vCard = getContactVCard(jidString)
-        if (vCard != null && !vCard.nickName.isNullOrEmpty()) {
-            return vCard.nickName.orEmpty()
         }
         return JidCreate.bareFrom(jidString).localpartOrNull.toString()
 
@@ -303,16 +303,14 @@ object RosterAction {
         return isFriend(JidCreate.bareFrom(fromId))
     }
 
-    suspend fun accept(jidString: String) {
+    suspend fun accept(jidString: String, rosterNickName: String) {
         if (connection.isConnected && connection.isAuthenticated) {
             val subscribed = connection.stanzaFactory.buildPresenceStanza()
                 .to(jidString)
                 .ofType(Presence.Type.subscribed)
                 .build()
             connection.sendStanza(subscribed)
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "acceptSubscribe: $jidString")
-            }
+            addRoster(jidString, rosterNickName)
         }
     }
 
@@ -323,9 +321,6 @@ object RosterAction {
                 .ofType(Presence.Type.unsubscribe)
                 .build()
             connection.sendStanza(subscribed)
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "reject: $jidString")
-            }
         }
     }
 
