@@ -147,6 +147,7 @@ object MessageHelper {
         val nickName = RosterAction.getNickName(fromString)
         val dateTime: DateTime = DateTime.now()
         insertRecentMessage(fromString, nickName, message, dateTime)
+        // insertMessage()
     }
 
     private fun processGroupChatMessage(message: Message) {

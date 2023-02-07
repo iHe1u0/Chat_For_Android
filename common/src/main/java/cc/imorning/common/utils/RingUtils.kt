@@ -52,8 +52,8 @@ object RingUtils {
     // Play system ring
     fun playSystemRingtone(context: Context?) {
         val soundUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val mMediaPlayer: MediaPlayer = MediaPlayer.create(context, soundUri)
-        mMediaPlayer.isLooping = false
-        mMediaPlayer.start()
+        val mediaPlayer: MediaPlayer = MediaPlayer.create(context, soundUri)
+        mediaPlayer.isLooping = false
+        mediaPlayer.start()
     }
 }

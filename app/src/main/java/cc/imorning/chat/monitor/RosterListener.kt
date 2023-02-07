@@ -7,6 +7,7 @@ import cc.imorning.chat.action.RosterAction.getNickName
 import cc.imorning.common.CommonApp.Companion.getContext
 import cc.imorning.common.CommonApp.Companion.xmppTcpConnection
 import cc.imorning.common.constant.Config
+import cc.imorning.common.utils.RingUtils
 import cc.imorning.database.db.DataDB.Companion.getInstance
 import cc.imorning.database.entity.RosterEntity
 import org.jivesoftware.smack.StanzaListener
@@ -46,6 +47,7 @@ object RosterListener {
                         false
                     )
                     databaseDao.insertRoster(roster)
+                    RingUtils.playSystemRingtone(context = getContext())
                     if (BuildConfig.DEBUG) {
                         Log.d(TAG, "$fromId 请求加为好友")
                     }
