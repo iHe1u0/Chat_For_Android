@@ -28,7 +28,6 @@ private const val TAG = "ChatActivity"
 
 class ChatActivity : ComponentActivity() {
 
-    // private var chatUserJid: String = ""
     private var chatType: ChatType.Type = ChatType.Type.Unknown
     private val connection = App.getTCPConnection()
 
@@ -45,6 +44,7 @@ class ChatActivity : ComponentActivity() {
         viewModel.addStatusListener()
         viewModel.init()
         viewModel.getHistoryMessages()
+        viewModel.initIncomeListener()
         setContent {
             CompositionLocalProvider(
                 LocalBackPressedDispatcher provides this@ChatActivity.onBackPressedDispatcher
@@ -66,7 +66,10 @@ class ChatActivity : ComponentActivity() {
                         chatUid = jidString.value,
                         uiState = uiState,
                         navigateToProfile = { /*Action when click user avatar */ },
-                        onNavIconPressed = { this@ChatActivity.finish() },
+                        onNavIconPressed = {
+                            this@ChatActivity.finish()
+                            this@ChatActivity.viewModelStore.clear()
+                        },
                         // Add padding so that we are inset from any navigation bars
                         modifier = Modifier.windowInsetsPadding(
                             WindowInsets

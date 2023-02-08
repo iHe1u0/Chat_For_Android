@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.jivesoftware.smack.chat2.IncomingChatMessageListener
+import org.jivesoftware.smack.chat2.OutgoingChatMessageListener
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.packet.Presence.Mode
 import org.jivesoftware.smack.roster.Roster
@@ -33,6 +35,8 @@ class ChatViewModel @Inject constructor() : ViewModel() {
     private lateinit var roster: Roster
     private lateinit var presence: Presence
     private lateinit var messageDatabaseDao: MessageDatabaseDao
+    private var incomingChatMessageListener: IncomingChatMessageListener? = null
+    private var outgoingChatMessageListener: OutgoingChatMessageListener? = null
 
     private val _chatType = MutableLiveData(ChatType.Type.Unknown)
     val chatType: MutableLiveData<ChatType.Type>
@@ -70,15 +74,23 @@ class ChatViewModel @Inject constructor() : ViewModel() {
             user = chatUserId.value,
             me = connection.user.asEntityBareJidString()
         ).databaseDao()
+        incomingChatMessageListener = IncomingChatMessageListener { from, message, chat ->
+            if (from.asEntityBareJidString() != chatUserId.value){
+                return@IncomingChatMessageListener
+            }
+            // val messageEntity = Gson().fromJson(message.body, MessageEntity::class.java)
+            // getHistoryMessages()
+        }
     }
 
     fun getHistoryMessages() {
         MainScope().launch(Dispatchers.IO) {
+
             val historyTables = messageDatabaseDao.queryMessage()
             val historyMsg = mutableListOf<MessageEntity>()
+
             for (msg in historyTables) {
                 with(msg) {
-                    Log.d(TAG, "getHistoryMessages: $text")
                     historyMsg.add(
                         MessageEntity(
                             sender = sender,
@@ -131,6 +143,10 @@ class ChatViewModel @Inject constructor() : ViewModel() {
                 }
             }
         })
+    }
+
+    fun initIncomeListener() {
+
     }
 
     companion object {

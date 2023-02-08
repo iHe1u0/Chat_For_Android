@@ -13,7 +13,7 @@ interface MessageDatabaseDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertMessage(messageTable: MessageTable)
 
-    @Query("select * from ${DatabaseHelper.TABLE_MESSAGE}")
+    @Query("select * from ${DatabaseHelper.TABLE_MESSAGE} order by send_time desc")
     fun queryMessage(): List<MessageTable>
 
 }
