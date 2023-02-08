@@ -41,10 +41,10 @@ class ChatActivity : ComponentActivity() {
         // including IME animations
         WindowCompat.setDecorFitsSystemWindows(window, true)
         handleIntent(intent)
-        viewModel.addStatusListener()
+        viewModel.initStatusListener()
         viewModel.init()
         viewModel.getHistoryMessages()
-        viewModel.initIncomeListener()
+        viewModel.initMessageListener()
         setContent {
             CompositionLocalProvider(
                 LocalBackPressedDispatcher provides this@ChatActivity.onBackPressedDispatcher
@@ -68,7 +68,7 @@ class ChatActivity : ComponentActivity() {
                         navigateToProfile = { /*Action when click user avatar */ },
                         onNavIconPressed = {
                             this@ChatActivity.finish()
-                            this@ChatActivity.viewModelStore.clear()
+                            // this@ChatActivity.viewModelStore.clear()
                         },
                         // Add padding so that we are inset from any navigation bars
                         modifier = Modifier.windowInsetsPadding(
@@ -82,6 +82,10 @@ class ChatActivity : ComponentActivity() {
         }
     }
 
+    override fun onDestroy() {
+        viewModel.clearMessageListener()
+        super.onDestroy()
+    }
     private fun handleIntent(intent: Intent) {
         if (null != intent.action) {
             when (val action = intent.action) {

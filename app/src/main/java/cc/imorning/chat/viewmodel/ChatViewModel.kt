@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.jivesoftware.smack.chat2.ChatManager
 import org.jivesoftware.smack.chat2.IncomingChatMessageListener
 import org.jivesoftware.smack.chat2.OutgoingChatMessageListener
 import org.jivesoftware.smack.packet.Presence
@@ -35,6 +36,8 @@ class ChatViewModel @Inject constructor() : ViewModel() {
     private lateinit var roster: Roster
     private lateinit var presence: Presence
     private lateinit var messageDatabaseDao: MessageDatabaseDao
+
+    private lateinit var chatManager: ChatManager
     private var incomingChatMessageListener: IncomingChatMessageListener? = null
     private var outgoingChatMessageListener: OutgoingChatMessageListener? = null
 
@@ -59,8 +62,8 @@ class ChatViewModel @Inject constructor() : ViewModel() {
         get() = _status.asStateFlow()
 
     private val _historyMessages = MutableStateFlow(emptyList<MessageEntity>())
-    val historyMessages: MutableStateFlow<List<MessageEntity>>
-        get() = _historyMessages
+    val historyMessages: StateFlow<List<MessageEntity>>
+        get() = _historyMessages.asStateFlow()
 
     fun init() {
         if (chatUserId.value.isEmpty() || connection == null) {
@@ -79,17 +82,10 @@ class ChatViewModel @Inject constructor() : ViewModel() {
             chatUserId.value,
             connection.user.asEntityBareJidString()
         )!!.databaseDao()
-        incomingChatMessageListener = IncomingChatMessageListener { from, message, chat ->
-            if (from.asEntityBareJidString() != chatUserId.value) {
-                return@IncomingChatMessageListener
-            }
-            getHistoryMessages()
-            // val messageEntity = Gson().fromJson(message.body, MessageEntity::class.java)
-            // getHistoryMessages()
-        }
     }
 
     fun getHistoryMessages() {
+
         MainScope().launch(Dispatchers.IO) {
 
             val historyTables = messageDatabaseDao.queryMessage()
@@ -119,7 +115,7 @@ class ChatViewModel @Inject constructor() : ViewModel() {
     /**
      * Add roster status listener for current friend
      */
-    fun addStatusListener() {
+    fun initStatusListener() {
         val roster = Roster.getInstanceFor(connection)
         presence = roster.getPresence(JidCreate.bareFrom(_chatUserId.value))
         roster.addRosterListener(object : RosterListener {
@@ -151,8 +147,18 @@ class ChatViewModel @Inject constructor() : ViewModel() {
         })
     }
 
-    fun initIncomeListener() {
+    fun initMessageListener() {
+        chatManager = ChatManager.getInstanceFor(connection)
+        incomingChatMessageListener = IncomingChatMessageListener { from, message, chat ->
+            if (from.toString() == chatUserId.value) {
+                getHistoryMessages()
+            }
+        }
+        chatManager.addIncomingListener(incomingChatMessageListener)
+    }
 
+    fun clearMessageListener() {
+        chatManager.removeIncomingListener(incomingChatMessageListener)
     }
 
     companion object {

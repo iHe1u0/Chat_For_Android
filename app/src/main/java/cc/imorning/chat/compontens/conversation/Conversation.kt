@@ -108,7 +108,6 @@ fun ConversationContent(
                         val gson = Gson()
                         MessageManager.sendMessage(chatUid, message = gson.toJson(message))
                         // Add message in UI
-                        // TODO: handle insert message into database,then update view
                         uiState.addMessageUI(
                             MessageEntity(
                                 sender = authorMe.toString(),
