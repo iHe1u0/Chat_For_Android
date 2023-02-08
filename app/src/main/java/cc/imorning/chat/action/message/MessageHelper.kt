@@ -7,12 +7,12 @@ import cc.imorning.chat.action.RosterAction
 import cc.imorning.common.CommonApp
 import cc.imorning.common.utils.Base64Utils
 import cc.imorning.common.utils.RingUtils
-import cc.imorning.database.db.MessageDB
 import cc.imorning.database.db.RecentDB
 import cc.imorning.database.entity.MessageBody
 import cc.imorning.database.entity.MessageEntity
 import cc.imorning.database.entity.MessageTable
 import cc.imorning.database.entity.RecentMessageEntity
+import cc.imorning.database.utils.MessageDatabaseHelper
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.Dispatchers
@@ -164,10 +164,15 @@ object MessageHelper {
         if (connection.isConnected && connection.isAuthenticated) {
             val sender = messageEntity.sender
             val receiver = messageEntity.receiver
-            val messageDatabaseDao = MessageDB.getInstance(
-                context = CommonApp.getContext(),
-                user = sender,
-                me = receiver
+            // val messageDatabaseDao = MessageDB.getInstance(
+            //     context = CommonApp.getContext(),
+            //     user = sender,
+            //     me = receiver
+            // ).databaseDao()
+            val messageDatabaseDao = MessageDatabaseHelper.getInstance().getMessageDatabaseDao(
+                CommonApp.getContext(),
+                sender,
+                receiver
             ).databaseDao()
             with(messageEntity) {
                 MainScope().launch(Dispatchers.IO) {
