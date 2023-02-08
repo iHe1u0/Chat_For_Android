@@ -8,13 +8,12 @@ import cc.imorning.common.utils.NetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import org.joda.time.DateTime
 
 data class RecentMessage(
     val nickName: String = "",
-    val sender: String = "",
+    val user: String = "",
     val message: String = "",
-    val time: DateTime = DateTime.now(),
+    val time: Long,
     val messageType: MessageType = MessageType.TEXT
 ) {
     init {
@@ -22,8 +21,12 @@ data class RecentMessage(
             && NetworkUtils.isNetworkConnected()
         ) {
             MainScope().launch(Dispatchers.IO) {
-                AvatarUtils.instance.saveAvatar(sender)
+                AvatarUtils.instance.saveAvatar(user)
             }
         }
+    }
+
+    override fun toString(): String {
+        return "[$user]:$message"
     }
 }

@@ -2,8 +2,8 @@ package cc.imorning.chat.action.message
 
 import android.util.Log
 import cc.imorning.chat.App
+import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.action.RosterAction
-import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
 import cc.imorning.common.utils.Base64Utils
 import cc.imorning.common.utils.RingUtils
@@ -11,6 +11,7 @@ import cc.imorning.database.db.MessageDB
 import cc.imorning.database.db.RecentDB
 import cc.imorning.database.entity.MessageBody
 import cc.imorning.database.entity.MessageEntity
+import cc.imorning.database.entity.MessageTable
 import cc.imorning.database.entity.RecentMessageEntity
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -20,8 +21,6 @@ import kotlinx.coroutines.launch
 import org.jivesoftware.smack.chat2.Chat
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Message.Type
-import org.joda.time.DateTime
-import org.joda.time.DateTimeZone
 import java.io.File
 
 private const val TAG = "MessageHelper"
@@ -124,15 +123,14 @@ object MessageHelper {
      * Process received message,insert message into database
      */
     private fun processChatMessage(messageEntity: MessageEntity, chat: Chat?) {
-        val fromString = messageEntity.sender
-        val nickName = RosterAction.getNickName(fromString)
         with(messageEntity) {
+            val nickName = RosterAction.getNickName(sender)
             insertRecentMessage(
-                sender = receiver,
+                user = sender,
                 nickName = nickName,
                 messageBody = messageBody.text,
                 messageType = messageType,
-                dateTime = DateTime(sendTime).withZone(DateTimeZone.getDefault())
+                dateTime = sendTime
             )
             // insert into message database
             insertMessage(messageEntity)
@@ -140,14 +138,14 @@ object MessageHelper {
     }
 
     fun insertRecentMessage(
-        sender: String,
+        user: String,
         nickName: String,
         messageBody: String,
         messageType: Type,
-        dateTime: DateTime
+        dateTime: Long
     ) {
         val recentMessage = RecentMessageEntity(
-            sender = sender,
+            sender = user,
             nickName = nickName,
             type = messageType,
             message = messageBody,
@@ -166,16 +164,30 @@ object MessageHelper {
         if (connection.isConnected && connection.isAuthenticated) {
             val sender = messageEntity.sender
             val receiver = messageEntity.receiver
-             val messageDatabaseDao = MessageDB.getInstance(
-                 context = CommonApp.getContext(),
-                 user = sender,
-                 receiver = receiver
-             ).databaseDao()
-            messageEntity.let {
-                Log.d(TAG, "insertMessage:[$sender]>[$receiver]: ${it.messageBody.text}")
-            }
-            MainScope().launch(Dispatchers.IO) {
-
+            val messageDatabaseDao = MessageDB.getInstance(
+                context = CommonApp.getContext(),
+                user = sender,
+                me = receiver
+            ).databaseDao()
+            with(messageEntity) {
+                MainScope().launch(Dispatchers.IO) {
+                    messageDatabaseDao.insertMessage(
+                        MessageTable(
+                            sender = sender,
+                            receiver = receiver,
+                            message_type = messageType,
+                            send_time = sendTime,
+                            is_show = isShow,
+                            is_recall = isRecall,
+                            text = messageBody.text,
+                            image = messageBody.image,
+                            audio = messageBody.audio,
+                            video = messageBody.video,
+                            file = messageBody.file,
+                            action = messageBody.action
+                        )
+                    )
+                }
             }
         }
     }

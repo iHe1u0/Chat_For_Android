@@ -1,7 +1,6 @@
 package cc.imorning.database.utils
 
 import android.content.Context
-import cc.imorning.common.utils.MD5Utils
 import java.io.File
 
 /**
@@ -19,10 +18,14 @@ object DatabaseHelper {
     const val RECENT_MESSAGE_DB = "recent_message.db"
 
     /**
+     * message database
+     */
+    const val MESSAGE_DB = "message.db"
+
+    /**
      * message table
      */
     const val TABLE_MESSAGE = "message"
-
 
     /**
      * user info table name
@@ -41,11 +44,11 @@ object DatabaseHelper {
 
     /**
      * get user database dir, e.g:
-     * /data/user/0/cc.imorning.chat/databases/md5.encode(jid)
+     * /data/user/0/cc.imorning.chat/databases/md5.encode(jid)/
      */
     fun getDatabaseRootDir(context: Context, jid: String): String {
-        val encodeUserDir = MD5Utils.digest(jid)
-        return context.getDatabasePath(encodeUserDir).path
+        val userDir = jid.replace("@", "_")
+        return context.getDatabasePath(userDir).path.plus(File.separator)
     }
 
     /**
@@ -55,12 +58,20 @@ object DatabaseHelper {
      * @param dbName database name
      *
      */
-    fun getDatabase(context: Context, user: String, dbName: String): String {
-        val rootDir = getDatabaseRootDir(context, user)
+    fun getDatabase(context: Context, me: String, dbName: String): String {
+        val rootDir = getDatabaseRootDir(context, me)
         if (dbName.endsWith(".db")) {
-            return rootDir.plus(File.separator).plus(dbName)
+            return rootDir.plus(dbName)
         }
-        return rootDir.plus(File.separator).plus(dbName).plus(".db")
+        return rootDir.plus(dbName).plus(".db")
+    }
+
+    fun getMessageDatabase(context: Context, user: String, me: String): String {
+        return getDatabaseRootDir(context, me)
+            .plus("message")
+            .plus(File.separator)
+            .plus(user.replace("@", "_"))
+            .plus(".db")
     }
 
 }

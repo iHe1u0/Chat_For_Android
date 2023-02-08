@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import cc.imorning.database.utils.DatabaseHelper
 import org.jivesoftware.smack.packet.Message.Type
-import org.joda.time.DateTime
+import org.joda.time.Instant
 
 @Entity(tableName = DatabaseHelper.TABLE_RECENT_MESSAGE)
 data class RecentMessageEntity(
@@ -24,7 +24,7 @@ data class RecentMessageEntity(
     val message: String? = "",
 
     @ColumnInfo(name = "time")
-    val time: DateTime,
+    val time: Long = Instant.now().millis,
 
     @ColumnInfo(name = "isShow")
     val isShow: Boolean

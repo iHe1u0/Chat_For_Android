@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import cc.imorning.common.constant.ServerConfig
 import com.microsoft.appcenter.AppCenter
@@ -36,8 +37,8 @@ open class CommonApp : Application() {
             Analytics::class.java,
             Crashes::class.java
         )
-        AppCenter.setLogLevel(Log.ERROR)
-        AppCenter.setEnabled(BuildConfig.DEBUG)
+        AppCenter.setLogLevel(Log.WARN)
+        AppCenter.setEnabled(!Build.FINGERPRINT.contains(other = "generic", ignoreCase = true))
 
         val formatStrategy = PrettyFormatStrategy.newBuilder()
             .showThreadInfo(true)
@@ -46,7 +47,8 @@ open class CommonApp : Application() {
             .build()
         Logger.addLogAdapter(object : AndroidLogAdapter(formatStrategy) {
             override fun isLoggable(priority: Int, tag: String?): Boolean {
-                return BuildConfig.DEBUG
+                return BuildConfig.DEBUG &&
+                        Build.FINGERPRINT.contains(other = "generic", ignoreCase = true)
             }
         })
 

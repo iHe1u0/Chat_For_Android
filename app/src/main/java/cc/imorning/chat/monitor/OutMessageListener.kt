@@ -8,8 +8,6 @@ import com.google.gson.Gson
 import org.jivesoftware.smack.chat2.Chat
 import org.jivesoftware.smack.chat2.OutgoingChatMessageListener
 import org.jivesoftware.smack.packet.MessageBuilder
-import org.joda.time.DateTime
-import org.joda.time.DateTimeZone
 import org.jxmpp.jid.EntityBareJid
 
 class OutMessageListener private constructor() : OutgoingChatMessageListener {
@@ -27,19 +25,18 @@ class OutMessageListener private constructor() : OutgoingChatMessageListener {
             }
             val gson = Gson()
             val message = gson.fromJson(this.body, MessageEntity::class.java)
-            val nickName = RosterAction.getNickName(message.sender)
+            val nickName = RosterAction.getNickName(message.receiver)
             with(message) {
                 MessageHelper.insertRecentMessage(
-                    sender = receiver,
+                    user = receiver,
                     nickName = nickName,
                     messageBody = messageBody.text,
                     messageType = messageType,
-                    dateTime = DateTime(sendTime).withZone(DateTimeZone.getDefault())
+                    dateTime = sendTime
                 )
+                MessageHelper.insertMessage(this)
             }
         }
-        // MessageHelper.insertRecentMessage(fromString, nickName, message, dateTime)
-        // MessageHelper.insertRecentMessage(fromString, nickName, message, dateTime)
     }
 
     companion object {

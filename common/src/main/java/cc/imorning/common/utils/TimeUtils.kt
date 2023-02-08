@@ -2,11 +2,12 @@ package cc.imorning.common.utils
 
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
+import org.joda.time.Instant
 import org.joda.time.format.DateTimeFormat
 
 object TimeUtils {
 
-    const val DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss"
+    private const val DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss"
 
     /**
      * get format time
@@ -28,4 +29,9 @@ object TimeUtils {
             .withZone(DateTimeZone.forOffsetHours(hoursOffset))
             .print(dateTime)
     }
+
+    fun millisToDateTime(millis: Long): DateTime {
+        return Instant(millis).toDateTime()
+    }
+
 }

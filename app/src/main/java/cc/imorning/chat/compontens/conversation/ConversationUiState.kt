@@ -12,16 +12,8 @@ class ConversationUiState(
     private val _messages: MutableList<MessageEntity> = initialMessages.toMutableStateList()
     val messages: List<MessageEntity> = _messages
 
-    fun addMessage(msg: MessageEntity) {
-        _messages.add(0, msg) // Add to the beginning of the list
+    fun addMessageUI(msg: MessageEntity) {
+        // Add to the beginning of the list
+        _messages.add(0, msg)
     }
 }
-
-//@Immutable
-//data class Message(
-//    val author: String,
-//    val content: String,
-//    val timestamp: String,
-//    val image: Int? = null,
-//    val authorImage: Int = if (author == "me") R.drawable.ic_default_avatar else R.drawable.ic_nick
-//)

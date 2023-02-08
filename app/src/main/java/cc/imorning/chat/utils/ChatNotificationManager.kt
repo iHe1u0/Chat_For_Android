@@ -8,7 +8,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.core.app.NotificationCompat
 import androidx.core.app.Person
@@ -20,11 +19,11 @@ import cc.imorning.chat.App
 import cc.imorning.chat.R
 import cc.imorning.chat.activity.ChatActivity
 import cc.imorning.chat.activity.MainActivity
-import cc.imorning.chat.model.OnlineMessage
 import cc.imorning.chat.monitor.ActivityMonitor
 import cc.imorning.chat.receiver.ReplyReceiver
 import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.Config
+import cc.imorning.database.entity.MessageEntity
 
 class ChatNotificationManager private constructor(val context: Context) {
 
@@ -93,12 +92,13 @@ class ChatNotificationManager private constructor(val context: Context) {
      */
     @WorkerThread
     fun showNotification(
-        message: OnlineMessage,
+        message: MessageEntity,
         from: String? = "unknown sender",
         update: Boolean = false
     ) {
         val user =
-            Person.Builder().setName(App.getTCPConnection().user.asEntityBareJid().toString())
+            Person.Builder()
+                .setName(App.getTCPConnection().user.asEntityBareJid().toString())
                 .build()
         val icon = IconCompat.createWithResource(context, R.drawable.ic_default_avatar)
         val person = Person.Builder().setName(from).setIcon(icon).build()
@@ -115,9 +115,9 @@ class ChatNotificationManager private constructor(val context: Context) {
         // val lastId = 0L
 
         val m = NotificationCompat.MessagingStyle.Message(
-            message.message,
-            message.time.millis,
-            if (message.from != null) person else null
+            message.messageBody.text,
+            System.currentTimeMillis(),
+            if (message.sender.isNotBlank()) person else null
         ).apply {
 
         }
@@ -134,7 +134,7 @@ class ChatNotificationManager private constructor(val context: Context) {
             )
             .setContentTitle(from)
             .setSmallIcon(R.drawable.ic_message)
-            .setContentText("${message.message}")
+            .setContentText(message.messageBody.text)
             .setCategory(Notification.CATEGORY_MESSAGE)
             .addPerson(person)
             .setShowWhen(true)

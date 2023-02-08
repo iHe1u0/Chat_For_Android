@@ -6,6 +6,7 @@ import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import cc.imorning.chat.App
+import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.R
 import cc.imorning.chat.action.message.MessageHelper
 import cc.imorning.chat.action.message.MessageManager
@@ -17,6 +18,7 @@ import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.chat.utils.ChatNotificationManager
 import cc.imorning.database.entity.MessageEntity
 import com.google.gson.Gson
+import com.orhanobut.logger.Logger
 import org.jivesoftware.smack.chat2.ChatManager
 import org.jivesoftware.smack.chat2.IncomingChatMessageListener
 import org.jivesoftware.smack.filter.AndFilter
@@ -102,8 +104,14 @@ class MessageMonitorService : Service() {
             val offlineMessages: List<Message> = MessageManager.getOfflineMessage()
             val gson = Gson()
             for (message in offlineMessages) {
-                val messageEntity = gson.fromJson(message.body, MessageEntity::class.java)
-                MessageHelper.processMessage(messageEntity = messageEntity)
+                if (message.type == Message.Type.chat) {
+                    val messageEntity = gson.fromJson(message.body, MessageEntity::class.java)
+                    MessageHelper.processMessage(messageEntity = messageEntity)
+                } else {
+                    if (BuildConfig.DEBUG) {
+                        Logger.xml(message.toXML().toString())
+                    }
+                }
             }
         }
     }

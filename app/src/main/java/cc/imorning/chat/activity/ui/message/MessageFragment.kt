@@ -151,9 +151,9 @@ fun MessageScreen(viewModel: MessageViewModel) {
                     val lastMessage: MutableSet<String> = mutableSetOf()
                     items(messages.value!!) { message ->
                         // sort by same message.sender
-                        if (!lastMessage.contains(message.sender)) {
+                        if (!lastMessage.contains(message.user)) {
                             RecentMessageItem(message)
-                            lastMessage.add(message.sender)
+                            lastMessage.add(message.user)
                         }
                     }
                 }

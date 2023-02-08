@@ -17,7 +17,6 @@ import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.compontens.conversation.ConversationContent
 import cc.imorning.chat.compontens.conversation.ConversationUiState
 import cc.imorning.chat.compontens.conversation.LocalBackPressedDispatcher
-import cc.imorning.chat.data.initialMessages
 import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.viewmodel.ChatViewModel
@@ -45,18 +44,20 @@ class ChatActivity : ComponentActivity() {
         handleIntent(intent)
         viewModel.addStatusListener()
         viewModel.init()
+        viewModel.getHistoryMessages()
         setContent {
             CompositionLocalProvider(
                 LocalBackPressedDispatcher provides this@ChatActivity.onBackPressedDispatcher
             ) {
                 ChatTheme {
 
-                    val jidString=viewModel.chatUserId.collectAsState()
+                    val historyMessages = viewModel.historyMessages.collectAsState()
+                    val jidString = viewModel.chatUserId.collectAsState()
                     val name = viewModel.userOrGroupName.collectAsState()
                     val rosterStatus = viewModel.status.collectAsState()
 
                     val uiState = ConversationUiState(
-                        initialMessages = initialMessages,
+                        initialMessages = historyMessages.value,
                         nickName = name.value,
                         friendStatus = rosterStatus.value
                     )
@@ -95,7 +96,8 @@ class ChatActivity : ComponentActivity() {
                     )
                 }
                 Config.Intent.Action.START_CHAT_FROM_APP -> {
-                    viewModel.chatUserId.value = intent.getStringExtra(Config.Intent.Key.START_CHAT_JID).toString()
+                    viewModel.chatUserId.value =
+                        intent.getStringExtra(Config.Intent.Key.START_CHAT_JID).toString()
                     chatType = ChatType.from(
                         intent.getStringExtra(Config.Intent.Key.START_CHAT_JID).toString()
                     )

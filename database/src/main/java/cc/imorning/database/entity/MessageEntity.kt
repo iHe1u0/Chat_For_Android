@@ -2,7 +2,7 @@ package cc.imorning.database.entity
 
 import com.google.gson.annotations.SerializedName
 import org.jivesoftware.smack.packet.Message.Type
-import org.joda.time.DateTime
+import org.joda.time.Instant
 
 /**
  * This is an entity for message will be sent or received.
@@ -31,14 +31,19 @@ data class MessageEntity(
     val messageBody: MessageBody,
 
     @SerializedName("send_time")
-    val sendTime: String = DateTime.now().toString(),
+    val sendTime: Long = Instant.now().millis,
 
     @SerializedName("is_show")
     val isShow: Boolean = true,
 
     @SerializedName("is_recall")
     val isRecall: Boolean = false
-)
+) {
+
+    override fun toString(): String {
+        return "[$sender]>[$receiver]:${messageBody.text}"
+    }
+}
 
 /**
  * This data class will include message body

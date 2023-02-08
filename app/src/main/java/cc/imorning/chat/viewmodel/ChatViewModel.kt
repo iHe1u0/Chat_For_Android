@@ -8,9 +8,16 @@ import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.action.RosterAction
 import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.ChatType
+import cc.imorning.database.dao.MessageDatabaseDao
+import cc.imorning.database.db.MessageDB
+import cc.imorning.database.entity.MessageBody
+import cc.imorning.database.entity.MessageEntity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.packet.Presence.Mode
 import org.jivesoftware.smack.roster.Roster
@@ -25,6 +32,7 @@ class ChatViewModel @Inject constructor() : ViewModel() {
 
     private lateinit var roster: Roster
     private lateinit var presence: Presence
+    private lateinit var messageDatabaseDao: MessageDatabaseDao
 
     private val _chatType = MutableLiveData(ChatType.Type.Unknown)
     val chatType: MutableLiveData<ChatType.Type>
@@ -46,12 +54,48 @@ class ChatViewModel @Inject constructor() : ViewModel() {
     val status: StateFlow<Mode>
         get() = _status.asStateFlow()
 
+    private val _historyMessages = MutableStateFlow(emptyList<MessageEntity>())
+    val historyMessages: MutableStateFlow<List<MessageEntity>>
+        get() = _historyMessages
+
     fun init() {
-        if (chatUserId.value.isEmpty()) {
+        if (chatUserId.value.isEmpty() || connection == null) {
+            Log.d(TAG, "init failed")
             return
         }
         _userOrGroupName.value = RosterAction.getNickName(jidString = chatUserId.value)
         _status.value = RosterAction.getRosterStatus(jidString = chatUserId.value)
+        messageDatabaseDao = MessageDB.getInstance(
+            context = CommonApp.getContext(),
+            user = chatUserId.value,
+            me = connection.user.asEntityBareJidString()
+        ).databaseDao()
+    }
+
+    fun getHistoryMessages() {
+        MainScope().launch(Dispatchers.IO) {
+            val historyTables = messageDatabaseDao.queryMessage()
+            val historyMsg = mutableListOf<MessageEntity>()
+            for (msg in historyTables) {
+                with(msg) {
+                    Log.d(TAG, "getHistoryMessages: $text")
+                    historyMsg.add(
+                        MessageEntity(
+                            sender = sender,
+                            receiver = receiver,
+                            messageType = message_type,
+                            messageBody = MessageBody(text, image, audio, video, file, action),
+                            sendTime = send_time,
+                            isShow = is_show,
+                            isRecall = is_recall
+                        )
+                    )
+                }
+            }
+            with(Dispatchers.Main) {
+                _historyMessages.value = historyMsg
+            }
+        }
     }
 
     /**

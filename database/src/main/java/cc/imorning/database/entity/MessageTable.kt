@@ -2,11 +2,17 @@ package cc.imorning.database.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 import cc.imorning.database.utils.DatabaseHelper
 import org.jivesoftware.smack.packet.Message
+import org.joda.time.Instant
 
 @Entity(tableName = DatabaseHelper.TABLE_MESSAGE)
 data class MessageTable(
+
+    @PrimaryKey
+    @ColumnInfo(name = "send_time")
+    val send_time: Long = Instant.now().millis,
 
     @ColumnInfo(name = "sender")
     val sender: String,
@@ -16,9 +22,6 @@ data class MessageTable(
 
     @ColumnInfo(name = "message_type")
     val message_type: Message.Type = Message.Type.normal,
-
-    @ColumnInfo(name = "send_time")
-    val send_time: String,
 
     @ColumnInfo(name = "is_show")
     val is_show: Boolean = true,

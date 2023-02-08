@@ -79,7 +79,6 @@ class MessageViewModel @Inject constructor(
             if (isFromUser) {
                 _isRefreshing.emit(true)
             }
-
             val messages = databaseDao.queryRecentMessage()
             val list = mutableListOf<RecentMessage>()
             if (messages.isNotEmpty()) {
@@ -87,7 +86,7 @@ class MessageViewModel @Inject constructor(
                     list.add(
                         RecentMessage(
                             nickName = "${message.nickName}",
-                            sender = message.sender,
+                            user = message.sender,
                             message = "${message.message}",
                             time = message.time
                         )

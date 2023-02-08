@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.VoiceChat
 import androidx.compose.material3.*
@@ -21,7 +20,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
@@ -104,14 +102,14 @@ fun ConversationContent(
                             sender = connection.user.asEntityBareJidString(),
                             receiver = chatUid,
                             messageBody = MessageBody(
-                                text = content
+                                text = content,
                             )
                         )
                         val gson = Gson()
                         MessageManager.sendMessage(chatUid, message = gson.toJson(message))
                         // Add message in UI
                         // TODO: handle insert message into database,then update view
-                        uiState.addMessage(
+                        uiState.addMessageUI(
                             MessageEntity(
                                 sender = authorMe.toString(),
                                 receiver = chatUid,
@@ -245,7 +243,7 @@ fun Messages(
                     Message(
                         onAuthorClick = { name -> navigateToProfile(name) },
                         msg = content,
-                        isUserMe = content.sender == content.receiver,
+                        isUserMe = content.sender == CommonApp.xmppTcpConnection?.user?.asEntityBareJidString(),
                         isFirstMessageByAuthor = isFirstMessageByAuthor,
                         isLastMessageByAuthor = isLastMessageByAuthor
                     )
@@ -410,6 +408,9 @@ private fun RowScope.DayHeaderLine() {
     )
 }
 
+/**
+ * chat message item UI
+ */
 @Composable
 fun ChatItemBubble(
     message: MessageEntity,
@@ -435,20 +436,20 @@ fun ChatItemBubble(
             )
         }
 
-        message.messageBody.image?.let {
-            Spacer(modifier = Modifier.height(4.dp))
-            Surface(
-                color = backgroundBubbleColor,
-                shape = ChatBubbleShape
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Favorite,
-                    modifier = Modifier.size(160.dp),
-                    contentDescription = "图片消息",
-                    tint = Color.Red.copy(0.5f)
-                )
-            }
-        }
+        // message.messageBody.image.isNullOrEmpty().let {
+        //     Spacer(modifier = Modifier.height(4.dp))
+        //     Surface(
+        //         color = backgroundBubbleColor,
+        //         shape = ChatBubbleShape
+        //     ) {
+        //         Icon(
+        //             imageVector = Icons.Filled.Favorite,
+        //             modifier = Modifier.size(160.dp),
+        //             contentDescription = "图片消息",
+        //             tint = Color.Red.copy(0.5f)
+        //         )
+        //     }
+        // }
     }
 }
 

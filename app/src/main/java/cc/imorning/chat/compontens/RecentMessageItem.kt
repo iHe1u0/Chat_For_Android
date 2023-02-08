@@ -22,14 +22,14 @@ private const val TAG = "RecentMessageItem"
 @Composable
 fun RecentMessageItem(message: RecentMessage) {
     val context = LocalContext.current
-    val avatarPath = AvatarUtils.instance.getAvatarPath(message.sender)
+    val avatarPath = AvatarUtils.instance.getAvatarPath(message.user)
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
                 val chatActivity = Intent(context, ChatActivity::class.java)
                 chatActivity.action = Config.Intent.Action.START_CHAT_FROM_APP
-                chatActivity.putExtra(Config.Intent.Key.START_CHAT_JID, message.sender)
+                chatActivity.putExtra(Config.Intent.Key.START_CHAT_JID, message.user)
                 chatActivity.putExtra(Config.Intent.Key.START_CHAT_TYPE, ChatType.Type.Single)
                 context.startActivity(chatActivity)
             },

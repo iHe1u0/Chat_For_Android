@@ -28,16 +28,16 @@ val initialMessages = listOf(
     MessageEntity(
         sender = "admin@curkay.catcompany.cn",
         receiver = "imorning@curkay.catcompany.cn",
-        messageBody = MessageBody(text = "message 10"),
+        messageBody = MessageBody(text = "message 2"),
     ),
     MessageEntity(
         sender = "admin@curkay.catcompany.cn",
         receiver = "imorning@curkay.catcompany.cn",
-        messageBody = MessageBody(text = "message 11"),
+        messageBody = MessageBody(text = "message 3"),
     ),
     MessageEntity(
         sender = "admin@curkay.catcompany.cn",
         receiver = "imorning@curkay.catcompany.cn",
-        messageBody = MessageBody(text = "message 100"),
+        messageBody = MessageBody(text = "message 4"),
     )
 )
