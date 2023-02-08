@@ -9,9 +9,9 @@ import cc.imorning.chat.action.RosterAction
 import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.ChatType
 import cc.imorning.database.dao.MessageDatabaseDao
-import cc.imorning.database.db.MessageDB
 import cc.imorning.database.entity.MessageBody
 import cc.imorning.database.entity.MessageEntity
+import cc.imorning.database.utils.MessageDatabaseHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,15 +69,21 @@ class ChatViewModel @Inject constructor() : ViewModel() {
         }
         _userOrGroupName.value = RosterAction.getNickName(jidString = chatUserId.value)
         _status.value = RosterAction.getRosterStatus(jidString = chatUserId.value)
-        messageDatabaseDao = MessageDB.getInstance(
-            context = CommonApp.getContext(),
-            user = chatUserId.value,
-            me = connection.user.asEntityBareJidString()
-        ).databaseDao()
+        // messageDatabaseDao = MessageDB.getInstance(
+        //     context = CommonApp.getContext(),
+        //     user = chatUserId.value,
+        //     me = connection.user.asEntityBareJidString()
+        // ).databaseDao()
+        messageDatabaseDao = MessageDatabaseHelper.instance!!.getMessageDB(
+            CommonApp.getContext(),
+            chatUserId.value,
+            connection.user.asEntityBareJidString()
+        )!!.databaseDao()
         incomingChatMessageListener = IncomingChatMessageListener { from, message, chat ->
-            if (from.asEntityBareJidString() != chatUserId.value){
+            if (from.asEntityBareJidString() != chatUserId.value) {
                 return@IncomingChatMessageListener
             }
+            getHistoryMessages()
             // val messageEntity = Gson().fromJson(message.body, MessageEntity::class.java)
             // getHistoryMessages()
         }

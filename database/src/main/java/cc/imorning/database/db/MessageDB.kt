@@ -1,7 +1,6 @@
 package cc.imorning.database.db
 
 import android.content.Context
-import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -35,10 +34,9 @@ abstract class MessageDB : RoomDatabase() {
          * @param me Current login user
          */
         fun getInstance(context: Context, user: String, me: String): MessageDB {
-
-            if (this::messageDB.isInitialized) {
-                return messageDB
-            }
+            // if (this::messageDB.isInitialized) {
+            //     return messageDB
+            // }
             // Create new instance for message database with jid
             messageDB = Room.databaseBuilder(
                 context,
@@ -47,7 +45,6 @@ abstract class MessageDB : RoomDatabase() {
             )
                 .fallbackToDestructiveMigration()
                 .build()
-            Log.d(TAG, "getInstance: [$me]-$messageDB")
             return messageDB
         }
     }
