@@ -228,7 +228,9 @@ fun MessagesUI(
 
                 item {
                     MessageItemUI(
-                        onAuthorClick = { name -> navigateToProfile(name) },
+                        onAuthorClick = { uid ->
+                            navigateToProfile(uid)
+                        },
                         msg = content,
                         isUserMe = content.sender == CommonApp.xmppTcpConnection?.user?.asEntityBareJidString(),
                         isFirstMessageByAuthor = isFirstMessageByAuthor,

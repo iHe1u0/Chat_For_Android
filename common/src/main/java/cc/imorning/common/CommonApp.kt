@@ -33,7 +33,7 @@ open class CommonApp : Application() {
 
         AppCenter.start(
             application,
-            "51915e37-24c4-4064-848b-cc16667c2f9c",
+            "28fb209f-c852-48b1-b691-9fa2b06c1762",
             Analytics::class.java,
             Crashes::class.java
         )

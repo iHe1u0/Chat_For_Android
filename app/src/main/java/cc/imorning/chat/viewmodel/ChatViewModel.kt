@@ -1,11 +1,14 @@
 package cc.imorning.chat.viewmodel
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.action.RosterAction
+import cc.imorning.chat.activity.DetailsActivity
 import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.ChatType
 import cc.imorning.database.dao.MessageDatabaseDao
@@ -159,6 +162,19 @@ class ChatViewModel @Inject constructor() : ViewModel() {
 
     fun clearMessageListener() {
         chatManager.removeIncomingListener(incomingChatMessageListener)
+    }
+
+    /**
+     * start
+     */
+    fun startDetailsActivity(context: Context, uid: String) {
+        if (uid.isEmpty()) {
+            return
+        }
+        val detailsActivity = Intent(context, DetailsActivity::class.java)
+        detailsActivity.putExtra(DetailsActivity.KEY_UID, uid)
+        detailsActivity.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+        context.startActivity(detailsActivity)
     }
 
     companion object {

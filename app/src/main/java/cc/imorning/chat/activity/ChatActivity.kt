@@ -65,7 +65,12 @@ class ChatActivity : ComponentActivity() {
                     ConversationContent(
                         chatUid = jidString.value,
                         uiState = uiState,
-                        navigateToProfile = { /*Action when click user avatar */ },
+                        navigateToProfile = { uid ->
+                            viewModel.startDetailsActivity(
+                                this@ChatActivity,
+                                uid
+                            )
+                        },
                         onNavIconPressed = {
                             this@ChatActivity.finish()
                         },
@@ -85,6 +90,7 @@ class ChatActivity : ComponentActivity() {
         viewModel.clearMessageListener()
         super.onDestroy()
     }
+
     private fun handleIntent(intent: Intent) {
         if (null != intent.action) {
             when (val action = intent.action) {

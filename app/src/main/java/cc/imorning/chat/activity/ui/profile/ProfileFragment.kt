@@ -1,7 +1,6 @@
 package cc.imorning.chat.activity.ui.profile
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,10 +29,8 @@ import androidx.fragment.app.viewModels
 import cc.imorning.chat.App
 import cc.imorning.chat.R
 import cc.imorning.chat.compontens.Avatar
-import cc.imorning.chat.service.MessageMonitorService
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.ui.view.ComposeDialogUtils
-import cc.imorning.common.CommonApp
 
 private const val TAG = "ProfileFragment"
 
@@ -98,10 +94,10 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
             .verticalScroll(rememberScrollState())
     ) {
 
-        val avatarPath = profileViewModel.avatarPath.observeAsState().value
-        val nickName = profileViewModel.nickname.observeAsState()
-        val phoneNumber = profileViewModel.phoneNumber.observeAsState()
-        val jidString = profileViewModel.jidString.observeAsState()
+        val avatarPath = profileViewModel.avatarPath.collectAsState().value
+        val nickName = profileViewModel.nickname.collectAsState()
+        val phoneNumber = profileViewModel.phoneNumber.collectAsState()
+        val jidString = profileViewModel.jidString.collectAsState()
 
         var showBuildingDialog by remember { mutableStateOf(false) }
         if (showBuildingDialog) {
@@ -122,32 +118,34 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                 modifier = Modifier.padding(start = 8.dp)
             ) {
                 Text(
-                    text = "${nickName.value}",
+                    text = nickName.value,
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.titleMedium,
                 )
                 ClickableText(
                     text = AnnotatedString(
-                        text = "${phoneNumber.value}",
+                        text = phoneNumber.value,
                         spanStyle = SpanStyle(
                             color = Color.Blue,
                         )
                     ),
                     style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.background(Color.Green),
                     onClick = {
-                        Toast.makeText(context, "${phoneNumber.value}", Toast.LENGTH_SHORT).show()
-                    }
+                        Toast.makeText(context, phoneNumber.value, Toast.LENGTH_SHORT).show()
+                    },
                 )
                 ClickableText(
                     text = AnnotatedString(
-                        text = "${jidString.value}",
+                        text = jidString.value,
                         spanStyle = SpanStyle(
                             color = Color.Blue,
                         )
                     ),
                     style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.background(Color.Magenta),
                     onClick = {
-                        Toast.makeText(context, "${jidString.value}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, jidString.value, Toast.LENGTH_SHORT).show()
                     }
                 )
             }
