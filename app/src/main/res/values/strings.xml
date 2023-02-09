@@ -1,25 +1,29 @@
 <resources>
-    <string name="app_name">IC</string>
+    <string name="app_name">iChat</string>
 
-    <string name="ok">确定</string>
-    <string name="cancel">取消</string>
-    <string name="close">关闭</string>
+    <string name="ok">Confirm</string>
+    <string name="cancel">Cancel</string>
 
-    <string name="title_message">消息</string>
-    <string name="title_contact">联系人</string>
-    <string name="title_profile">设置</string>
+    <string name="close">Close</string>
+    <string name="title_message">Message</string>
+    <string name="title_contact">Contact</string>
+    <string name="title_profile">Settings</string>
 
-    <string name="login">登录</string>
-    <string name="remember_password">记住密码</string>
-    <string name="account">账号</string>
-    <string name="password">密码</string>
-    <string name="search_contact">搜索联系人</string>
+    <string name="login">Login</string>
+    <string name="remember_password">Remember Password</string>
+    <string name="account">Account</string>
+    <string name="password">Password</string>
+    <string name="search_contact">Search in roster</string>
 
-    <string name="desc_contact_item_avatar">用户头像</string>
-    <string name="desc_add_contact">添加联系人</string>
-    <string name="new_message">新消息</string>
-    <string name="send">发送</string>
+    <string name="desc_contact_item_avatar">Avatar</string>
+    <string name="desc_add_contact">Add new roster</string>
+    <string name="new_message">New message</string>
+    <string name="send">Send</string>
 
-    <string name="app_is_running">软件运行中</string>
-    <string name="network_is_unavailable">网络未连接</string>
+    <string name="app_is_running">App is running</string>
+    <string name="network_is_unavailable">Network has been disconnected</string>
+    <string name="logging_in">Logging in</string>
+    <string name="register">register</string>
+    <string name="forget_password">Forget password?</string>
+    <string name="change_mode">Change mode</string>
 </resources>

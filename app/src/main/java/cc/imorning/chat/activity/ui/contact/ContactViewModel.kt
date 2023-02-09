@@ -52,6 +52,9 @@ class ContactViewModel @Inject constructor(
         }
     }
 
+    /**
+     * update roster list
+     */
     fun updateRosterView() {
         viewModelScope.launch(Dispatchers.IO) {
             val rosterList = databaseDao.queryRosters()

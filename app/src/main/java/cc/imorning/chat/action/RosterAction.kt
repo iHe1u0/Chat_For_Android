@@ -10,6 +10,7 @@ import cc.imorning.common.exception.OfflineException
 import cc.imorning.common.utils.NetworkUtils
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.packet.Presence.Mode
+import org.jivesoftware.smack.packet.PresenceBuilder
 import org.jivesoftware.smack.roster.Roster
 import org.jivesoftware.smack.roster.RosterEntry
 import org.jivesoftware.smack.roster.RosterGroup
@@ -332,6 +333,17 @@ object RosterAction {
         val presence: Presence = roster.getPresence(JidCreate.bareFrom(jidString))
         return presence.mode
 
+    }
+
+    /**
+     * update current user mode
+     */
+    fun updateMode(mode: Mode) {
+        val presence = PresenceBuilder
+            .buildPresence()
+            .setMode(mode)
+            .build()
+        connection.sendStanza(presence)
     }
 
 }

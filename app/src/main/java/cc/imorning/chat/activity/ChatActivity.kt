@@ -68,7 +68,6 @@ class ChatActivity : ComponentActivity() {
                         navigateToProfile = { /*Action when click user avatar */ },
                         onNavIconPressed = {
                             this@ChatActivity.finish()
-                            // this@ChatActivity.viewModelStore.clear()
                         },
                         // Add padding so that we are inset from any navigation bars
                         modifier = Modifier.windowInsetsPadding(
