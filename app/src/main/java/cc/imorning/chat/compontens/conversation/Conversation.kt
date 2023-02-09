@@ -37,6 +37,7 @@ import cc.imorning.chat.ui.view.ComposeDialogUtils.FunctionalityNotAvailablePopu
 import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.chat.utils.StatusHelper
 import cc.imorning.common.CommonApp
+import cc.imorning.common.utils.TimeUtils
 import cc.imorning.database.entity.MessageBody
 import cc.imorning.database.entity.MessageEntity
 import com.example.compose.jetchat.conversation.JumpToBottom
@@ -81,7 +82,7 @@ fun ConversationContent(
                     .fillMaxSize()
                     .nestedScroll(scrollBehavior.nestedScrollConnection)
             ) {
-                Messages(
+                MessagesUI(
                     messages = uiState.messages,
                     navigateToProfile = navigateToProfile,
                     modifier = Modifier.weight(1f),
@@ -200,7 +201,7 @@ fun ChannelNameBar(
 }
 
 @Composable
-fun Messages(
+fun MessagesUI(
     messages: List<MessageEntity>,
     navigateToProfile: (String) -> Unit,
     scrollState: LazyListState,
@@ -225,6 +226,17 @@ fun Messages(
                 val isFirstMessageByAuthor = prevAuthor != content.sender
                 val isLastMessageByAuthor = nextAuthor != content.sender
 
+                item {
+                    MessageItemUI(
+                        onAuthorClick = { name -> navigateToProfile(name) },
+                        msg = content,
+                        isUserMe = content.sender == CommonApp.xmppTcpConnection?.user?.asEntityBareJidString(),
+                        isFirstMessageByAuthor = isFirstMessageByAuthor,
+                        isLastMessageByAuthor = isLastMessageByAuthor,
+                    )
+                }
+
+
                 // Hardcode day dividers for simplicity
                 // if (index == messages.size - 1) {
                 //     item {
@@ -238,15 +250,6 @@ fun Messages(
                 //         DayHeader(DateTime.now())
                 //     }
                 // }
-                item {
-                    Message(
-                        onAuthorClick = { name -> navigateToProfile(name) },
-                        msg = content,
-                        isUserMe = content.sender == CommonApp.xmppTcpConnection?.user?.asEntityBareJidString(),
-                        isFirstMessageByAuthor = isFirstMessageByAuthor,
-                        isLastMessageByAuthor = isLastMessageByAuthor
-                    )
-                }
             }
         }
         // Jump to bottom button shows up when user scrolls past a threshold.
@@ -278,12 +281,12 @@ fun Messages(
 }
 
 @Composable
-fun Message(
+fun MessageItemUI(
     onAuthorClick: (String) -> Unit,
     msg: MessageEntity,
     isUserMe: Boolean,
     isFirstMessageByAuthor: Boolean,
-    isLastMessageByAuthor: Boolean
+    isLastMessageByAuthor: Boolean,
 ) {
     val borderColor = if (isUserMe) {
         MaterialTheme.colorScheme.primary
@@ -349,9 +352,17 @@ fun AuthorAndTextMessage(
     }
 }
 
+/**
+ * avatar and timestamp
+ */
 @Composable
 private fun AuthorNameTimestamp(msg: MessageEntity) {
     // Combine author and timestamp for a11y.
+    val format = if (TimeUtils.isToday(msg.sendTime)) {
+        "HH:mm:ss"
+    } else {
+        "yyyy-MM-dd HH:mm:ss"
+    }
     Row(modifier = Modifier.semantics(mergeDescendants = true) {}) {
         Text(
             text = RosterAction.getNickName(msg.sender),
@@ -362,7 +373,7 @@ private fun AuthorNameTimestamp(msg: MessageEntity) {
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            text = DateTime(msg.sendTime).toString("HH:mm:ss"),
+            text = DateTime(msg.sendTime).toString(format),
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.alignBy(LastBaseline),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -379,7 +390,8 @@ fun DayHeader(dateTime: DateTime) {
     val title = if (dateTime.isEqualNow) {
         "今天"
     } else {
-        DateTime(dateTime).toString("yyyy年MM月dd日")
+        TimeUtils.getFormatDateTime(dateTime)
+        // DateTime(dateTime).toString("yyyy-MM-dd")
     }
     Row(
         modifier = Modifier

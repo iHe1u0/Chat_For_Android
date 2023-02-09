@@ -3,9 +3,12 @@ package cc.imorning.common.utils
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.joda.time.Instant
+import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 
 object TimeUtils {
+
+    private const val TAG = "TimeUtils"
 
     private const val DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss"
 
@@ -32,6 +35,15 @@ object TimeUtils {
 
     fun millisToDateTime(millis: Long): DateTime {
         return Instant(millis).toDateTime()
+    }
+
+    /**
+     * return time if today
+     */
+    fun isToday(time: Long): Boolean {
+        val today = LocalDate()
+        val date = DateTime(time).toLocalDate()
+        return date.equals(today)
     }
 
 }
