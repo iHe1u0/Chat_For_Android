@@ -149,7 +149,7 @@ class ChatViewModel @Inject constructor() : ViewModel() {
 
     fun initMessageListener() {
         chatManager = ChatManager.getInstanceFor(connection)
-        incomingChatMessageListener = IncomingChatMessageListener { from, message, chat ->
+        incomingChatMessageListener = IncomingChatMessageListener { from, _, _ ->
             if (from.toString() == chatUserId.value) {
                 getHistoryMessages()
             }

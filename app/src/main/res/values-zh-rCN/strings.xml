@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">IC</string>
+
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+    <string name="close">关闭</string>
+
+    <string name="title_message">消息</string>
+    <string name="title_contact">联系人</string>
+    <string name="title_profile">设置</string>
+
+    <string name="login">登录</string>
+    <string name="remember_password">记住密码</string>
+    <string name="account">账号</string>
+    <string name="password">密码</string>
+    <string name="search_contact">搜索联系人</string>
+
+    <string name="desc_contact_item_avatar">用户头像</string>
+    <string name="desc_add_contact">添加联系人</string>
+    <string name="new_message">新消息</string>
+    <string name="send">发送</string>
+
+    <string name="app_is_running">软件运行中</string>
+    <string name="network_is_unavailable">网络未连接</string>
+    <string name="logging_in">登录中</string>
+    <string name="register">注册</string>
+    <string name="forget_password">忘记密码</string>
+    <string name="change_mode">更改状态</string>
+</resources>

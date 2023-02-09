@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -81,7 +82,7 @@ fun ContentScreen(viewModel: LoginViewModel) {
     val message = viewModel.getErrorMessage().observeAsState()
     val needStartActivity = viewModel.needStartActivity().observeAsState()
     if (shouldShowWaitingDialog.value == true) {
-        ComposeDialogUtils.ShowWaitingDialog(title = "登录中")
+        ComposeDialogUtils.ShowWaitingDialog(title = stringResource(R.string.logging_in))
     }
     if (shouldShowErrorDialog.value == true) {
         ComposeDialogUtils.InfoAlertDialog(message = message.value!!) {
@@ -104,7 +105,7 @@ fun ContentScreen(viewModel: LoginViewModel) {
             OutlinedTextField(
                 value = account.value.toString(),
                 onValueChange = { viewModel.setAccount(it.trim()) },
-                label = { Text(text = "账号") },
+                label = { Text(text = stringResource(id = R.string.account)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Ascii,
@@ -113,7 +114,7 @@ fun ContentScreen(viewModel: LoginViewModel) {
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Filled.AccountCircle,
-                        contentDescription = "账户"
+                        contentDescription = stringResource(id = R.string.account)
                     )
                 },
             )
@@ -125,12 +126,12 @@ fun ContentScreen(viewModel: LoginViewModel) {
             OutlinedTextField(
                 value = token.value.toString(),
                 onValueChange = { viewModel.setToken(it.trim()) },
-                label = { Text(text = "密码") },
+                label = { Text(text = stringResource(id = R.string.password)) },
                 singleLine = true,
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Filled.Password,
-                        contentDescription = "密码"
+                        contentDescription = stringResource(id = R.string.password)
                     )
                 },
                 keyboardOptions = KeyboardOptions(
@@ -157,7 +158,7 @@ fun ContentScreen(viewModel: LoginViewModel) {
                         viewModel.setSaveState(checked)
                     }
                 )
-                Text(text = "记住密码")
+                Text(text = stringResource(id = R.string.remember_password))
             }
             Button(
                 onClick = {
@@ -165,7 +166,7 @@ fun ContentScreen(viewModel: LoginViewModel) {
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text(text = "登录")
+                Text(text = stringResource(id = R.string.login))
             }
         }
     }
@@ -188,7 +189,7 @@ fun FloatingActionButton() {
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_register),
-            contentDescription = "注册"
+            contentDescription = stringResource(R.string.register)
         )
     }
 }
@@ -199,14 +200,14 @@ fun BottomSheetContent() {
     Column {
         BottomSheetListItem(
             imageVector = Icons.Filled.Add,
-            title = "注册",
+            title = stringResource(R.string.register),
             onItemClick = { title ->
                 Toast.makeText(context, title, Toast.LENGTH_SHORT).show()
             }
         )
         BottomSheetListItem(
             imageVector = Icons.Filled.FindInPage,
-            title = "忘记密码",
+            title = stringResource(R.string.forget_password),
             onItemClick = { title ->
                 Toast.makeText(context, title, Toast.LENGTH_SHORT).show()
             }

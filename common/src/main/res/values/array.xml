@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="mode">
+        <item>Online</item>
+        <item>Away</item>
+        <item>DND</item>
+        <item>Offline</item>
+    </string-array>
+</resources>

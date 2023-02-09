@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import cc.imorning.chat.App
+import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.model.RecentMessage
 import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.chat.utils.AvatarUtils
@@ -35,8 +36,11 @@ class MessageViewModel @Inject constructor(
     private val _avatarPath = MutableLiveData("")
     val avatarPath: MutableLiveData<String> = _avatarPath
 
-    private val _status = MutableLiveData("在线")
-    val status: MutableLiveData<String> = _status
+    private val _nickName = MutableStateFlow("USER")
+    val nickName: StateFlow<String> = _nickName
+
+    private val _status = MutableStateFlow("ONLINE")
+    val status: StateFlow<String> = _status
 
     private val _messages = MutableLiveData<MutableList<RecentMessage>>()
     val messages: MutableLiveData<MutableList<RecentMessage>> = _messages
@@ -56,7 +60,9 @@ class MessageViewModel @Inject constructor(
             if (ConnectionManager.isConnectionAuthenticated(connection = connection) &&
                 NetworkUtils.isNetworkConnected()
             ) {
-                AvatarUtils.instance.saveAvatar(connection.user.asEntityBareJidString())
+                MainScope().launch(Dispatchers.IO) {
+                    AvatarUtils.instance.saveAvatar(connection.user.asEntityBareJidString())
+                }
                 val roster = Roster.getInstanceFor(connection)
                 val availability = roster.getPresence(connection.user.asBareJid())
                 _avatarPath.value =
@@ -126,6 +132,14 @@ class MessageViewModel @Inject constructor(
             removeIncomingListener(incomingChatMessageListener)
             removeOutgoingListener(outgoingChatMessageListener)
             chatManager = null
+        }
+    }
+
+    fun updateUser() {
+        if (connection.isAuthenticated) {
+            val jid = connection.user.asEntityBareJidString()
+            _nickName.value = RosterAction.getNickName(jidString = jid)
+            _status.value = StatusHelper(RosterAction.getRosterStatus(jidString = jid)).toString()
         }
     }
 

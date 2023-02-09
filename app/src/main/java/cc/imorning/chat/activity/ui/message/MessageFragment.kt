@@ -1,17 +1,19 @@
 package cc.imorning.chat.activity.ui.message
 
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
@@ -29,13 +31,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import cc.imorning.chat.BuildConfig
+import cc.imorning.chat.App
 import cc.imorning.chat.R
+import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.activity.SearchActivity
 import cc.imorning.chat.compontens.RecentMessageItem
 import cc.imorning.chat.network.ConnectionLiveData
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.ui.view.ComposeDialogUtils
+import cc.imorning.chat.utils.StatusHelper
 import cc.imorning.common.CommonApp
 import cc.imorning.database.db.RecentDB
 import coil.compose.AsyncImagePainter
@@ -114,7 +118,7 @@ fun MessageScreen(viewModel: MessageViewModel) {
         if ((connectionStatus != null) && (!connectionStatus)) {
             viewModel.removeListener()
             Text(
-                text = "网络无连接",
+                text = stringResource(id = R.string.network_is_unavailable),
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = Color.Red),
@@ -165,17 +169,19 @@ fun MessageScreen(viewModel: MessageViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(messageViewModel: MessageViewModel) {
+    val context = LocalContext.current
     var showBuildingDialog by remember { mutableStateOf(false) }
     if (showBuildingDialog) {
         ComposeDialogUtils.FunctionalityNotAvailablePopup { showBuildingDialog = false }
     }
     val avatarPath = messageViewModel.avatarPath.observeAsState()
-    val status = messageViewModel.status.observeAsState()
+    val status = messageViewModel.status.collectAsState()
+
     CenterAlignedTopAppBar(
         title = {
             TextButton(
                 onClick = {
-                    showBuildingDialog = true
+                    showModeDialog(context, messageViewModel)
                 },
             ) {
                 SubcomposeAsyncImage(
@@ -191,9 +197,6 @@ fun TopBar(messageViewModel: MessageViewModel) {
                             CircularProgressIndicator()
                         }
                         is AsyncImagePainter.State.Error -> {
-                            if (BuildConfig.DEBUG) {
-                                Log.w(TAG, "on error when get avatar: ${avatarPath.value}")
-                            }
                             Icon(imageVector = Icons.Filled.Person, contentDescription = null)
                         }
                         is AsyncImagePainter.State.Empty -> {
@@ -205,12 +208,33 @@ fun TopBar(messageViewModel: MessageViewModel) {
                     }
                 }
                 Text(
-                    text = status.value!!,
+                    text = status.value,
                     modifier = Modifier.padding(start = 4.dp)
                 )
             }
         }
     )
+}
+
+fun showModeDialog(context: Context, messageViewModel: MessageViewModel) {
+    val connection = App.getTCPConnection()
+    var currentIndex =
+        StatusHelper.getIndex(RosterAction.getRosterStatus(connection.user.asEntityBareJidString()))
+    val array = context.resources.getStringArray(cc.imorning.common.R.array.mode)
+    val modeDialog = AlertDialog.Builder(context)
+    modeDialog.setTitle(context.getString(R.string.change_mode))
+    modeDialog.setPositiveButton(context.getString(R.string.cancel), null)
+    modeDialog.setSingleChoiceItems(
+        array,
+        currentIndex
+    ) { _: DialogInterface, index: Int ->
+        currentIndex = index
+    }
+    modeDialog.setPositiveButton(context.getString(R.string.ok)) { _: DialogInterface, _: Int ->
+        RosterAction.updateMode(StatusHelper.getMode(currentIndex))
+        messageViewModel.updateUser()
+    }
+    modeDialog.create().show()
 }
 
 @Composable
@@ -225,7 +249,7 @@ fun FloatingActionButton() {
     ) {
         Icon(
             imageVector = Icons.Filled.Search,
-            contentDescription = "搜索"
+            contentDescription = stringResource(id = R.string.search_contact)
         )
     }
 }

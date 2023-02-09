@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="mode">
+        <item>在线</item>
+        <item>离开</item>
+        <item>勿扰</item>
+        <item>离线</item>
+    </string-array>
+</resources>
