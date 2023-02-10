@@ -28,7 +28,9 @@ import cc.imorning.chat.App
 import cc.imorning.chat.R
 import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.compontens.VCardDialog
+import cc.imorning.chat.compontens.conversation.ClickableMessage
 import cc.imorning.common.constant.Config
+import cc.imorning.common.utils.FileUtils
 import cc.imorning.common.utils.QrUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -115,26 +117,24 @@ object ComposeDialogUtils {
     @Composable
     fun ShowAbout(onDismiss: () -> Unit) {
         val context = LocalContext.current
+        val content = FileUtils.instance.readStringFromAssets("about.txt")
         val bitmap: Bitmap = BitmapFactory.decodeStream(context.assets.open("logo.png"))
         AlertDialog(
             onDismissRequest = onDismiss,
             icon = {
                 Image(
                     bitmap = bitmap.asImageBitmap(),
-                    contentDescription = "",
+                    contentDescription = "logo",
                     modifier = Modifier.size(128.dp),
                     alignment = Alignment.Center
                 )
             },
             text = {
-                Text(
-                    text = "Designed by iMorning",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                ClickableMessage(message = content, isUserMe = true, authorClicked = {})
             },
             confirmButton = {
                 TextButton(onClick = onDismiss) {
-                    Text(text = stringResource(id = R.string.ok))
+                    Text(text = stringResource(id = R.string.close))
                 }
             }
         )
@@ -203,7 +203,11 @@ object ComposeDialogUtils {
                             name = jidString.split("@")[0]
                         }
                         scope.launch(Dispatchers.IO) {
-                            val result = RosterAction.addRoster(jidString, name, arrayOf(Config.DEFAULT_GROUP))
+                            val result = RosterAction.addRoster(
+                                jidString,
+                                name,
+                                arrayOf(Config.DEFAULT_GROUP)
+                            )
                             if (Looper.myLooper() == null) {
                                 Looper.prepare()
                             }

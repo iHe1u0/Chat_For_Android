@@ -1,12 +1,13 @@
 package cc.imorning.common.utils
 
 import android.os.Environment
-import android.util.Log
 import cc.imorning.common.CommonApp
-import com.orhanobut.logger.BuildConfig
+import java.io.BufferedReader
 import java.io.File
+import java.io.InputStream
+import java.io.InputStreamReader
 
-class FileUtils {
+class FileUtils private constructor() {
 
     private val context = CommonApp.getContext()
 
@@ -26,10 +27,10 @@ class FileUtils {
         }
     }
 
+    /**
+     * get roster avatar file path with jidString
+     */
     fun getAvatarCachePath(jid: String): File {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "getAvatarCache: $jid")
-        }
         return File(getAvatarImagesDir(), MD5Utils.digest(jid)!!)
     }
 
@@ -45,18 +46,6 @@ class FileUtils {
             return true
         }
         return false
-    }
-
-    /**
-     * get avatar cache dir
-     */
-    private fun getAvatarImagesDir(): String {
-        val dir = getCacheDir()!!.absolutePath.plus("/avatarCache/")
-        val file = File(dir)
-        if (!file.exists()) {
-            file.mkdir()
-        }
-        return dir
     }
 
     /**
@@ -89,6 +78,50 @@ class FileUtils {
             pcmFileDir.mkdir()
         }
         return pcmFileDir.absolutePath
+    }
+
+    /**
+     * read string from assets
+     */
+    fun readStringFromAssets(fileName: String): String {
+        if (fileName.isEmpty()) {
+            return ""
+        }
+        val assetManager = context.assets
+        val stream = assetManager.open(fileName)
+        val lines = BufferedReader(InputStreamReader(stream)).readLines()
+        val content = StringBuilder()
+        lines.forEach {
+            if (it.isEmpty()) {
+                content.append("\n")
+            } else {
+                content.append(it)
+            }
+        }
+        return content.toString()
+    }
+
+    private fun getInputStreamCode(inputStream: InputStream): String {
+        val head = ByteArray(3)
+        inputStream.read(head)
+        return when {
+            (head[0].toInt() == -1 && head[1].toInt() == -2) -> Charsets.UTF_16.name()
+            (head[0].toInt() == -2 && head[1].toInt() == -1) -> "Unicode"
+            (head[0].toInt() == -17 && head[1].toInt() == -69 && head[2].toInt() == -65) -> Charsets.UTF_8.name()
+            else -> "GBK"
+        }
+    }
+
+    /**
+     * get avatar cache dir
+     */
+    private fun getAvatarImagesDir(): String {
+        val dir = getCacheDir()!!.absolutePath.plus("/avatarCache/")
+        val file = File(dir)
+        if (!file.exists()) {
+            file.mkdir()
+        }
+        return dir
     }
 
     companion object {
