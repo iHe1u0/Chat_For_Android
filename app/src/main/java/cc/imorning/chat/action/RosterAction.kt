@@ -308,6 +308,9 @@ object RosterAction {
     }
 
     suspend fun accept(jidString: String, rosterNickName: String) {
+        if (jidString.isEmpty()){
+            return
+        }
         if (connection.isConnected && connection.isAuthenticated) {
             val subscribed = connection.stanzaFactory.buildPresenceStanza()
                 .to(jidString)

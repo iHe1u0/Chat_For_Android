@@ -1,12 +1,8 @@
 package cc.imorning.chat.activity.ui.contact
 
-import android.content.Context
-import android.widget.EditText
-import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import cc.imorning.chat.R
 import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.common.CommonApp
@@ -120,27 +116,13 @@ class ContactViewModel @Inject constructor(
         }
     }
 
-    fun acceptSubscribe(context: Context, jidString: String) {
-
-        val rosterNickName = EditText(context)
-        rosterNickName.isSingleLine = true
-        rosterNickName.maxEms = 16
-        rosterNickName.setText(RosterAction.getNickName(jidString))
-
-        val alertDialog = AlertDialog.Builder(context)
-        alertDialog.setTitle("输入备注")
-        alertDialog.setView(rosterNickName)
-        alertDialog.setPositiveButton(context.getText(R.string.ok)) { _, _ ->
-            MainScope().launch(Dispatchers.IO) {
-                RosterAction.accept(jidString, rosterNickName.text.toString())
-                withContext(Dispatchers.Main) {
-                    getRostersFromServer(true)
-                }
+    fun acceptSubscribe(jidString: String, newNickName: String) {
+        MainScope().launch(Dispatchers.IO) {
+            RosterAction.accept(jidString, newNickName)
+            withContext(Dispatchers.Main) {
+                getRostersFromServer(true)
             }
         }
-        alertDialog.setNegativeButton(context.getText(R.string.cancel), null)
-        alertDialog.show()
-
     }
 
     fun rejectSubscribe(jidString: String) {

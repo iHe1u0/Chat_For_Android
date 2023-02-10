@@ -115,7 +115,7 @@ object ComposeDialogUtils {
     }
 
     @Composable
-    fun ShowAbout(onDismiss: () -> Unit) {
+    fun AboutDialog(onDismiss: () -> Unit) {
         val context = LocalContext.current
         val content = FileUtils.instance.readStringFromAssets("about.txt")
         val bitmap: Bitmap = BitmapFactory.decodeStream(context.assets.open("logo.png"))
@@ -130,11 +130,60 @@ object ComposeDialogUtils {
                 )
             },
             text = {
-                ClickableMessage(message = content, isUserMe = true, authorClicked = {})
+                ClickableMessage(
+                    message = content,
+                    isUserMe = true,
+                    authorClicked = {},
+                )
             },
             confirmButton = {
                 TextButton(onClick = onDismiss) {
                     Text(text = stringResource(id = R.string.close))
+                }
+            }
+        )
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun EditorDialog(
+        title: String = "Tips",
+        hint: String = "Please input...",
+        positiveButton: String = "OK",
+        negativeButton: String = "Cancel",
+        onConfirm: (String) -> Unit,
+        onCancel: () -> Unit
+    ) {
+        var text by remember { mutableStateOf(hint) }
+        AlertDialog(
+            onDismissRequest = { onConfirm(text) },
+            title = {
+                Text(text = title)
+            },
+            text = {
+                Column {
+                    TextField(
+                        value = text,
+                        onValueChange = { text = it },
+                    )
+                }
+            },
+            confirmButton = {
+                Row {
+                    Button(
+                        onClick = {
+                            onConfirm(text)
+                        }
+                    ) {
+                        Text(text = positiveButton)
+                    }
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = onCancel
+                ) {
+                    Text(text = negativeButton)
                 }
             }
         )
@@ -269,9 +318,9 @@ object ComposeDialogUtils {
 fun PreviewDialog() {
     var showDialog by remember { mutableStateOf(false) }
     if (showDialog) {
-        ComposeDialogUtils.ShowAbout { showDialog = false }
+        ComposeDialogUtils.AboutDialog { showDialog = false }
     }
-    ComposeDialogUtils.ShowAbout {
+    ComposeDialogUtils.AboutDialog {
         showDialog = false
     }
 }

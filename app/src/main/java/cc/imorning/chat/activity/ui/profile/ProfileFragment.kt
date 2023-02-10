@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -31,6 +32,7 @@ import cc.imorning.chat.R
 import cc.imorning.chat.compontens.Avatar
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.ui.view.ComposeDialogUtils
+import cc.imorning.common.constant.Config
 
 private const val TAG = "ProfileFragment"
 
@@ -94,6 +96,8 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
             .verticalScroll(rememberScrollState())
     ) {
 
+        val uriHandler = LocalUriHandler.current
+
         val avatarPath = profileViewModel.avatarPath.collectAsState().value
         val nickName = profileViewModel.nickname.collectAsState()
         val phoneNumber = profileViewModel.phoneNumber.collectAsState()
@@ -106,7 +110,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
 
         var showAboutDialog by remember { mutableStateOf(false) }
         if (showAboutDialog) {
-            ComposeDialogUtils.ShowAbout { showAboutDialog = false }
+            ComposeDialogUtils.AboutDialog { showAboutDialog = false }
         }
         Row(
             modifier = Modifier
@@ -164,16 +168,16 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
         )
         MenuItem(
             icon = R.drawable.ic_code,
-            title = "关于",
+            title = stringResource(R.string.about),
             action = {
                 showAboutDialog = true
             }
         )
         MenuItem(
             icon = R.drawable.ic_bug_report,
-            title = "反馈问题",
+            title = stringResource(R.string.feedback),
             action = {
-                showBuildingDialog = true
+                uriHandler.openUri(Config.ISSUES_URL)
             }
         )
         MenuItem(

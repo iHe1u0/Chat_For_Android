@@ -26,4 +26,8 @@
     <string name="register">注册</string>
     <string name="forget_password">忘记密码</string>
     <string name="change_mode">更改状态</string>
+    <string name="add_roster_nick">添加好友备注</string>
+    <string name="browser_not_found">未找到浏览器</string>
+    <string name="about">关于</string>
+    <string name="feedback">反馈问题</string>
 </resources>

@@ -26,4 +26,8 @@
     <string name="register">register</string>
     <string name="forget_password">Forget password?</string>
     <string name="change_mode">Change mode</string>
+    <string name="add_roster_nick">Add nick name for friend</string>
+    <string name="browser_not_found">Can\'t find any browser,did you install it?</string>
+    <string name="about">About</string>
+    <string name="feedback">Feedback</string>
 </resources>

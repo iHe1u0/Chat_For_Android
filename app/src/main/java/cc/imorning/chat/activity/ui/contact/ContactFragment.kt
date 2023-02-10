@@ -13,8 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
@@ -29,6 +28,7 @@ import cc.imorning.chat.compontens.NewRosterItem
 import cc.imorning.chat.compontens.RosterItem
 import cc.imorning.chat.compontens.SearchBar
 import cc.imorning.chat.ui.theme.ChatTheme
+import cc.imorning.chat.ui.view.ComposeDialogUtils
 import cc.imorning.common.CommonApp
 import cc.imorning.database.db.DataDB
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -115,6 +115,21 @@ fun ContactScreen(viewModel: ContactViewModel) {
     val rosters = viewModel.rosters.collectAsState()
     val newRoster = viewModel.newRosters.collectAsState()
 
+    var showEditorDialog by remember { mutableStateOf(false) }
+    var newJid by remember { mutableStateOf("") }
+    if (showEditorDialog) {
+        ComposeDialogUtils.EditorDialog(
+            title = stringResource(R.string.add_roster_nick),
+            hint = RosterAction.getNickName(newJid),
+            positiveButton = stringResource(id = R.string.ok),
+            negativeButton = stringResource(id = R.string.cancel),
+            onConfirm = {
+                showEditorDialog = false
+                viewModel.acceptSubscribe(newJid, it)
+            },
+            onCancel = { showEditorDialog = false }
+        )
+    }
     Column {
         // search bar
         SearchBar(modifier = Modifier.fillMaxWidth())
@@ -138,14 +153,15 @@ fun ContactScreen(viewModel: ContactViewModel) {
                 item {
                     if (newRoster.value.isNotEmpty()) {
                         Column {
-                            newRoster.value.forEach { newRoster ->
+                            newRoster.value.forEach {
                                 NewRosterItem(
-                                    roster = newRoster,
+                                    roster = it,
                                     onAccept = {
-                                        viewModel.acceptSubscribe(context, newRoster.jid)
+                                        showEditorDialog = true
+                                        newJid = it.jid
                                     },
                                     onReject = {
-                                        viewModel.rejectSubscribe(newRoster.jid)
+                                        viewModel.rejectSubscribe(it.jid)
                                     }
                                 )
                             }

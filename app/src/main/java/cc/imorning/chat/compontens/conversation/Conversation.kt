@@ -1,10 +1,7 @@
 package cc.imorning.chat.compontens.conversation
 
 import android.widget.Toast
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -13,6 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.VoiceChat
 import androidx.compose.material3.*
@@ -20,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
@@ -385,7 +384,7 @@ private fun AuthorNameTimestamp(msg: MessageEntity) {
     }
 }
 
-private val ChatBubbleShape = RoundedCornerShape(4.dp, 20.dp, 20.dp, 20.dp)
+private val ChatBubbleShape = RoundedCornerShape(6.dp, 20.dp, 20.dp, 20.dp)
 
 @Composable
 fun DayHeader(dateTime: DateTime) {
@@ -426,51 +425,54 @@ private fun RowScope.DayHeaderLine() {
  */
 @Composable
 fun ChatItemBubble(
-    message: MessageEntity,
+    messageEntity: MessageEntity,
     isUserMe: Boolean,
     authorClicked: (String) -> Unit
 ) {
-
+    val message = messageEntity.messageBody
     val backgroundBubbleColor = if (isUserMe) {
         MaterialTheme.colorScheme.primary
     } else {
         MaterialTheme.colorScheme.surfaceVariant
     }
-
     Column {
         Surface(
             color = backgroundBubbleColor,
             shape = ChatBubbleShape
         ) {
-            ClickableMessage(
-                message = message.messageBody.text,
-                isUserMe = isUserMe,
-                authorClicked = authorClicked
-            )
+            if (message.text.isNotEmpty()) {
+                ClickableMessage(
+                    message = message.text,
+                    isUserMe = isUserMe,
+                    authorClicked = authorClicked,
+                    messageId = messageEntity.sendTime
+                )
+            }
         }
-
-        // message.messageBody.image.isNullOrEmpty().let {
-        //     Spacer(modifier = Modifier.height(4.dp))
-        //     Surface(
-        //         color = backgroundBubbleColor,
-        //         shape = ChatBubbleShape
-        //     ) {
-        //         Icon(
-        //             imageVector = Icons.Filled.Favorite,
-        //             modifier = Modifier.size(160.dp),
-        //             contentDescription = "图片消息",
-        //             tint = Color.Red.copy(0.5f)
-        //         )
-        //     }
-        // }
+        if (!message.image.isNullOrEmpty()) {
+            Spacer(modifier = Modifier.height(4.dp))
+            Surface(
+                color = backgroundBubbleColor,
+                shape = ChatBubbleShape
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Image,
+                    modifier = Modifier.size(16.dp),
+                    contentDescription = "images",
+                    tint = Color.Red.copy(0.5f)
+                )
+            }
+        }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ClickableMessage(
     message: String,
     isUserMe: Boolean,
-    authorClicked: (String) -> Unit
+    authorClicked: (String) -> Unit,
+    messageId: Long = 0L
 ) {
     val uriHandler = LocalUriHandler.current
 
@@ -496,6 +498,19 @@ fun ClickableMessage(
                 }
         }
     )
+
+    // Text(
+    //     text = styledMessage,
+    //     style = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current),
+    //     modifier = Modifier
+    //         .padding(16.dp)
+    //         .combinedClickable(
+    //             onClick = {},
+    //             onLongClick = {
+    //                 Log.d(TAG, "ClickableMessage: ${styledMessage.text}")
+    //             }
+    //         )
+    // )
 }
 
 private val JumpToBottomThreshold = 56.dp

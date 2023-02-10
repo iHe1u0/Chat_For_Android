@@ -21,4 +21,7 @@ object Config {
     const val LOGIN_INFO = "login_info"
 
     const val DEFAULT_GROUP = "Friends"
+
+    // This url used to report bugs
+    const val ISSUES_URL: String = "https://github.com/morningos/Chat_For_Android/issues"
 }
