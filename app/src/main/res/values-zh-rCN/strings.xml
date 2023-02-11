@@ -30,4 +30,10 @@
     <string name="browser_not_found">未找到浏览器</string>
     <string name="about">关于</string>
     <string name="feedback">反馈问题</string>
+    <string name="set_nick_name">点击设置昵称</string>
+    <string name="set_phone_number">点击设置手机号</string>
+    <string name="new_nick_name">新的昵称</string>
+    <string name="change_phone_number">更改手机号</string>
+    <string name="nick_is_empty">昵称不能为空！</string>
+    <string name="name_too_long">昵称长度不能超过%s字符</string>
 </resources>

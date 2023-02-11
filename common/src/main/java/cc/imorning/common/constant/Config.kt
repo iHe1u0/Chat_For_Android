@@ -24,4 +24,6 @@ object Config {
 
     // This url used to report bugs
     const val ISSUES_URL: String = "https://github.com/morningos/Chat_For_Android/issues"
+
+    const val NAME_MAX_LENGTH = 16
 }

@@ -30,4 +30,10 @@
     <string name="browser_not_found">Can\'t find any browser,did you install it?</string>
     <string name="about">About</string>
     <string name="feedback">Feedback</string>
+    <string name="set_nick_name">Click to set nick name</string>
+    <string name="set_phone_number">Click to set phone number</string>
+    <string name="nick_is_empty">nick name is empty!</string>
+    <string name="new_nick_name">new name</string>
+    <string name="change_phone_number">change phone number</string>
+    <string name="name_too_long">Name max length is %s</string>
 </resources>

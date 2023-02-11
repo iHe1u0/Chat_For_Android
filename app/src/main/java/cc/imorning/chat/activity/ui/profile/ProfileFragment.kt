@@ -29,6 +29,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import cc.imorning.chat.App
 import cc.imorning.chat.R
+import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.compontens.Avatar
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.ui.view.ComposeDialogUtils
@@ -112,23 +113,78 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
         if (showAboutDialog) {
             ComposeDialogUtils.AboutDialog { showAboutDialog = false }
         }
+
+        var showSetNickNameDialog by remember { mutableStateOf(false) }
+        var showSetPhoneNumberDialog by remember { mutableStateOf(false) }
+        if (showSetNickNameDialog) {
+            ComposeDialogUtils.EditorDialog(
+                title = stringResource(R.string.new_nick_name),
+                hint = RosterAction.getNickName(nickName.value),
+                positiveButton = stringResource(id = R.string.ok),
+                negativeButton = stringResource(id = R.string.cancel),
+                onConfirm = {
+                    if (it.isEmpty()) {
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.nick_is_empty),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    if (it.length > Config.NAME_MAX_LENGTH) {
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.name_too_long)
+                                .format(Config.NAME_MAX_LENGTH),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    showSetNickNameDialog = false
+                    RosterAction.updateNickName(it)
+                },
+                onCancel = { showSetNickNameDialog = false }
+            )
+        }
+        if (showSetPhoneNumberDialog) {
+            ComposeDialogUtils.EditorDialog(
+                title = stringResource(R.string.change_phone_number),
+                hint = RosterAction.getNickName(nickName.value),
+                positiveButton = stringResource(id = R.string.ok),
+                negativeButton = stringResource(id = R.string.cancel),
+                onConfirm = {
+                    showSetPhoneNumberDialog = false
+                    RosterAction.updatePhoneNumber(it)
+                },
+                onCancel = { showSetPhoneNumberDialog = false }
+            )
+        }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 8.dp)
         ) {
-            Avatar(avatarPath = avatarPath.orEmpty())
+            Avatar(avatarPath = avatarPath)
             Column(
                 modifier = Modifier.padding(start = 8.dp)
             ) {
-                Text(
-                    text = nickName.value,
-                    textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.titleMedium,
+                ClickableText(
+                    text = AnnotatedString(
+                        text = nickName.value.ifEmpty { stringResource(R.string.set_nick_name) },
+                        spanStyle = SpanStyle(
+                            color = Color.Blue,
+                        )
+                    ),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier
+                        .background(Color.Green)
+                        .defaultMinSize(minWidth = 10.dp),
+                    onClick = {
+                        showSetNickNameDialog = true
+                    },
                 )
                 ClickableText(
                     text = AnnotatedString(
-                        text = phoneNumber.value,
+                        text = phoneNumber.value.ifEmpty { stringResource(R.string.set_phone_number) },
                         spanStyle = SpanStyle(
                             color = Color.Blue,
                         )
@@ -136,7 +192,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.background(Color.Green),
                     onClick = {
-                        Toast.makeText(context, phoneNumber.value, Toast.LENGTH_SHORT).show()
+                        showSetPhoneNumberDialog = true
                     },
                 )
                 ClickableText(

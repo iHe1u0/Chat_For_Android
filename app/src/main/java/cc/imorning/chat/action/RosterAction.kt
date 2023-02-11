@@ -308,7 +308,7 @@ object RosterAction {
     }
 
     suspend fun accept(jidString: String, rosterNickName: String) {
-        if (jidString.isEmpty()){
+        if (jidString.isEmpty()) {
             return
         }
         if (connection.isConnected && connection.isAuthenticated) {
@@ -350,6 +350,22 @@ object RosterAction {
             .setMode(mode)
             .build()
         connection.sendStanza(presence)
+    }
+
+    /**
+     * update current user nick name with [nickName]
+     *
+     * @param nickName new nick name
+     */
+    fun updateNickName(nickName: String) {
+    }
+
+    /**
+     * update current user nick name with [phoneNumber]
+     *
+     * @param phoneNumber new phone number
+     */
+    fun updatePhoneNumber(phoneNumber: String) {
     }
 
 }
