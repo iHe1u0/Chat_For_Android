@@ -4,11 +4,9 @@ import android.app.Activity
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
 import android.util.Log
 import cc.imorning.common.constant.ServerConfig
 import com.microsoft.appcenter.AppCenter
-import com.microsoft.appcenter.analytics.Analytics
 import com.microsoft.appcenter.crashes.Crashes
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
@@ -32,13 +30,11 @@ open class CommonApp : Application() {
         application = this
 
         AppCenter.start(
-            application,
-            "28fb209f-c852-48b1-b691-9fa2b06c1762",
-            Analytics::class.java,
+            application, "28fb209f-c852-48b1-b691-9fa2b06c1762",
             Crashes::class.java
         )
         AppCenter.setLogLevel(Log.WARN)
-        AppCenter.setEnabled(!Build.FINGERPRINT.contains(other = "generic", ignoreCase = true))
+        AppCenter.setEnabled(!BuildConfig.DEBUG)
 
         val formatStrategy = PrettyFormatStrategy.newBuilder()
             .showThreadInfo(true)
@@ -47,8 +43,7 @@ open class CommonApp : Application() {
             .build()
         Logger.addLogAdapter(object : AndroidLogAdapter(formatStrategy) {
             override fun isLoggable(priority: Int, tag: String?): Boolean {
-                return BuildConfig.DEBUG &&
-                        Build.FINGERPRINT.contains(other = "generic", ignoreCase = true)
+                return BuildConfig.DEBUG
             }
         })
 

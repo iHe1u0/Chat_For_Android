@@ -8,12 +8,14 @@ import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.work.*
+import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.activity.LoginActivity
 import cc.imorning.chat.network.ReconnectionWorker
 import cc.imorning.chat.service.MessageMonitorService
-import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
+import cc.imorning.common.constant.ServerConfig
 import org.jivesoftware.smack.*
+import org.jivesoftware.smackx.iqversion.VersionManager
 import org.jivesoftware.smackx.vcardtemp.VCardManager
 
 class ChatConnectionListener : ConnectionListener {
@@ -22,6 +24,18 @@ class ChatConnectionListener : ConnectionListener {
     private var messageMonitor: Intent? = null
 
     private lateinit var reconnectionManager: ReconnectionManager
+
+    override fun connected(connection: XMPPConnection?) {
+        if (connection != null && connection.isConnected) {
+            // set client version
+            VersionManager.getInstanceFor(connection).setVersion(
+                ServerConfig.RESOURCE,
+                BuildConfig.VERSION_NAME,
+                "Android ${Build.VERSION.RELEASE}"
+            )
+        }
+        super.connected(connection)
+    }
 
     override fun authenticated(connection: XMPPConnection?, resumed: Boolean) {
         if (messageMonitor == null) {
@@ -33,15 +47,16 @@ class ChatConnectionListener : ConnectionListener {
             }
         }
         CommonApp.vCard = VCardManager.getInstanceFor(connection).loadVCard()
-        reconnectionManager= ReconnectionManager.getInstanceFor(connection as AbstractXMPPConnection);
-        reconnectionManager.enableAutomaticReconnection();
+        reconnectionManager =
+            ReconnectionManager.getInstanceFor(connection as AbstractXMPPConnection)
+        reconnectionManager.enableAutomaticReconnection()
     }
 
     override fun connectionClosed() {
         if (BuildConfig.DEBUG) {
             Log.i(TAG, "connection closed")
         }
-        reconnectionManager.abortPossiblyRunningReconnection();
+        reconnectionManager.abortPossiblyRunningReconnection()
         context.stopService(messageMonitor)
         super.connectionClosed()
     }
@@ -60,7 +75,7 @@ class ChatConnectionListener : ConnectionListener {
             Handler(Looper.getMainLooper()).post {
                 Toast.makeText(context, "登录过期，请重新登录", Toast.LENGTH_LONG).show()
             }
-            reconnectionManager.abortPossiblyRunningReconnection();
+            reconnectionManager.abortPossiblyRunningReconnection()
         } else {
             reconnect(CommonApp.getContext())
         }

@@ -1,11 +1,27 @@
 package cc.imorning.common.constant
 
+/**
+ * This class saved configure of chat sever,modify them for your own server
+ */
 object ServerConfig {
-    const val RESOURCE = "android"
-    const val HOST_NAME = "curkay.catcompany.cn"
-    const val DOMAIN = "curkay.catcompany.cn"
 
-    // const val HOST_NAME = "imorning.lan"
-    // const val DOMAIN = "imorning.lan"
+    /**
+     * Host name,typically is domain of server
+     */
+    const val HOST_NAME = "im.imorning.cc"
+
+    /**
+     * Same as [HOST_NAME]
+     */
+    const val DOMAIN = "im.imorning.cc"
+
+    /**
+     * Resource of client,different servers have different resources
+     */
+    const val RESOURCE = "ANDROID-IC"
+
+    /**
+     * Login port,default is 5222
+     */
     const val LOGIN_PORT = 5222
 }
