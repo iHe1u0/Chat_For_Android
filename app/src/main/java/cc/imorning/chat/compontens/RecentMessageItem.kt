@@ -36,7 +36,9 @@ fun RecentMessageItem(message: RecentMessage) {
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Avatar(avatarPath = avatarPath)
+        Avatar(avatarPath = avatarPath) {
+
+        }
         Column(modifier = Modifier.padding(start = 8.dp)) {
             Text(
                 text = message.nickName,

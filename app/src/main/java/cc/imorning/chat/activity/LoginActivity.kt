@@ -1,7 +1,9 @@
 package cc.imorning.chat.activity
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
@@ -31,6 +33,7 @@ import cc.imorning.chat.compontens.BottomSheetListItem
 import cc.imorning.chat.compontens.RegisterDialog
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.ui.view.ComposeDialogUtils
+import cc.imorning.chat.utils.PermissionUtils
 import cc.imorning.chat.viewmodel.LoginViewModel
 
 private const val TAG = "LoginActivity"
@@ -45,6 +48,19 @@ class LoginActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             LoginScreen(viewModel)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val permissions = mutableListOf<String>()
+        permissions.add(Manifest.permission.RECORD_AUDIO)
+        permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
+        }
+        if (permissions.isNotEmpty()) {
+            PermissionUtils.requestPermission(this, permissions.toTypedArray())
         }
     }
 }

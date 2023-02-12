@@ -152,24 +152,13 @@ object RosterAction {
 
     /**
      * Get VCard information
+     *
+     * @param jidString a user jid without resource
      */
     fun getContactVCard(jidString: String): VCard? {
-        if (!ConnectionManager.isConnectionAuthenticated(connection) ||
-            jidString.isEmpty()
-        ) {
-            return null
-        }
-        var jid = jidString
-        if (jidString.contains("/")) {
-            jid = jidString.split("/")[0]
-        }
-        try {
-            val user = JidCreate.entityBareFrom(jid)
+        if (ConnectionManager.isConnectionAuthenticated(connection) && jidString.isNotEmpty()) {
+            val user = JidCreate.entityBareFrom(jidString)
             return VCardManager.getInstanceFor(connection).loadVCard(user)
-        } catch (e: Exception) {
-            if (BuildConfig.DEBUG) {
-                Log.w(TAG, "get user[$jid] vCard failed", e)
-            }
         }
         return null
     }
@@ -358,6 +347,10 @@ object RosterAction {
      * @param nickName new nick name
      */
     fun updateNickName(nickName: String) {
+        val vCardManager = VCardManager.getInstanceFor(connection)
+        val me = vCardManager.loadVCard()
+        me.nickName = nickName
+        vCardManager.saveVCard(me)
     }
 
     /**
@@ -366,6 +359,10 @@ object RosterAction {
      * @param phoneNumber new phone number
      */
     fun updatePhoneNumber(phoneNumber: String) {
+        val vCardManager = VCardManager.getInstanceFor(connection)
+        val me = vCardManager.loadVCard()
+        me.setPhoneWork(Config.PHONE, phoneNumber)
+        vCardManager.saveVCard(me)
     }
 
 }

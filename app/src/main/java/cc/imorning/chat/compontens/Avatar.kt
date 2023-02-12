@@ -1,5 +1,7 @@
 package cc.imorning.chat.compontens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -20,14 +22,18 @@ import coil.compose.SubcomposeAsyncImageContent
 
 private const val TAG = "Avatar"
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun Avatar(avatarPath: String) {
+fun Avatar(avatarPath: String, onClick: () -> Unit) {
     SubcomposeAsyncImage(
         model = avatarPath,
         contentDescription = stringResource(id = R.string.desc_contact_item_avatar),
         modifier = Modifier
             .size(64.dp)
-            .clip(CircleShape),
+            .clip(CircleShape)
+            .combinedClickable(
+                onClick = onClick
+            ),
         alignment = Alignment.Center,
         filterQuality = FilterQuality.High
     ) {

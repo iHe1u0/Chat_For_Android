@@ -46,7 +46,9 @@ fun RosterItem(
         },
         modifier = Modifier.fillMaxWidth()
     ) {
-        Avatar(avatarPath)
+        Avatar(avatarPath) {
+
+        }
         Column(
             modifier = Modifier.padding(start = 8.dp)
         ) {

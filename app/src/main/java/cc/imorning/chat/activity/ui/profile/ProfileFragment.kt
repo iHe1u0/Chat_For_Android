@@ -1,11 +1,15 @@
 package cc.imorning.chat.activity.ui.profile
 
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -33,6 +37,7 @@ import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.compontens.Avatar
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.ui.view.ComposeDialogUtils
+import cc.imorning.chat.ui.view.ToastUtils
 import cc.imorning.common.constant.Config
 
 private const val TAG = "ProfileFragment"
@@ -44,7 +49,6 @@ class ProfileFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        // val userId = arguments?.getString("userId")
         viewModel.getUserInfo()
     }
 
@@ -123,23 +127,22 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                 positiveButton = stringResource(id = R.string.ok),
                 negativeButton = stringResource(id = R.string.cancel),
                 onConfirm = {
-                    if (it.isEmpty()) {
-                        Toast.makeText(
-                            context,
-                            context.getString(R.string.nick_is_empty),
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
                     if (it.length > Config.NAME_MAX_LENGTH) {
-                        Toast.makeText(
+                        ToastUtils.showMessage(
                             context,
                             context.getString(R.string.name_too_long)
-                                .format(Config.NAME_MAX_LENGTH),
-                            Toast.LENGTH_LONG
-                        ).show()
+                                .format(Config.NAME_MAX_LENGTH)
+                        )
                     }
-                    showSetNickNameDialog = false
-                    RosterAction.updateNickName(it)
+                    if (it.isEmpty()) {
+                        ToastUtils.showMessage(
+                            context,
+                            context.getString(R.string.input_is_empty)
+                        )
+                    } else {
+                        showSetNickNameDialog = false
+                        RosterAction.updateNickName(it)
+                    }
                 },
                 onCancel = { showSetNickNameDialog = false }
             )
@@ -147,7 +150,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
         if (showSetPhoneNumberDialog) {
             ComposeDialogUtils.EditorDialog(
                 title = stringResource(R.string.change_phone_number),
-                hint = RosterAction.getNickName(nickName.value),
+                hint = RosterAction.getNickName(nickName.value.orEmpty()),
                 positiveButton = stringResource(id = R.string.ok),
                 negativeButton = stringResource(id = R.string.cancel),
                 onConfirm = {
@@ -163,11 +166,25 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                 .fillMaxWidth()
                 .padding(start = 8.dp)
         ) {
-            Avatar(avatarPath = avatarPath)
+            var selectedImageUri by remember {
+                mutableStateOf<Uri?>(null)
+            }
+            val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.PickVisualMedia(),
+                onResult = { uri -> selectedImageUri = uri }
+            )
+            Avatar(avatarPath = avatarPath) {
+                singlePhotoPickerLauncher.launch(
+                    PickVisualMediaRequest(
+                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                    )
+                )
+                profileViewModel.updateAvatar(selectedImageUri)
+            }
             Column(
                 modifier = Modifier.padding(start = 8.dp)
             ) {
-                ClickableText(
+                Text(
                     text = AnnotatedString(
                         text = nickName.value.ifEmpty { stringResource(R.string.set_nick_name) },
                         spanStyle = SpanStyle(
@@ -175,12 +192,10 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                         )
                     ),
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier
-                        .background(Color.Green)
-                        .defaultMinSize(minWidth = 10.dp),
-                    onClick = {
-                        showSetNickNameDialog = true
-                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    // onClick = {
+                    //     showSetNickNameDialog = true
+                    // },
                 )
                 ClickableText(
                     text = AnnotatedString(
@@ -190,7 +205,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                         )
                     ),
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.background(Color.Green),
+                    modifier = Modifier.fillMaxWidth(),
                     onClick = {
                         showSetPhoneNumberDialog = true
                     },
@@ -203,19 +218,12 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                         )
                     ),
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.background(Color.Magenta),
                     onClick = {
                         Toast.makeText(context, jidString.value, Toast.LENGTH_SHORT).show()
                     }
                 )
             }
         }
-//        Text(
-//            text = "${status.value}",
-//            modifier = Modifier.fillMaxWidth(),
-//            style = MaterialTheme.typography.titleSmall,
-//            textAlign = TextAlign.Center
-//        )
         Divider(
             modifier = Modifier
                 .fillMaxWidth()

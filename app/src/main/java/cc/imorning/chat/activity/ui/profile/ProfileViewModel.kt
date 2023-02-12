@@ -1,5 +1,6 @@
 package cc.imorning.chat.activity.ui.profile
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import cc.imorning.chat.App
@@ -8,6 +9,7 @@ import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.chat.utils.StatusHelper
+import cc.imorning.common.constant.Config
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.jivesoftware.smackx.vcardtemp.VCardManager
@@ -61,8 +63,15 @@ class ProfileViewModel : ViewModel() {
         _jidString.value = jid.toString()
         // status
         _status.value = StatusHelper(RosterAction.getRosterStatus(jid.toString())).toString()
-        // phone number?
-        _phoneNumber.value = currentUser.getPhoneHome("VOICE").orEmpty()
+        // phone number
+        _phoneNumber.value = currentUser.getPhoneWork(Config.PHONE).orEmpty()
+    }
+
+    fun updateAvatar(uri: Uri?) {
+        Log.d(TAG, "updateAvatar: $uri")
+        if (uri == null) {
+            return
+        }
     }
 
     companion object {

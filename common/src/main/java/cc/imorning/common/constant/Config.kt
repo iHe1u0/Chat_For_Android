@@ -17,6 +17,8 @@ object Config {
         }
     }
 
+    const val PHONE: String = "VOICE"
+
     const val DEFAULT_CONFIG = "default_info"
     const val LOGIN_INFO = "login_info"
 
