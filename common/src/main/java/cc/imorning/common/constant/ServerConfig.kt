@@ -18,7 +18,7 @@ object ServerConfig {
     /**
      * Resource of client,different servers have different resources
      */
-    const val RESOURCE = "ANDROID-IC"
+    const val RESOURCE = "android"
 
     /**
      * Login port,default is 5222

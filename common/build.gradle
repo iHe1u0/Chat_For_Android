@@ -39,8 +39,6 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.9.0'
     //ViewModel
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
-    // WorkManager
-    api "androidx.work:work-runtime-ktx:$work_version"
     // Logger
     api "com.orhanobut:logger:2.2.0"
     // Smack
