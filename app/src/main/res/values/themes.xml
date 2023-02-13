@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Platform.Theme.Chat" parent="Theme.Material3.DayNight">
-    </style>
+    <style name="Platform.Theme.Chat" parent="Theme.Material3.DayNight" />
 
     <!-- The actual theme we use. This varies for light theme (here),
          and values-night for dark theme. -->
-    <style name="Theme.Chat" parent="Platform.Theme.Chat">
-    </style>
+    <style name="Theme.Chat" parent="Platform.Theme.Chat" />
+
+    <style name="Theme.Chat.CropImageTheme" parent="Theme.Chat" />
 
     <style name="Theme.Chat.NoActionBar">
         <item name="windowActionBar">false</item>

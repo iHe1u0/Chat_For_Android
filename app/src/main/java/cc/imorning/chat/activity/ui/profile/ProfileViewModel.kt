@@ -1,18 +1,25 @@
 package cc.imorning.chat.activity.ui.profile
 
-import android.net.Uri
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import cc.imorning.chat.App
 import cc.imorning.chat.BuildConfig
+import cc.imorning.chat.R
 import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.network.ConnectionManager
+import cc.imorning.chat.ui.view.ToastUtils
 import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.chat.utils.StatusHelper
 import cc.imorning.common.constant.Config
+import cc.imorning.common.utils.FileUtils
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import org.jivesoftware.smackx.vcardtemp.VCardManager
+import java.io.File
 
 class ProfileViewModel : ViewModel() {
 
@@ -31,7 +38,7 @@ class ProfileViewModel : ViewModel() {
     val jidString: StateFlow<String> = _jidString
     val status: StateFlow<String> = _status
 
-    fun getUserInfo() {
+    suspend fun updateUserConfigure() {
         if (!ConnectionManager.isConnectionAuthenticated(connection)) {
             if (BuildConfig.DEBUG) {
                 Log.w(TAG, "get user info failed cause connection in error status")
@@ -40,24 +47,20 @@ class ProfileViewModel : ViewModel() {
         }
         val vCard = VCardManager.getInstanceFor(connection)
         val jid = connection.user.asBareJid()
-        val currentUser = vCard.loadVCard(jid.asEntityBareJidIfPossible())
-        // for avatar
-        if (currentUser.avatar != null) {
-            AvatarUtils.instance.saveAvatar(jid.toString())
-            _avatarPath.value =
-                AvatarUtils.instance.getAvatarPath(jid.toString())
-        }
-        val name = RosterAction.getNickName(jidString = jid.toString())
+        val currentUser = vCard.loadVCard()
+        val name = RosterAction.getNickName()
         if (name.isEmpty()) {
+            Log.d(TAG, "updateUserConfigure: nick name is empty")
             _nickName.value = jid.toString()
-            if (currentUser.avatar == null) {
-                _avatarPath.value = AvatarUtils.instance.getOnlineAvatar(jid.toString())
-            }
         } else {
-            _nickName.value = RosterAction.getNickName(_jidString.value)
-            if (currentUser.avatar == null) {
-                _avatarPath.value = AvatarUtils.instance.getOnlineAvatar(name)
-            }
+            _nickName.value = name
+        }
+        if (currentUser.avatar != null) {
+            AvatarUtils.instance.saveAvatar()
+            _avatarPath.value =
+                AvatarUtils.instance.getAvatarPath()
+        } else {
+            _avatarPath.value = AvatarUtils.instance.getOnlineAvatar(jid.toString())
         }
         // jid
         _jidString.value = jid.toString()
@@ -67,10 +70,46 @@ class ProfileViewModel : ViewModel() {
         _phoneNumber.value = currentUser.getPhoneWork(Config.PHONE).orEmpty()
     }
 
-    fun updateAvatar(uri: Uri?) {
-        Log.d(TAG, "updateAvatar: $uri")
-        if (uri == null) {
-            return
+    /**
+     * update user's avatar
+     *
+     * @param path picture file path
+     */
+    fun updateAvatar(context: Context, path: String) {
+        val file = File(path)
+        if (file.exists() && connection.isAuthenticated) {
+            val avatarFile: File = FileUtils.instance.compressImage(file)
+            if (avatarFile.length() / 1024 > 1024) {
+                ToastUtils.showMessage(context, context.getString(R.string.file_too_large))
+                return
+            }
+            viewModelScope.launch(Dispatchers.IO) {
+                val vCardManager = VCardManager.getInstanceFor(connection)
+                val vCard = vCardManager.loadVCard()
+                vCard.avatar = FileUtils.instance.getFileBytes(avatarFile)
+                try {
+                    vCardManager.saveVCard(vCard)
+                } catch (e: Exception) {
+                    if (BuildConfig.DEBUG) {
+                        Log.e(TAG, "updateAvatar: ${e.message}", e)
+                    }
+                }
+                updateUserConfigure()
+            }
+        }
+    }
+
+    fun updateNickName(newName: String) {
+        RosterAction.updateNickName(newName)
+        viewModelScope.launch(Dispatchers.IO) {
+            updateUserConfigure()
+        }
+    }
+
+    fun updatePhoneNumber(newPhoneNum: String) {
+        RosterAction.updatePhoneNumber(newPhoneNum)
+        viewModelScope.launch(Dispatchers.IO) {
+            updateUserConfigure()
         }
     }
 

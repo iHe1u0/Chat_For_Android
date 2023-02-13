@@ -36,7 +36,7 @@ class AvatarUtils private constructor() {
     /**
      * try to get and save avatar for user @param jid
      */
-    fun saveAvatar(jidString: String) {
+    fun saveAvatar(jidString: String? = null) {
         if (!ConnectionManager.isConnectionAuthenticated(connection)) {
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "connection is not authenticated")
@@ -47,7 +47,10 @@ class AvatarUtils private constructor() {
         if (vCard != null) {
             val avatarByte = vCard.avatar
             if (avatarByte != null) {
-                saveContactAvatar(jidString = jidString, avatarByte = avatarByte)
+                if (jidString != null) {
+                    saveContactAvatar(jidString = jidString, avatarByte = avatarByte)
+                }
+                saveContactAvatar(connection.user.asEntityBareJidString(), avatarByte)
             }
         } else {
             if (BuildConfig.DEBUG) {
@@ -56,14 +59,17 @@ class AvatarUtils private constructor() {
         }
     }
 
-    fun getAvatarPath(jidString: String): String {
+    fun getAvatarPath(jidString: String? = null): String {
         if (ConnectionManager.isConnectionAuthenticated(connection)) {
+            if (jidString == null) {
+                return FileUtils.instance.getAvatarCachePath(connection.user.asEntityBareJidString()).absolutePath
+            }
             if (!hasAvatarCache(jidString)) {
                 saveAvatar(jidString)
             }
             return FileUtils.instance.getAvatarCachePath(jidString).absolutePath
         }
-        return getOnlineAvatar(jidString)
+        return getOnlineAvatar("$jidString")
     }
 
     private fun saveContactAvatar(jidString: String, avatarByte: ByteArray) {

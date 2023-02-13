@@ -155,10 +155,16 @@ object RosterAction {
      *
      * @param jidString a user jid without resource
      */
-    fun getContactVCard(jidString: String): VCard? {
-        if (ConnectionManager.isConnectionAuthenticated(connection) && jidString.isNotEmpty()) {
-            val user = JidCreate.entityBareFrom(jidString)
-            return VCardManager.getInstanceFor(connection).loadVCard(user)
+    fun getContactVCard(jidString: String?): VCard? {
+        if (ConnectionManager.isConnectionAuthenticated(connection)) {
+            if (jidString == null) {
+                val vCardManager = VCardManager.getInstanceFor(connection)
+                return vCardManager.loadVCard()
+            }
+            if (jidString.isNotEmpty()) {
+                val user = JidCreate.entityBareFrom(jidString)
+                return VCardManager.getInstanceFor(connection).loadVCard(user)
+            }
         }
         return null
     }
@@ -208,7 +214,12 @@ object RosterAction {
     /**
      * get contact's nick name by jid like im@test.com
      */
-    fun getNickName(jidString: String): String {
+    fun getNickName(jidString: String? = null): String {
+        if (jidString == null) {
+            val vCardManager = VCardManager.getInstanceFor(connection)
+            val vCard = vCardManager.loadVCard()
+            return vCard.nickName
+        }
         if (jidString.isEmpty()) {
             return ""
         }

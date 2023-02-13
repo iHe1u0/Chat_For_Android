@@ -66,6 +66,10 @@
         <activity
             android:name=".activity.DetailsActivity"
             android:exported="true" />
+        <activity
+            android:name="com.canhub.cropper.CropImageActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Chat.CropImageTheme" />
 
         <service
             android:name=".service.NetworkService"

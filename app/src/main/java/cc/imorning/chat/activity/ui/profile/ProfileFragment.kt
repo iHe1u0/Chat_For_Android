@@ -39,6 +39,12 @@ import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.ui.view.ComposeDialogUtils
 import cc.imorning.chat.ui.view.ToastUtils
 import cc.imorning.common.constant.Config
+import com.canhub.cropper.CropImageContract
+import com.canhub.cropper.CropImageContractOptions
+import com.canhub.cropper.CropImageOptions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 private const val TAG = "ProfileFragment"
 
@@ -49,7 +55,9 @@ class ProfileFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        viewModel.getUserInfo()
+        MainScope().launch(Dispatchers.IO) {
+            viewModel.updateUserConfigure()
+        }
     }
 
     override fun onCreateView(
@@ -92,6 +100,7 @@ fun TopBar() {
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProfileScreen(profileViewModel: ProfileViewModel) {
     val context = LocalContext.current
@@ -100,7 +109,15 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-
+        val cropLauncher =
+            rememberLauncherForActivityResult(CropImageContract()) { result ->
+                if (result.isSuccessful) {
+                    val newAvatarFilePath = result.getUriFilePath(context)
+                    if (newAvatarFilePath != null) {
+                        profileViewModel.updateAvatar(context, newAvatarFilePath)
+                    }
+                }
+            }
         val uriHandler = LocalUriHandler.current
 
         val avatarPath = profileViewModel.avatarPath.collectAsState().value
@@ -126,22 +143,22 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                 hint = RosterAction.getNickName(nickName.value),
                 positiveButton = stringResource(id = R.string.ok),
                 negativeButton = stringResource(id = R.string.cancel),
-                onConfirm = {
-                    if (it.length > Config.NAME_MAX_LENGTH) {
+                onConfirm = { newName ->
+                    if (newName.length > Config.NAME_MAX_LENGTH) {
                         ToastUtils.showMessage(
                             context,
                             context.getString(R.string.name_too_long)
                                 .format(Config.NAME_MAX_LENGTH)
                         )
                     }
-                    if (it.isEmpty()) {
+                    if (newName.isEmpty()) {
                         ToastUtils.showMessage(
                             context,
                             context.getString(R.string.input_is_empty)
                         )
                     } else {
                         showSetNickNameDialog = false
-                        RosterAction.updateNickName(it)
+                        profileViewModel.updateNickName(newName)
                     }
                 },
                 onCancel = { showSetNickNameDialog = false }
@@ -155,7 +172,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                 negativeButton = stringResource(id = R.string.cancel),
                 onConfirm = {
                     showSetPhoneNumberDialog = false
-                    RosterAction.updatePhoneNumber(it)
+                    profileViewModel.updatePhoneNumber(it)
                 },
                 onCancel = { showSetPhoneNumberDialog = false }
             )
@@ -171,7 +188,15 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
             }
             val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.PickVisualMedia(),
-                onResult = { uri -> selectedImageUri = uri }
+                onResult = { uri ->
+                    selectedImageUri = uri
+                    cropLauncher.launch(
+                        CropImageContractOptions(
+                            uri = selectedImageUri,
+                            cropImageOptions = CropImageOptions(),
+                        ),
+                    )
+                }
             )
             Avatar(avatarPath = avatarPath) {
                 singlePhotoPickerLauncher.launch(
@@ -179,7 +204,6 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                         ActivityResultContracts.PickVisualMedia.ImageOnly
                     )
                 )
-                profileViewModel.updateAvatar(selectedImageUri)
             }
             Column(
                 modifier = Modifier.padding(start = 8.dp)
@@ -192,10 +216,13 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                         )
                     ),
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.fillMaxWidth(),
-                    // onClick = {
-                    //     showSetNickNameDialog = true
-                    // },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .combinedClickable(
+                            onClick = {
+                                showSetNickNameDialog = true
+                            }
+                        )
                 )
                 ClickableText(
                     text = AnnotatedString(

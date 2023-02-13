@@ -37,4 +37,5 @@
     <string name="change_phone_number">change phone number</string>
     <string name="name_too_long">Name max length is %s</string>
     <string name="input_is_empty">Input can\'t be empty!</string>
+    <string name="file_too_large">File too large!</string>
 </resources>

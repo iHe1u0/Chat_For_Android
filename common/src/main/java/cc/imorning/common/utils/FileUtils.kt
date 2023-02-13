@@ -1,11 +1,16 @@
 package cc.imorning.common.utils
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.os.Build
 import android.os.Environment
+import android.util.Log
+import android.webkit.MimeTypeMap
 import cc.imorning.common.CommonApp
-import java.io.BufferedReader
-import java.io.File
-import java.io.InputStream
-import java.io.InputStreamReader
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import java.io.*
 
 class FileUtils private constructor() {
 
@@ -101,6 +106,38 @@ class FileUtils private constructor() {
         return content.toString()
     }
 
+    fun copy(srcFile: File, dstFile: File) {
+        if (!srcFile.exists() || (srcFile.length() == 0L)) {
+            dstFile.createNewFile()
+            return
+        }
+        val inputStream = FileInputStream(srcFile)
+        val outputStream = FileOutputStream(dstFile)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            android.os.FileUtils.copy(inputStream, outputStream)
+        } else {
+            val bufferedInputStream = BufferedInputStream(inputStream)
+            val bufferedOutputStream = BufferedOutputStream(outputStream)
+            val buffer = ByteArray(4096)
+            var len: Int
+            while (true) {
+                len = bufferedInputStream.read(buffer)
+                if (len == -1) {
+                    break
+                }
+                bufferedOutputStream.write(buffer, 0, len)
+            }
+            bufferedInputStream.close()
+            bufferedOutputStream.close()
+        }
+        inputStream.close()
+        outputStream.close()
+    }
+
+    fun copy(srcFilePath: String, dstFilePath: String) {
+        copy(File(srcFilePath), File(dstFilePath))
+    }
+
     private fun getInputStreamCode(inputStream: InputStream): String {
         val head = ByteArray(3)
         inputStream.read(head)
@@ -122,6 +159,72 @@ class FileUtils private constructor() {
             file.mkdir()
         }
         return dir
+    }
+
+    fun getFileBytes(file: File): ByteArray {
+        if (file.exists()) {
+            return file.readBytes()
+        }
+        return ByteArray(0)
+    }
+
+    fun getFileMimeType(file: File): String {
+        if (file.exists()) {
+            return MimeTypeMap.getFileExtensionFromUrl(file.absolutePath)
+        }
+        return "UNKNOWN"
+    }
+
+    fun compressImage(srcFile: File): File {
+        assert(srcFile.exists())
+        val srcFileLength = srcFile.length() / 1024
+        // if source file is less than 512KB,then do nothing
+        if (srcFileLength < 512) {
+            return srcFile
+        }
+        // compress quality depends on source file size
+        val quality =
+            if (srcFileLength > 2048) {
+                25
+            } else if (srcFileLength > 1024) {
+                50
+            } else {
+                75
+            }
+        val dir = getCacheDir()!!.absolutePath
+        val file = File(dir, "tmp.jpg")
+        if (file.exists()) {
+            file.delete()
+        }
+        file.createNewFile()
+        file.deleteOnExit()
+        val fileOutputStream = FileOutputStream(file)
+        val bitmap = BitmapFactory.decodeFile(srcFile.absolutePath)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, fileOutputStream)
+        fileOutputStream.flush()
+        fileOutputStream.close()
+        Log.d(TAG, "compressImage: [${srcFile.length() / 1024}KB]>[${file.length() / 1024}KB]")
+        if (srcFile.length() < file.length()) {
+            return srcFile
+        }
+        return file
+    }
+
+    /**
+     * Clean cache
+     */
+    fun cleanCache() {
+        val avatarCacheFiles = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        if ((avatarCacheFiles != null) && avatarCacheFiles.exists()) {
+            val fileList = avatarCacheFiles.listFiles() ?: return
+            MainScope().launch(Dispatchers.IO) {
+                for (file in fileList) {
+                    if (file.name.startsWith("cropped")) {
+                        file.delete()
+                    }
+                }
+            }
+        }
     }
 
     companion object {
