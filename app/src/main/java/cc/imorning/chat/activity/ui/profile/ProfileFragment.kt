@@ -140,7 +140,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
         if (showSetNickNameDialog) {
             ComposeDialogUtils.EditorDialog(
                 title = stringResource(R.string.new_nick_name),
-                hint = RosterAction.getNickName(nickName.value),
+                hint = nickName.value,
                 positiveButton = stringResource(id = R.string.ok),
                 negativeButton = stringResource(id = R.string.cancel),
                 onConfirm = { newName ->
