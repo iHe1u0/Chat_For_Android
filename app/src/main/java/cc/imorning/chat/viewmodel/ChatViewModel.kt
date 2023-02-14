@@ -110,7 +110,7 @@ class ChatViewModel @Inject constructor() : ViewModel() {
                 }
             }
             with(Dispatchers.Main) {
-                _historyMessages.value = historyMsg
+                _historyMessages.emit(historyMsg)
             }
         }
     }
@@ -152,7 +152,7 @@ class ChatViewModel @Inject constructor() : ViewModel() {
 
     fun initMessageListener() {
         chatManager = ChatManager.getInstanceFor(connection)
-        incomingChatMessageListener = IncomingChatMessageListener { from, _, _ ->
+        incomingChatMessageListener = IncomingChatMessageListener { from, message, _ ->
             if (from.toString() == chatUserId.value) {
                 getHistoryMessages()
             }
