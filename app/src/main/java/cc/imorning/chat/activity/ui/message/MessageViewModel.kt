@@ -21,9 +21,8 @@ import org.jivesoftware.smack.chat2.IncomingChatMessageListener
 import org.jivesoftware.smack.chat2.OutgoingChatMessageListener
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.roster.Roster
-import javax.inject.Inject
 
-class MessageViewModel @Inject constructor(
+class MessageViewModel(
     private val databaseDao: RecentDatabaseDao
 ) : ViewModel() {
 

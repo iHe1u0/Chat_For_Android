@@ -30,9 +30,8 @@ import org.jivesoftware.smack.roster.Roster
 import org.jivesoftware.smack.roster.RosterListener
 import org.jxmpp.jid.Jid
 import org.jxmpp.jid.impl.JidCreate
-import javax.inject.Inject
 
-class ChatViewModel @Inject constructor() : ViewModel() {
+class ChatViewModel : ViewModel() {
 
     private val connection = CommonApp.xmppTcpConnection
 

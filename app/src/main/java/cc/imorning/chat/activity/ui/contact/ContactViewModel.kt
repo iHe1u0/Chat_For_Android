@@ -8,17 +8,14 @@ import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.common.CommonApp
 import cc.imorning.database.dao.DataDatabaseDao
 import cc.imorning.database.entity.RosterEntity
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.roster.packet.RosterPacket
-import javax.inject.Inject
 
-@HiltViewModel
-class ContactViewModel @Inject constructor(
+class ContactViewModel(
     private val databaseDao: DataDatabaseDao
 ) : ViewModel() {
 
