@@ -118,7 +118,7 @@ object ComposeDialogUtils {
     fun AboutDialog(onDismiss: () -> Unit) {
         val context = LocalContext.current
         val content = FileUtils.instance.readStringFromAssets("about.txt")
-        val bitmap: Bitmap = BitmapFactory.decodeStream(context.assets.open("logo.png"))
+        val bitmap: Bitmap = BitmapFactory.decodeStream(context.assets.open("logo.webp"))
         AlertDialog(
             onDismissRequest = onDismiss,
             icon = {
