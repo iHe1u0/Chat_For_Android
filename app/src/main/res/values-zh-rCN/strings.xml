@@ -40,4 +40,9 @@
     <string name="file_too_large">文件太大！</string>
     <string name="information">信息</string>
     <string name="profile_error">名片加载失败</string>
+    <string name="send_message">发送消息</string>
+    <string name="delete">删除</string>
+    <string name="nick_name">昵称</string>
+    <string name="phone_number">电话</string>
+    <string name="email">邮箱</string>
 </resources>

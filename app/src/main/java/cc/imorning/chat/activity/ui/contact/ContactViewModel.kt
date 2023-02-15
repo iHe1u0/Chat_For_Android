@@ -130,6 +130,12 @@ class ContactViewModel(
             }
         }
     }
+
+    fun remove() {
+        viewModelScope.launch(Dispatchers.IO) {
+            databaseDao.deleteAll()
+        }
+    }
 }
 
 

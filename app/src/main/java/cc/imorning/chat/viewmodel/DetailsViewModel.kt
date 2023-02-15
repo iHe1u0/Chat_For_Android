@@ -3,17 +3,26 @@ package cc.imorning.chat.viewmodel
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import cc.imorning.chat.App
 import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.utils.AvatarUtils
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class DetailsViewModel : ViewModel() {
     suspend fun init() {
         if (_jid.value.isNotEmpty()) {
             _uiState.value = DetailsScreenState(_jid.value)
+        }
+    }
+
+    fun delete() {
+        viewModelScope.launch(Dispatchers.IO) {
+            RosterAction.removeRoster(jid.value)
         }
     }
 
@@ -49,7 +58,7 @@ data class DetailsScreenState(val jid: String) {
 
     fun status() = RosterAction.getRosterStatus(jid)
 
-    fun template1() {
+    fun phone() = RosterAction.getPhone(jid)
 
-    }
+    fun email() = RosterAction.getEmail(jid)
 }

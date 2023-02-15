@@ -11,12 +11,9 @@ import cc.imorning.common.constant.Config
 import cc.imorning.common.utils.NetworkUtils
 import cc.imorning.common.utils.SessionManager
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.jivesoftware.smack.SmackException
 import org.jivesoftware.smack.sasl.SASLErrorException
-import org.joda.time.DateTime
 
 class LoginViewModel : ViewModel() {
 
@@ -106,69 +103,56 @@ class LoginViewModel : ViewModel() {
         val accountValue = account.value?.trim()
         val tokenValue = token.value?.trim()
         if (accountValue.isNullOrBlank() || tokenValue.isNullOrBlank()) {
-            updateLoginStatus(isNeedWaiting = false, isError = true, message = "账号或密码为空")
+            updateLoginStatus(needWaiting = false, isError = true, message = "账号或密码为空")
+            return
+        }
+        if (NetworkUtils.isNetworkNotConnected()) {
+            updateLoginStatus(needWaiting = false, isError = true, message = "网络未连接")
             return
         }
         viewModelScope.launch(Dispatchers.IO) {
-            if (NetworkUtils.isNetworkNotConnected()) {
-                updateLoginStatus(isNeedWaiting = false, isError = true, message = "网络未连接")
-                return@launch
-            }
-            if (!connection.isConnected) {
-                try {
-                    connection.connect()
-                } catch (throwable: Throwable) {
-                    updateLoginStatus(
-                        isNeedWaiting = false,
-                        isError = true,
-                        message = "服务器连接失败: ${throwable.localizedMessage}"
-                    )
-                    return@launch
-                }
-            }
             if (!connection.isAuthenticated) {
                 try {
-                    connection.login(accountValue, tokenValue)
-                    if (BuildConfig.DEBUG) {
-                        Log.d(TAG, "login success @ ${DateTime.now()}")
+                    if (!connection.isConnected) {
+                        connection.connect()
                     }
+                    connection.login(accountValue, tokenValue)
                     if (shouldSavedState.value == true) {
                         sessionManager.saveAccount(accountValue)
                         sessionManager.saveAuthToken(tokenValue)
                     }
-                    updateLoginStatus(isNeedWaiting = false, isError = false)
-                    withContext(Dispatchers.Main) { needStartActivity.value = true }
+                    updateLoginStatus(needWaiting = false, isError = false)
                 } catch (e: SASLErrorException) {
-                    updateLoginStatus(isNeedWaiting = false, isError = true, message = "账号或密码错误")
-                    if (BuildConfig.DEBUG) {
-                        Log.e(TAG, "auth failed [$accountValue,$tokenValue]")
-                    }
+                    updateLoginStatus(needWaiting = false, isError = true, message = "账号或密码错误")
                 } catch (e: SmackException.AlreadyLoggedInException) {
-                    updateLoginStatus(isNeedWaiting = false, isError = false)
-                    if (BuildConfig.DEBUG) {
-                        Log.e(TAG, "$accountValue already online")
-                    }
+                    updateLoginStatus(needWaiting = false, isError = false)
                 } catch (throwable: Throwable) {
-                    updateLoginStatus(isNeedWaiting = false, isError = true, message = "未知错误")
+                    updateLoginStatus(
+                        needWaiting = false,
+                        isError = true,
+                        message = "unknown error"
+                    )
                     if (BuildConfig.DEBUG) {
                         Log.e(TAG, "login failed: ${throwable.localizedMessage}", throwable)
                     }
                 }
             } else {
-                updateLoginStatus(isNeedWaiting = false, isError = false, message = "用户已在线")
-                withContext(Dispatchers.Main) { needStartActivity.value = true }
+                updateLoginStatus(needWaiting = false, isError = false, message = "用户已在线")
             }
         }
     }
 
-    private fun updateLoginStatus(isNeedWaiting: Boolean, isError: Boolean, message: String = "") {
+    private fun updateLoginStatus(needWaiting: Boolean, isError: Boolean, message: String = "") {
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "update login status: $isNeedWaiting $isError $message")
+            Log.d(TAG, "update login status: $needWaiting $isError $message")
         }
-        MainScope().launch(Dispatchers.Main) {
-            shouldShowWaiting.value = isNeedWaiting
+        viewModelScope.launch(Dispatchers.Main) {
+            shouldShowWaiting.value = needWaiting
             showErrorDialog.value = isError
             errorMessage.value = message
+            if (!needWaiting && !isError) {
+                needStartActivity.value = true
+            }
         }
     }
 

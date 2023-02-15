@@ -20,16 +20,16 @@ data class RosterEntity(
     val jid: String,
 
     @ColumnInfo(name = "nick", typeAffinity = ColumnInfo.TEXT)
-    val nick: String,
+    val nick: String = "",
 
     @ColumnInfo(name = "mode")
-    val mode: Mode,
+    val mode: Mode = Mode.chat,
 
     @ColumnInfo(name = "type")
     val type: Message.Type = Message.Type.normal,
 
     @ColumnInfo(name = "group", typeAffinity = ColumnInfo.TEXT)
-    val group: String? = Config.DEFAULT_GROUP,
+    val group: String = Config.DEFAULT_GROUP,
 
     /**
      * both: both user and sender is friend

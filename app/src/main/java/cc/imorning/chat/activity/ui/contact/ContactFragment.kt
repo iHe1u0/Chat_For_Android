@@ -143,6 +143,7 @@ fun ContactScreen(viewModel: ContactViewModel) {
                 )
             },
             onRefresh = {
+                viewModel.remove()
                 viewModel.getRostersFromServer()
                 viewModel.updateRosterView()
             }) {

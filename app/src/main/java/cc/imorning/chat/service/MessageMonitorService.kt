@@ -58,7 +58,7 @@ class MessageMonitorService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         processOfflineMessage()
-        if (ConnectionManager.isConnectionAuthenticated(connection)) {
+        if (ConnectionManager.isConnectionAvailable(connection)) {
             addMessageListener()
             addRosterPresenceChangeListener()
             isRunning = true
@@ -100,7 +100,7 @@ class MessageMonitorService : Service() {
      * process offline message
      */
     private fun processOfflineMessage() {
-        if (ConnectionManager.isConnectionAuthenticated(connection = connection)) {
+        if (ConnectionManager.isConnectionAvailable(connection = connection)) {
             val offlineMessages: List<Message> = MessageManager.getOfflineMessage()
             val gson = Gson()
             for (message in offlineMessages) {

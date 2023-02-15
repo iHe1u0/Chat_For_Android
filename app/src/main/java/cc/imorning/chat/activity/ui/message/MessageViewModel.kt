@@ -56,7 +56,7 @@ class MessageViewModel(
     @Synchronized
     fun updateStatus() {
         MainScope().launch {
-            if (ConnectionManager.isConnectionAuthenticated(connection = connection) &&
+            if (ConnectionManager.isConnectionAvailable(connection = connection) &&
                 NetworkUtils.isNetworkConnected()
             ) {
                 MainScope().launch(Dispatchers.IO) {
@@ -106,7 +106,7 @@ class MessageViewModel(
 
     @Synchronized
     fun addListener() {
-        if (ConnectionManager.isConnectionAuthenticated(connection) &&
+        if (ConnectionManager.isConnectionAvailable(connection) &&
             chatManager == null
         ) {
             chatManager = ChatManager.getInstanceFor(connection)

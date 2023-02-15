@@ -64,7 +64,7 @@ object MessageManager {
         receiver: String,
         message: String
     ): Boolean {
-        if (!ConnectionManager.isConnectionAuthenticated(connection)) {
+        if (!ConnectionManager.isConnectionAvailable(connection)) {
             return false
         }
         val newChat = chatManager.chatWith(JidCreate.entityBareFrom(receiver))

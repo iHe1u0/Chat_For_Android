@@ -1,5 +1,6 @@
 package cc.imorning.chat.compontens.conversation
 
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -32,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import cc.imorning.chat.R
 import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.action.message.MessageManager
+import cc.imorning.chat.activity.DetailsActivity
+import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.chat.ui.view.ComposeDialogUtils.FunctionalityNotAvailablePopup
 import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.chat.utils.StatusHelper
@@ -89,7 +92,7 @@ fun ConversationContent(
                 )
                 UserInput(
                     onMessageSent = { content ->
-                        if (connection == null || (!connection.isConnected) && (!connection.isAuthenticated)) {
+                        if (!ConnectionManager.isConnectionAvailable(connection)) {
                             Toast.makeText(
                                 context,
                                 context.getString(R.string.network_is_unavailable),
@@ -134,6 +137,7 @@ fun ConversationContent(
             ChannelNameBar(
                 nickName = uiState.nickName,
                 friendStatus = uiState.friendStatus,
+                jid = chatUid,
                 onNavIconPressed = onNavIconPressed,
                 scrollBehavior = scrollBehavior,
                 // Use statusBarsPadding() to move the app bar content below the status bar
@@ -148,10 +152,12 @@ fun ConversationContent(
 fun ChannelNameBar(
     nickName: String,
     friendStatus: Presence.Mode,
+    jid: String,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     onNavIconPressed: () -> Unit = { }
 ) {
+    val context = LocalContext.current
     var functionalityNotAvailablePopupShown by remember { mutableStateOf(false) }
     if (functionalityNotAvailablePopupShown) {
         FunctionalityNotAvailablePopup { functionalityNotAvailablePopupShown = false }
@@ -190,7 +196,11 @@ fun ChannelNameBar(
                 imageVector = Icons.Outlined.Info,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
-                    .clickable(onClick = { functionalityNotAvailablePopupShown = true })
+                    .clickable(onClick = {
+                        val intent = Intent(context, DetailsActivity::class.java)
+                        intent.putExtra(DetailsActivity.KEY_UID, jid)
+                        context.startActivity(intent)
+                    })
                     .padding(horizontal = 12.dp, vertical = 16.dp)
                     .height(24.dp),
                 contentDescription = "信息"
@@ -231,7 +241,7 @@ fun MessagesUI(
                             navigateToProfile(uid)
                         },
                         msg = content,
-                        isUserMe = content.sender == CommonApp.xmppTcpConnection?.user?.asEntityBareJidString(),
+                        isUserMe = content.sender == CommonApp.xmppTcpConnection.user?.asEntityBareJidString(),
                         isFirstMessageByAuthor = isFirstMessageByAuthor,
                         isLastMessageByAuthor = isLastMessageByAuthor,
                     )

@@ -4,7 +4,6 @@ import cc.imorning.chat.App
 import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.common.constant.MessageType
-import cc.imorning.common.utils.NetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -17,9 +16,7 @@ data class RecentMessage(
     val messageType: MessageType = MessageType.TEXT
 ) {
     init {
-        if (ConnectionManager.isConnectionAuthenticated(App.getTCPConnection())
-            && NetworkUtils.isNetworkConnected()
-        ) {
+        if (ConnectionManager.isConnectionAvailable(App.getTCPConnection())) {
             MainScope().launch(Dispatchers.IO) {
                 AvatarUtils.instance.saveAvatar(user)
             }

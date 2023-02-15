@@ -95,7 +95,7 @@ class ChatActivity : ComponentActivity() {
         if (null != intent.action) {
             when (val action = intent.action) {
                 Intent.ACTION_VIEW -> {
-                    if (!ConnectionManager.isConnectionAuthenticated(this.connection)) {
+                    if (!ConnectionManager.isConnectionAvailable(this.connection)) {
                         Toast.makeText(this, "请先登录", Toast.LENGTH_LONG).show()
                         val loginActivity = Intent(this, LoginActivity::class.java)
                         startActivity(loginActivity)

@@ -64,7 +64,7 @@ open class CommonApp : Application() {
         private const val TAG = "CommonApp"
 
         private var application: Application? = null
-        var xmppTcpConnection: XMPPTCPConnection? = null
+        lateinit var xmppTcpConnection: XMPPTCPConnection
 
         var vCard: VCard? = null
 

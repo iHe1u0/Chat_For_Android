@@ -13,7 +13,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -25,6 +24,7 @@ import cc.imorning.chat.compontens.ProfileProperty
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.ui.theme.ChatTypography
 import cc.imorning.chat.utils.AvatarUtils
+import cc.imorning.chat.utils.StatusHelper
 import cc.imorning.chat.viewmodel.DetailsViewModel
 import cc.imorning.chat.viewmodel.DetailsViewModelFactory
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +42,6 @@ class DetailsActivity : BaseActivity() {
         const val KEY_UID = "user_jid"
     }
 
-    @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val uid = intent.getStringExtra(KEY_UID)
@@ -121,7 +120,7 @@ fun DetailsScreen(viewModel: DetailsViewModel) {
                             maxLines = 1,
                             style = ChatTypography.titleMedium
                         )
-                        Text(text = uiState.value.status().name, maxLines = 1)
+                        Text(text = StatusHelper(uiState.value.status()).toString(), maxLines = 1)
                     }
                 }
                 Row(modifier = Modifier.fillMaxWidth()) {
@@ -129,46 +128,58 @@ fun DetailsScreen(viewModel: DetailsViewModel) {
                         onClick = { /*TODO*/ },
                         modifier = Modifier.weight(1f)
                     ) {
-                        Icon(imageVector = Icons.Filled.Message, contentDescription = "")
-                        Text(text = "发送消息")
+                        Icon(
+                            imageVector = Icons.Filled.Message,
+                            contentDescription = stringResource(R.string.send_message)
+                        )
+                        Text(text = stringResource(R.string.send_message))
                     }
                     FilledIconButton(onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Filled.Call, contentDescription = "")
+                        Icon(imageVector = Icons.Filled.Call, contentDescription = "audio call")
                     }
                     FilledIconButton(onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Filled.VideoCall, contentDescription = "")
+                        Icon(
+                            imageVector = Icons.Filled.VideoCall,
+                            contentDescription = "video call"
+                        )
                     }
                 }
-                ProfileProperty(label = "label", value = "value")
-                ProfileProperty(label = "label", value = "value")
-                ProfileProperty(label = "label", value = "value")
-                ProfileProperty(label = "label", value = "value")
-                ProfileProperty(label = "label", value = "value")
-                ProfileProperty(label = "label", value = "value")
-                ProfileProperty(label = "label", value = "value")
-                ProfileProperty(label = "label", value = "value")
-                ProfileProperty(label = "label", value = "value")
-                ProfileProperty(label = "label", value = "value")
-                ProfileProperty(label = "label", value = "value")
-                ProfileProperty(label = "label", value = "value")
-                ProfileProperty(label = "label", value = "value")
-                ProfileProperty(label = "label", value = "value")
-                ProfileProperty(label = "label", value = "value")
-                ProfileProperty(label = "label", value = "value")
-                ProfileProperty(label = "label", value = "value")
-                ProfileProperty(label = "label", value = "value")
+                ProfileProperty(label = "JID", value = uiState.value.jid)
+                ProfileProperty(
+                    label = stringResource(R.string.nick_name),
+                    value = uiState.value.nickName()
+                )
+                ProfileProperty(
+                    label = stringResource(R.string.phone_number),
+                    value = uiState.value.phone()
+                )
+                ProfileProperty(
+                    label = stringResource(R.string.email),
+                    value = uiState.value.email()
+                )
+
                 if (!uiState.value.isMe()) {
-                    FilledIconButton(
-                        onClick = { /*TODO*/ },
+                    OutlinedIconButton(
+                        onClick = {
+                            viewModel.delete()
+                            (context as Activity).finish()
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         colors = IconButtonDefaults.filledIconButtonColors(
                             containerColor = Color.Red
                         )
                     ) {
-                        Icon(
-                            imageVector = Icons.Filled.DeleteForever, contentDescription = "",
-                            tint = Color.White
-                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Filled.DeleteForever,
+                                contentDescription = stringResource(R.string.delete),
+                                tint = Color.White
+                            )
+                            Text(
+                                text = stringResource(id = R.string.delete),
+                                color = Color.White
+                            )
+                        }
                     }
                 }
             }
@@ -178,7 +189,10 @@ fun DetailsScreen(viewModel: DetailsViewModel) {
 
 @Composable
 fun ProfileError() {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
         Text(stringResource(R.string.profile_error))
     }
 }

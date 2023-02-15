@@ -7,9 +7,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import cc.imorning.chat.App
 import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.activity.DetailsActivity
+import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.ChatType
 import cc.imorning.database.dao.MessageDatabaseDao
@@ -33,7 +35,7 @@ import org.jxmpp.jid.impl.JidCreate
 
 class ChatViewModel : ViewModel() {
 
-    private val connection = CommonApp.xmppTcpConnection
+    private val connection = App.getTCPConnection()
 
     private lateinit var roster: Roster
     private lateinit var presence: Presence
@@ -68,22 +70,17 @@ class ChatViewModel : ViewModel() {
         get() = _historyMessages.asStateFlow()
 
     fun init() {
-        if (chatUserId.value.isEmpty() || connection == null) {
-            Log.d(TAG, "init failed")
-            return
+        if (chatUserId.value.isNotEmpty()) {
+            messageDatabaseDao = MessageDatabaseHelper.instance!!.getMessageDB(
+                CommonApp.getContext(),
+                chatUserId.value,
+                App.user
+            )!!.databaseDao()
         }
-        _userOrGroupName.value = RosterAction.getNickName(jidString = chatUserId.value)
-        _status.value = RosterAction.getRosterStatus(jidString = chatUserId.value)
-        // messageDatabaseDao = MessageDB.getInstance(
-        //     context = CommonApp.getContext(),
-        //     user = chatUserId.value,
-        //     me = connection.user.asEntityBareJidString()
-        // ).databaseDao()
-        messageDatabaseDao = MessageDatabaseHelper.instance!!.getMessageDB(
-            CommonApp.getContext(),
-            chatUserId.value,
-            connection.user.asEntityBareJidString()
-        )!!.databaseDao()
+        if (ConnectionManager.isConnectionAvailable()) {
+            _userOrGroupName.value = RosterAction.getNickName(jidString = chatUserId.value)
+            _status.value = RosterAction.getRosterStatus(jidString = chatUserId.value)
+        }
     }
 
     fun getHistoryMessages() {

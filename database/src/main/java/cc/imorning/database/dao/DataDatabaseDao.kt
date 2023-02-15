@@ -21,6 +21,9 @@ interface DataDatabaseDao {
     @Query("select * from ${DatabaseHelper.TABLE_ROSTER}")
     fun queryRosters(): List<RosterEntity>
 
+    @Query("delete from ${DatabaseHelper.TABLE_ROSTER}")
+    fun deleteAll()
+
     @Delete
     fun deleteRoster(rosterEntity: RosterEntity)
 

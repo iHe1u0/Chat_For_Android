@@ -37,7 +37,7 @@ class AvatarUtils private constructor() {
      * try to get and save avatar for user @param jid
      */
     fun saveAvatar(jidString: String? = null) {
-        if (!ConnectionManager.isConnectionAuthenticated(connection)) {
+        if (!ConnectionManager.isConnectionAvailable(connection)) {
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "connection is not authenticated")
             }
@@ -60,7 +60,7 @@ class AvatarUtils private constructor() {
     }
 
     fun getAvatarPath(jidString: String? = null): String {
-        if (ConnectionManager.isConnectionAuthenticated(connection)) {
+        if (ConnectionManager.isConnectionAvailable(connection)) {
             if (jidString == null) {
                 return FileUtils.instance.getAvatarCachePath(connection.user.asEntityBareJidString()).absolutePath
             }
@@ -96,7 +96,7 @@ class AvatarUtils private constructor() {
     }
 
     fun getUserBitmap(jidString: String): Bitmap {
-        if (connection.isConnected) {
+        if (ConnectionManager.isConnectionAvailable(connection)) {
             val vCard = VCardManager.getInstanceFor(connection)
                 .loadVCard(JidCreate.entityBareFrom(jidString))
             val byteArray = vCard.avatar

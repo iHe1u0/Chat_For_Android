@@ -8,7 +8,6 @@ import cc.imorning.chat.service.MessageMonitorService
 import cc.imorning.chat.utils.ChatNotificationManager
 import cc.imorning.common.CommonApp
 import cc.imorning.common.utils.FileUtils
-import cc.imorning.common.utils.NetworkUtils
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.request.CachePolicy
@@ -27,7 +26,7 @@ class App : CommonApp(), ImageLoaderFactory {
         // Setup notification
         ChatNotificationManager.manager.setUpNewMessageNotificationChannels()
 
-        if (!ConnectionManager.isConnectionAuthenticated(getTCPConnection())) {
+        if (!ConnectionManager.isConnectionAvailable(getTCPConnection())) {
             MainScope().launch(Dispatchers.IO) { getTCPConnection() }
         }
 
@@ -42,6 +41,7 @@ class App : CommonApp(), ImageLoaderFactory {
 
     companion object {
         private const val TAG = "App"
+        var user: String = ""
         fun exitApp(status: Int = 0) {
             FileUtils.instance.cleanCache()
             getContext().stopService(
@@ -55,16 +55,10 @@ class App : CommonApp(), ImageLoaderFactory {
         }
 
         /**
-         * try to connect server
+         * return tcp connection
          */
-        @Synchronized
         fun getTCPConnection(): XMPPTCPConnection {
-            xmppTcpConnection!!.apply {
-                if (!this.isConnected && NetworkUtils.isNetworkConnected(getContext())) {
-                    ConnectionManager.connect(xmppTcpConnection!!)
-                }
-                return this
-            }
+            return xmppTcpConnection
         }
     }
 

@@ -51,6 +51,7 @@ class ChatConnectionListener : ConnectionListener {
         reconnectionManager =
             ReconnectionManager.getInstanceFor(connection as AbstractXMPPConnection)
         reconnectionManager.enableAutomaticReconnection()
+        App.user = connection.user.asEntityBareJidString()
     }
 
     override fun connectionClosed() {

@@ -79,13 +79,7 @@ object RosterAction {
         if (NetworkUtils.isNetworkNotConnected(CommonApp.getContext())) {
             return null
         }
-        if (!connection.isConnected) {
-            ConnectionManager.connect(connection)
-        }
-        if (!connection.isAuthenticated) {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "connection is not authenticated")
-            }
+        if (!connection.isConnected || !connection.isAuthenticated) {
             return null
         }
         val roster: Roster = Roster.getInstanceFor(connection)
@@ -156,7 +150,7 @@ object RosterAction {
      * @param jidString a user jid without resource
      */
     fun getContactVCard(jidString: String?): VCard? {
-        if (ConnectionManager.isConnectionAuthenticated(connection)) {
+        if (ConnectionManager.isConnectionAvailable(connection)) {
             if (jidString == null) {
                 val vCardManager = VCardManager.getInstanceFor(connection)
                 return vCardManager.loadVCard()
@@ -183,7 +177,7 @@ object RosterAction {
         nickName: String,
         groups: Array<String>? = arrayOf(Config.DEFAULT_GROUP)
     ): Boolean {
-        if (!ConnectionManager.isConnectionAuthenticated(connection)) {
+        if (!ConnectionManager.isConnectionAvailable(connection)) {
             return false
         }
         val roster = Roster.getInstanceFor(connection)
@@ -200,10 +194,16 @@ object RosterAction {
     /**
      * delete a contact
      */
-    fun removeRoster(roster: Roster, jid: BareJid): Boolean {
+    fun removeRoster(jid: String): Boolean {
+        if (jid.isEmpty() || !ConnectionManager.isConnectionAvailable()) {
+            return false
+        }
         try {
-            val entry = roster.getEntry(jid)
-            roster.removeEntry(entry)
+            val roster = Roster.getInstanceFor(connection)
+            val entry = roster.getEntry(JidCreate.bareFrom(jid))
+            if (entry != null) {
+                roster.removeEntry(entry)
+            }
             return true
         } catch (e: Exception) {
             Log.e(TAG, "remove user failed", e)
@@ -248,7 +248,7 @@ object RosterAction {
         if (key == null) {
             return null
         }
-        if (ConnectionManager.isConnectionAuthenticated(connection)) {
+        if (ConnectionManager.isConnectionAvailable(connection)) {
             val userSearchManager = UserSearchManager(connection)
             for (service in userSearchManager.searchServices) {
                 try {
@@ -377,6 +377,24 @@ object RosterAction {
         val me = vCardManager.loadVCard()
         me.setPhoneWork(Config.PHONE, phoneNumber)
         vCardManager.saveVCard(me)
+    }
+
+    fun getPhone(jid: String): String {
+        if (ConnectionManager.isConnectionAvailable()) {
+            val vCard =
+                VCardManager.getInstanceFor(connection).loadVCard(JidCreate.entityBareFrom(jid))
+            return vCard.getPhoneWork(Config.PHONE).orEmpty()
+        }
+        return ""
+    }
+
+    fun getEmail(jid: String): String {
+        if (ConnectionManager.isConnectionAvailable()) {
+            val vCard =
+                VCardManager.getInstanceFor(connection).loadVCard(JidCreate.entityBareFrom(jid))
+            return vCard.emailHome.orEmpty()
+        }
+        return ""
     }
 
 }

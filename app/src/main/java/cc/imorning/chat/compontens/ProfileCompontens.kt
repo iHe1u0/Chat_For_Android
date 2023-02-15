@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 fun ProfileProperty(label: String, value: String, isLink: Boolean = false) {
     Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
         Divider()
+
         Text(
             text = label,
             modifier = Modifier.baselineHeight(24.dp),

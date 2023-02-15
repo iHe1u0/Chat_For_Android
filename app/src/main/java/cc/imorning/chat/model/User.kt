@@ -1,10 +1,10 @@
 package cc.imorning.chat.model
 
 import android.util.Log
-import cc.imorning.common.BuildConfig
 import cc.imorning.chat.App.Companion.getTCPConnection
-import cc.imorning.chat.network.ConnectionManager.isConnectionAuthenticated
+import cc.imorning.chat.network.ConnectionManager.isConnectionAvailable
 import cc.imorning.chat.utils.AvatarUtils
+import cc.imorning.common.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -52,7 +52,7 @@ class User(private val jidString: String) {
     init {
         val jid = JidCreate.entityBareFrom(jidString)
         val connection = getTCPConnection()
-        if (isConnectionAuthenticated(connection)) {
+        if (isConnectionAvailable(connection)) {
             try {
                 val vCard = VCardManager.getInstanceFor(connection).loadVCard(jid)
                 MainScope().launch(Dispatchers.IO) { AvatarUtils.instance.saveAvatar(jidString) }

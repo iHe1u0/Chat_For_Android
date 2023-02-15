@@ -40,4 +40,9 @@
     <string name="file_too_large">File too large!</string>
     <string name="information">Profile</string>
     <string name="profile_error">There was an error loading the profile</string>
+    <string name="send_message">Send message</string>
+    <string name="delete">Delete</string>
+    <string name="nick_name">Name</string>
+    <string name="email">Email</string>
+    <string name="phone_number">Phone</string>
 </resources>

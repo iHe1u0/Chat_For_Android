@@ -11,8 +11,8 @@ import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.ui.view.ToastUtils
 import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.chat.utils.StatusHelper
-import cc.imorning.common.constant.Config
 import cc.imorning.common.utils.FileUtils
+import cc.imorning.common.utils.NetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,7 +38,7 @@ class ProfileViewModel : ViewModel() {
     val status: StateFlow<String> = _status
 
     suspend fun updateUserConfigure() {
-        if (!connection.isConnected || !connection.isAuthenticated) {
+        if (!connection.isConnected || !connection.isAuthenticated || NetworkUtils.isNetworkNotConnected()) {
             if (BuildConfig.DEBUG) {
                 Log.w(TAG, "get user info failed cause connection in error status")
             }
@@ -65,7 +65,7 @@ class ProfileViewModel : ViewModel() {
         // status
         _status.value = StatusHelper(RosterAction.getRosterStatus(jid.toString())).toString()
         // phone number
-        _phoneNumber.value = currentUser.getPhoneWork(Config.PHONE).orEmpty()
+        _phoneNumber.value = RosterAction.getPhone(App.user)
     }
 
     /**
