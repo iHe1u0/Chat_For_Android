@@ -38,4 +38,6 @@
     <string name="name_too_long">昵称长度不能超过%s字符</string>
     <string name="input_is_empty">输入不能为空</string>
     <string name="file_too_large">文件太大！</string>
+    <string name="information">信息</string>
+    <string name="profile_error">名片加载失败</string>
 </resources>

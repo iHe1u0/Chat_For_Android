@@ -498,19 +498,6 @@ fun ClickableMessage(
                 }
         }
     )
-
-    // Text(
-    //     text = styledMessage,
-    //     style = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current),
-    //     modifier = Modifier
-    //         .padding(16.dp)
-    //         .combinedClickable(
-    //             onClick = {},
-    //             onLongClick = {
-    //                 Log.d(TAG, "ClickableMessage: ${styledMessage.text}")
-    //             }
-    //         )
-    // )
 }
 
 private val JumpToBottomThreshold = 56.dp

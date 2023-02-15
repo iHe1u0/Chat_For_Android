@@ -5,9 +5,13 @@ import android.app.RemoteInput
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import cc.imorning.chat.App
 import cc.imorning.chat.action.message.MessageManager
 import cc.imorning.chat.utils.ChatNotificationManager
 import cc.imorning.common.constant.Config
+import cc.imorning.database.entity.MessageBody
+import cc.imorning.database.entity.MessageEntity
+import com.google.gson.Gson
 
 class ReplyReceiver : BroadcastReceiver() {
 
@@ -21,7 +25,17 @@ class ReplyReceiver : BroadcastReceiver() {
         val toJidString = intent.getStringExtra(Config.Intent.Action.QUICK_REPLY_TO)
         val replyMessage = getMessageText(intent)
         if (null != replyMessage && toJidString != null) {
-            MessageManager.sendMessage(receiver = toJidString, message = replyMessage.toString())
+            val gson = Gson()
+            MessageManager.sendMessage(
+                receiver = toJidString, message = gson.toJson(
+                    MessageEntity(
+                        sender = App.getTCPConnection().user.asEntityBareJidString(),
+                        receiver = toJidString,
+                        messageBody = MessageBody(text = replyMessage.toString())
+
+                    )
+                )
+            )
         }
         notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

@@ -38,4 +38,6 @@
     <string name="name_too_long">Name max length is %s</string>
     <string name="input_is_empty">Input can\'t be empty!</string>
     <string name="file_too_large">File too large!</string>
+    <string name="information">Profile</string>
+    <string name="profile_error">There was an error loading the profile</string>
 </resources>

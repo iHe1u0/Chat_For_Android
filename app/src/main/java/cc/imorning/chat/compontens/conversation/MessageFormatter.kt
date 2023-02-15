@@ -37,7 +37,7 @@ val symbolPattern by lazy {
 
 // Accepted annotations for the ClickableTextWrapper
 enum class SymbolAnnotationType {
-    PERSON, LINK
+    PERSON, LINK, TEXT
 }
 typealias StringAnnotation = AnnotatedString.Range<String>
 // Pair returning styled content and annotation for ClickableText when matching syntax token

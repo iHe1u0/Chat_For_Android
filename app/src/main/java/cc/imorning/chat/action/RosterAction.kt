@@ -215,6 +215,9 @@ object RosterAction {
      * get contact's nick name by jid like im@test.com
      */
     fun getNickName(jidString: String? = null): String {
+        if (!connection.isConnected || !connection.isAuthenticated) {
+            return ""
+        }
         if (jidString == null) {
             val vCardManager = VCardManager.getInstanceFor(connection)
             val vCard = vCardManager.loadVCard()

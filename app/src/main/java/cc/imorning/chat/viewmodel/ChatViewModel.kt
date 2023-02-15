@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.activity.DetailsActivity
@@ -16,7 +17,6 @@ import cc.imorning.database.entity.MessageBody
 import cc.imorning.database.entity.MessageEntity
 import cc.imorning.database.utils.MessageDatabaseHelper
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -88,7 +88,7 @@ class ChatViewModel : ViewModel() {
 
     fun getHistoryMessages() {
 
-        MainScope().launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
 
             val historyTables = messageDatabaseDao.queryMessage()
             val historyMsg = mutableListOf<MessageEntity>()
@@ -151,7 +151,7 @@ class ChatViewModel : ViewModel() {
 
     fun initMessageListener() {
         chatManager = ChatManager.getInstanceFor(connection)
-        incomingChatMessageListener = IncomingChatMessageListener { from, message, _ ->
+        incomingChatMessageListener = IncomingChatMessageListener { from, _, _ ->
             if (from.toString() == chatUserId.value) {
                 getHistoryMessages()
             }

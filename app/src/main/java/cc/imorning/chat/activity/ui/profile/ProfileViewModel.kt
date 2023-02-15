@@ -8,7 +8,6 @@ import cc.imorning.chat.App
 import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.R
 import cc.imorning.chat.action.RosterAction
-import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.chat.ui.view.ToastUtils
 import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.chat.utils.StatusHelper
@@ -39,7 +38,7 @@ class ProfileViewModel : ViewModel() {
     val status: StateFlow<String> = _status
 
     suspend fun updateUserConfigure() {
-        if (!ConnectionManager.isConnectionAuthenticated(connection)) {
+        if (!connection.isConnected || !connection.isAuthenticated) {
             if (BuildConfig.DEBUG) {
                 Log.w(TAG, "get user info failed cause connection in error status")
             }
@@ -50,7 +49,6 @@ class ProfileViewModel : ViewModel() {
         val currentUser = vCard.loadVCard()
         val name = RosterAction.getNickName()
         if (name.isEmpty()) {
-            Log.d(TAG, "updateUserConfigure: nick name is empty")
             _nickName.value = jid.toString()
         } else {
             _nickName.value = name

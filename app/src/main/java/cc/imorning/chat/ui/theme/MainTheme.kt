@@ -3,11 +3,7 @@ package cc.imorning.chat.ui.theme
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -78,7 +74,7 @@ fun ChatTheme(
     content: @Composable () -> Unit
 ) {
     val dynamicColor = isDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-    val myColorScheme = when {
+    val chatDynamicColorScheme = when {
         dynamicColor && isDarkTheme -> {
             dynamicDarkColorScheme(LocalContext.current)
         }
@@ -90,8 +86,8 @@ fun ChatTheme(
     }
 
     MaterialTheme(
-        colorScheme = myColorScheme,
-        typography = JetchatTypography,
+        colorScheme = chatDynamicColorScheme,
+        typography = ChatTypography,
         content = content
     )
 }
