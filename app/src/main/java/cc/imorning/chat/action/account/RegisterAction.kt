@@ -4,6 +4,7 @@ import android.util.Log
 import cc.imorning.chat.App
 import cc.imorning.common.BuildConfig
 import cc.imorning.common.constant.ResultCode
+import cc.imorning.common.constant.ServerConfig
 import cc.imorning.common.utils.NetworkUtils
 import org.jivesoftware.smack.SmackException
 import org.jivesoftware.smack.XMPPException
@@ -23,17 +24,24 @@ object RegisterAction {
         val accountManager = AccountManager.getInstance(connection)
         accountManager.sensitiveOperationOverInsecureConnection(true)
         try {
+            connection.connect()
             if (!accountManager.supportsAccountCreation()) {
                 return ResultCode.ERROR_NOT_SUPPORT_OPERATION
             }
-            accountManager.createAccount(Localpart.from(account), password)
+            val attributes = mutableMapOf<String, String>()
+            attributes["name"] = "User"
+            attributes["email"] = account.plus("@").plus(ServerConfig.HOST_NAME)
+            accountManager.createAccount(
+                Localpart.from(account),
+                password,
+                attributes
+            )
             return ResultCode.OK
         } catch (e: XMPPException.XMPPErrorException) {
             return ResultCode.ERROR_NOT_SUPPORT_OPERATION
-        }catch (e:SmackException.NoResponseException){
+        } catch (e: SmackException.NoResponseException) {
             return ResultCode.ERROR_NO_RESPONSE
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             if (BuildConfig.DEBUG) {
                 Log.e(TAG, "register new user failed: ${e.localizedMessage}", e)
             }

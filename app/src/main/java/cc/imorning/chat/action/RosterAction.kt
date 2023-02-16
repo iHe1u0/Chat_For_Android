@@ -221,7 +221,7 @@ object RosterAction {
         if (jidString == null) {
             val vCardManager = VCardManager.getInstanceFor(connection)
             val vCard = vCardManager.loadVCard()
-            return vCard.nickName
+            return vCard.nickName.orEmpty()
         }
         if (jidString.isEmpty()) {
             return ""

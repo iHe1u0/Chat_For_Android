@@ -167,7 +167,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
         if (showSetPhoneNumberDialog) {
             ComposeDialogUtils.EditorDialog(
                 title = stringResource(R.string.change_phone_number),
-                hint = RosterAction.getNickName(nickName.value),
+                hint = RosterAction.getNickName(phoneNumber.value),
                 positiveButton = stringResource(id = R.string.ok),
                 negativeButton = stringResource(id = R.string.cancel),
                 onConfirm = {

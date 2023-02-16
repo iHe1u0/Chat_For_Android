@@ -11,9 +11,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
-import cc.imorning.common.CommonApp
 import cc.imorning.chat.action.account.RegisterAction
+import cc.imorning.chat.ui.view.ToastUtils
+import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.ResultCode
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,7 +96,9 @@ fun RegisterDialog(onDismiss: () -> Unit) {
                     Toast.makeText(context, "两次输入密码不一致", Toast.LENGTH_LONG).show()
                     return@TextButton
                 }
-                doRegistration(account, password)
+                MainScope().launch(Dispatchers.IO) {
+                    doRegistration(account, password)
+                }
             }) {
                 Text(text = "注册")
             }
@@ -109,19 +115,19 @@ fun doRegistration(account: String, password: String) {
     val context = CommonApp.getContext()
     when (RegisterAction.run(account, password)) {
         ResultCode.OK -> {
-            Toast.makeText(context, "账号[$account]注册成功，请返回登录", Toast.LENGTH_LONG).show()
+            ToastUtils.showMessage(context, "账号[$account]注册成功，请返回登录")
         }
         ResultCode.ERROR_NOT_SUPPORT_OPERATION -> {
-            Toast.makeText(context, "当前禁止新用户注册", Toast.LENGTH_LONG).show()
+            ToastUtils.showMessage(context, "当前禁止新用户注册")
         }
         ResultCode.ERROR_NETWORK -> {
-            Toast.makeText(context, "网络连接失败，请检查网络", Toast.LENGTH_LONG).show()
+            ToastUtils.showMessage(context, "网络连接失败，请检查网络")
         }
         ResultCode.ERROR_NO_RESPONSE -> {
-            Toast.makeText(context, "服务器未响应，请重启App后尝试", Toast.LENGTH_LONG).show()
+            ToastUtils.showMessage(context, "服务器未响应，请重启App后尝试")
         }
         ResultCode.ERROR -> {
-            Toast.makeText(context, "未知错误", Toast.LENGTH_LONG).show()
+            ToastUtils.showMessage(context, "未知错误")
         }
         else -> {}
     }
