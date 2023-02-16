@@ -227,6 +227,19 @@ class FileUtils private constructor() {
         }
     }
 
+    fun processPicMessage(picList: MutableList<File>): String? {
+        if (picList.size == 0) {
+            return null
+        }
+        val picMessage = StringBuffer()
+        picList.forEach {
+            picMessage.append(
+                Base64Utils.encodeFile(it)
+            )
+        }
+        return picMessage.toString()
+    }
+
     companion object {
         private const val TAG = "FileUtils"
 

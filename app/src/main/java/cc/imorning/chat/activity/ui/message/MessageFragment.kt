@@ -57,7 +57,7 @@ class MessageFragment : Fragment() {
     private val messageViewModel: MessageViewModel by activityViewModels {
         val db = RecentDB.getInstance(
             CommonApp.getContext(),
-            CommonApp.xmppTcpConnection!!.user.asEntityBareJidString()
+            CommonApp.xmppTcpConnection.user.asEntityBareJidString()
         )
         MessageViewModelFactory(db.recentDatabaseDao())
     }

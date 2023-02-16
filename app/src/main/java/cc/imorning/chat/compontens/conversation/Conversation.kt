@@ -11,7 +11,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.VoiceChat
 import androidx.compose.material3.*
@@ -19,7 +18,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
@@ -42,11 +40,13 @@ import cc.imorning.common.CommonApp
 import cc.imorning.common.utils.TimeUtils
 import cc.imorning.database.entity.MessageBody
 import cc.imorning.database.entity.MessageEntity
+import coil.compose.AsyncImage
 import com.example.compose.jetchat.conversation.JumpToBottom
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import org.jivesoftware.smack.packet.Presence
 import org.joda.time.DateTime
+import java.io.File
 
 private const val TAG = "Conversation"
 
@@ -77,6 +77,8 @@ fun ConversationContent(
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topBarState)
     val scope = rememberCoroutineScope()
 
+    var picList = mutableListOf<File>()
+
     Surface(modifier = modifier) {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
@@ -106,6 +108,7 @@ fun ConversationContent(
                             receiver = chatUid,
                             messageBody = MessageBody(
                                 text = content,
+                                image = picList.toString()
                             )
                         )
                         val gson = Gson()
@@ -117,9 +120,18 @@ fun ConversationContent(
                                 receiver = chatUid,
                                 messageBody = MessageBody(
                                     text = content,
+                                    image = if (picList.isEmpty()) {
+                                        null
+                                    } else {
+                                        picList[0].absolutePath
+                                    }
                                 )
                             )
                         )
+                        picList.removeAll(picList)
+                    },
+                    onPictureSelected = { picFiles ->
+                        picList = picFiles
                     },
                     resetScroll = {
                         scope.launch {
@@ -465,18 +477,12 @@ fun ChatItemBubble(
                 color = backgroundBubbleColor,
                 shape = ChatBubbleShape
             ) {
-                Icon(
-                    imageVector = Icons.Default.Image,
-                    modifier = Modifier.size(16.dp),
-                    contentDescription = "images",
-                    tint = Color.Red.copy(0.5f)
-                )
+                AsyncImage(model = message.image, contentDescription = null)
             }
         }
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ClickableMessage(
     message: String,

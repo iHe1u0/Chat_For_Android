@@ -16,14 +16,17 @@
 
 package cc.imorning.chat.compontens.conversation
 
+import android.os.Environment
 import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.AlternateEmail
 import androidx.compose.material.icons.outlined.InsertPhoto
 import androidx.compose.material.icons.outlined.Mood
@@ -41,6 +44,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.FirstBaseline
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -58,6 +62,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cc.imorning.chat.R
 import cc.imorning.chat.ui.view.ComposeDialogUtils.FunctionalityNotAvailablePopup
+import coil.compose.AsyncImage
+import java.io.File
+
+private const val TAG = "UserInput"
 
 enum class InputSelector {
     NONE,
@@ -75,13 +83,14 @@ enum class EmojiStickerSelector {
 @Preview
 @Composable
 fun UserInputPreview() {
-    UserInput(onMessageSent = {})
+    UserInput(onMessageSent = {}, onPictureSelected = {})
 }
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun UserInput(
     onMessageSent: (String) -> Unit,
+    onPictureSelected: (MutableList<File>) -> Unit,
     modifier: Modifier = Modifier,
     resetScroll: () -> Unit = {},
 ) {
@@ -94,6 +103,8 @@ fun UserInput(
     }
 
     var textState by remember { mutableStateOf(TextFieldValue()) }
+
+    var sendButtonEnabled by remember { mutableStateOf(false) }
 
     // Used to decide if the keyboard should be shown
     var textFieldFocusState by remember { mutableStateOf(false) }
@@ -118,13 +129,12 @@ fun UserInput(
                 },
                 focusState = textFieldFocusState
             )
-            // send button
             UserInputSelector(
                 onSelectorChange = {
                     currentInputSelector = it
                     keyboard?.hide()
                 },
-                sendMessageEnabled = textState.text.isNotBlank(),
+                sendMessageEnabled = textState.text.isNotBlank() || sendButtonEnabled,
                 onMessageSent = {
                     onMessageSent(textState.text)
                     // Reset text field and close keyboard
@@ -138,7 +148,11 @@ fun UserInput(
             SelectorExpanded(
                 onCloseRequested = dismissKeyboard,
                 onTextAdded = { textState = textState.addText(it) },
-                currentSelector = currentInputSelector
+                currentSelector = currentInputSelector,
+                onPictureSelected = {
+                    onPictureSelected(it)
+                    sendButtonEnabled = it.size != 0
+                }
             )
         }
     }
@@ -162,7 +176,8 @@ private fun TextFieldValue.addText(newString: String): TextFieldValue {
 private fun SelectorExpanded(
     currentSelector: InputSelector,
     onCloseRequested: () -> Unit,
-    onTextAdded: (String) -> Unit
+    onTextAdded: (String) -> Unit,
+    onPictureSelected: (MutableList<File>) -> Unit
 ) {
     if (currentSelector == InputSelector.NONE) return
 
@@ -179,7 +194,7 @@ private fun SelectorExpanded(
         when (currentSelector) {
             InputSelector.EMOJI -> EmojiSelector(onTextAdded, focusRequester)
             InputSelector.DM -> NotAvailablePopup(onCloseRequested)
-            InputSelector.PICTURE -> FunctionalityNotAvailablePanel()
+            InputSelector.PICTURE -> PictureSelector(onPictureSelected)
             InputSelector.RECORD -> FunctionalityNotAvailablePanel()
             else -> {
                 throw NotImplementedError()
@@ -247,7 +262,7 @@ private fun UserInputSelector(
             onClick = { onSelectorChange(InputSelector.RECORD) },
             icon = Icons.Outlined.RecordVoiceOver,
             selected = currentInputSelector == InputSelector.RECORD,
-            description = "@"
+            description = "录音"
         )
         InputSelectorButton(
             onClick = { onSelectorChange(InputSelector.PICTURE) },
@@ -277,7 +292,9 @@ private fun UserInputSelector(
         Button(
             modifier = Modifier.height(36.dp),
             enabled = sendMessageEnabled,
-            onClick = onMessageSent,
+            onClick = {
+                onMessageSent()
+            },
             colors = buttonColors,
             border = border,
             contentPadding = PaddingValues(0.dp)
@@ -437,6 +454,66 @@ fun EmojiSelector(
     }
     if (selected == EmojiStickerSelector.STICKER) {
         NotAvailablePopup(onDismissed = { selected = EmojiStickerSelector.EMOJI })
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun PictureSelector(pictures: (MutableList<File>) -> Unit) {
+
+    val fileList =
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).listFiles()
+    if (fileList == null || fileList.isEmpty()) {
+        Box(
+            modifier = Modifier
+                .height(128.dp)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(text = stringResource(R.string.no_pic))
+        }
+        return
+    }
+    val selectList = mutableListOf<File>()
+    var selectCount by remember { mutableStateOf(0) }
+
+    LazyRow {
+        items(count = fileList.size) {
+            Box {
+                var isSelected by rememberSaveable { mutableStateOf(false) }
+                AsyncImage(
+                    model = fileList[it],
+                    contentDescription = null,
+                    modifier = Modifier
+                        .height(128.dp)
+                        .combinedClickable(
+                            onClick = {
+                                isSelected = !isSelected
+                                if (isSelected) {
+                                    selectList.add(fileList[it])
+                                    selectCount++
+                                } else {
+                                    selectList.remove(fileList[it])
+                                    selectCount--
+                                }
+                                pictures(selectList)
+                            }
+                        ),
+                    contentScale = ContentScale.Crop
+                )
+                if (isSelected) {
+                    Icon(
+                        imageVector = Icons.Filled.CheckCircle,
+                        contentDescription = null,
+                        tint = Color.Magenta
+                    )
+                }
+            }
+            Divider(
+                color = Color.Blue,
+                modifier = Modifier.width(2.dp)
+            )
+        }
     }
 }
 

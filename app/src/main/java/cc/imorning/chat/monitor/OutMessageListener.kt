@@ -27,14 +27,23 @@ class OutMessageListener private constructor() : OutgoingChatMessageListener {
             val message = gson.fromJson(this.body, MessageEntity::class.java)
             val nickName = RosterAction.getNickName(message.receiver)
             with(message) {
+                // insert into recent message
+                val recentMessageText = StringBuffer()
+                if (messageBody.text.isNotEmpty()) {
+                    recentMessageText.append(messageBody.text)
+                }
+                if (!message.messageBody.image.isNullOrEmpty()) {
+                    recentMessageText.append("[图片]")
+                }
                 MessageHelper.insertRecentMessage(
                     user = receiver,
                     nickName = nickName,
-                    messageBody = messageBody.text,
+                    messageBody = recentMessageText.toString(),
                     messageType = messageType,
                     dateTime = sendTime
                 )
-                MessageHelper.insertMessage(this)
+                // insert into chat message
+                MessageHelper.insertChatMessage(this)
             }
         }
     }

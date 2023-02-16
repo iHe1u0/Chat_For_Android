@@ -125,15 +125,22 @@ object MessageHelper {
     private fun processChatMessage(messageEntity: MessageEntity, chat: Chat?) {
         with(messageEntity) {
             val nickName = RosterAction.getNickName(sender)
+            val messageText = StringBuffer()
+            if (messageBody.text.isNotEmpty()) {
+                messageText.append(messageBody.text)
+            }
+            if (messageBody.image.isNullOrEmpty()) {
+                messageText.append("[图片]")
+            }
             insertRecentMessage(
                 user = sender,
                 nickName = nickName,
-                messageBody = messageBody.text,
+                messageBody = messageText.toString(),
                 messageType = messageType,
                 dateTime = sendTime
             )
             // insert into message database
-            insertMessage(messageEntity)
+            insertChatMessage(messageEntity)
         }
     }
 
@@ -159,11 +166,12 @@ object MessageHelper {
         }
     }
 
-    fun insertMessage(messageEntity: MessageEntity) {
+    fun insertChatMessage(messageEntity: MessageEntity) {
         // if connection is not connect or authenticated,then return
         if (connection.isConnected && connection.isAuthenticated) {
             val sender = messageEntity.sender
             val receiver = messageEntity.receiver
+            val sendIsMe = sender == App.user
             val messageDatabaseDao = MessageDatabaseHelper.instance!!.getMessageDB(
                 CommonApp.getContext(),
                 sender,
@@ -171,6 +179,14 @@ object MessageHelper {
             )!!.databaseDao()
             with(messageEntity) {
                 MainScope().launch(Dispatchers.IO) {
+                    var imagePath = ""
+                    if (messageBody.image != null && messageBody.image!!.isNotEmpty()) {
+                        // TODO: save image and get file path
+                        messageBody.image!!.let {
+                            val firstPic = it.split(",")[0].replaceFirst("[", "")
+                            imagePath = firstPic.substring(0, firstPic.length - 1)
+                        }
+                    }
                     messageDatabaseDao.insertMessage(
                         MessageTable(
                             sender = sender,
@@ -180,7 +196,7 @@ object MessageHelper {
                             is_show = isShow,
                             is_recall = isRecall,
                             text = messageBody.text,
-                            image = messageBody.image,
+                            image = imagePath,
                             audio = messageBody.audio,
                             video = messageBody.video,
                             file = messageBody.file,

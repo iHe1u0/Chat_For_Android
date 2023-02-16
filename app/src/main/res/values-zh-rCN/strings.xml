@@ -45,4 +45,5 @@
     <string name="nick_name">昵称</string>
     <string name="phone_number">电话</string>
     <string name="email">邮箱</string>
+    <string name="no_pic">暂无图片</string>
 </resources>
