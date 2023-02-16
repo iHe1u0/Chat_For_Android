@@ -32,6 +32,11 @@ class FileUtils private constructor() {
         }
     }
 
+    fun getFileDir(): File? {
+        return context.getExternalFilesDir("chatFile")
+
+    }
+
     /**
      * get roster avatar file path with jidString
      */

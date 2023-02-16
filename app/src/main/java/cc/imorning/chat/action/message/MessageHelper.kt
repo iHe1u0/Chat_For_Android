@@ -4,6 +4,8 @@ import android.util.Log
 import cc.imorning.chat.App
 import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.action.RosterAction
+import cc.imorning.chat.file.SendProgress
+import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.common.CommonApp
 import cc.imorning.common.utils.Base64Utils
 import cc.imorning.common.utils.RingUtils
@@ -21,6 +23,7 @@ import kotlinx.coroutines.launch
 import org.jivesoftware.smack.chat2.Chat
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Message.Type
+import org.jivesoftware.smackx.filetransfer.FileTransferManager
 import java.io.File
 
 private const val TAG = "MessageHelper"
@@ -117,6 +120,25 @@ object MessageHelper {
             }
             null
         }
+    }
+
+    fun sendFile(file: File, receiver: String) {
+        if (!file.exists() || receiver.isEmpty()) {
+            return
+        }
+        if (ConnectionManager.isConnectionAvailable(connection)) {
+            val fileTransferManager = FileTransferManager.getInstanceFor(connection)
+            val outgoingFileTransfer =
+                fileTransferManager.createOutgoingFileTransfer(connection.user)
+            val negotiationProgress = SendProgress()
+            outgoingFileTransfer.sendFile(
+                file.absolutePath,
+                file.length(),
+                file.absolutePath.toString(),
+                negotiationProgress
+            )
+        }
+
     }
 
     /**

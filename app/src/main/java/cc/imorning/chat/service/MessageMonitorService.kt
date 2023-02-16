@@ -10,6 +10,7 @@ import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.R
 import cc.imorning.chat.action.message.MessageHelper
 import cc.imorning.chat.action.message.MessageManager
+import cc.imorning.chat.file.ChatFileTransferListener
 import cc.imorning.chat.monitor.ChatStanzaListener
 import cc.imorning.chat.monitor.IncomingMessageListener
 import cc.imorning.chat.monitor.OutMessageListener
@@ -26,6 +27,7 @@ import org.jivesoftware.smack.filter.MessageTypeFilter
 import org.jivesoftware.smack.filter.StanzaTypeFilter
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Presence
+import org.jivesoftware.smackx.filetransfer.FileTransferManager
 
 class MessageMonitorService : Service() {
 
@@ -41,6 +43,7 @@ class MessageMonitorService : Service() {
 
     private val chatNotificationManager = ChatNotificationManager.manager
 
+    private lateinit var fileTransferListener: ChatFileTransferListener
     override fun onBind(intent: Intent?): IBinder {
         return messageServiceBinder
     }
@@ -61,11 +64,18 @@ class MessageMonitorService : Service() {
         if (ConnectionManager.isConnectionAvailable(connection)) {
             addMessageListener()
             addRosterPresenceChangeListener()
+            addFileListener()
             isRunning = true
         } else {
             stopSelf()
         }
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun addFileListener() {
+        fileTransferListener = ChatFileTransferListener()
+        FileTransferManager.getInstanceFor(connection)
+            .addFileTransferListener(fileTransferListener)
     }
 
     /**
@@ -121,6 +131,8 @@ class MessageMonitorService : Service() {
             chatManager.removeIncomingListener(incomingMessageListener)
             chatManager.removeOutgoingListener(outMessageListener)
             connection.removeStanzaListener(chatStanzaListener)
+            FileTransferManager.getInstanceFor(connection)
+                .removeFileTransferListener(fileTransferListener)
         }
         chatNotificationManager.cancelNotification(ChatNotificationManager.CHANNEL_APP_RUNNING_ID)
         super.onDestroy()
