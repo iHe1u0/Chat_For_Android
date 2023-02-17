@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.compose.jetchat.conversation
+package cc.imorning.chat.compontens.conversation
 
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.updateTransition

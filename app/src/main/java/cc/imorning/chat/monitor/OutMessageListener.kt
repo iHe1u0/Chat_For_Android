@@ -32,7 +32,7 @@ class OutMessageListener private constructor() : OutgoingChatMessageListener {
                 if (messageBody.text.isNotEmpty()) {
                     recentMessageText.append(messageBody.text)
                 }
-                if (!message.messageBody.image.isNullOrEmpty()) {
+                if (message.messageBody.image?.length!! > 5) {
                     recentMessageText.append("[图片]")
                 }
                 MessageHelper.insertRecentMessage(

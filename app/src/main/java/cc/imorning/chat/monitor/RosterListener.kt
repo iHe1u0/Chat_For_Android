@@ -1,11 +1,11 @@
 package cc.imorning.chat.monitor
 
 import android.util.Log
+import cc.imorning.chat.App
 import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.action.RosterAction.getNickName
 import cc.imorning.common.CommonApp.Companion.getContext
-import cc.imorning.common.CommonApp.Companion.xmppTcpConnection
 import cc.imorning.common.constant.Config
 import cc.imorning.common.utils.RingUtils
 import cc.imorning.database.db.DataDB.Companion.getInstance
@@ -20,10 +20,7 @@ object RosterListener {
 
     private const val TAG = "RosterListener"
 
-    private val databaseDao = getInstance(
-        getContext(),
-        xmppTcpConnection!!.user.asEntityBareJidString()
-    ).databaseDao()
+    private val databaseDao = getInstance(getContext(), App.user).databaseDao()
 
     /**
      * listener for roster change,for more information:

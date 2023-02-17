@@ -10,7 +10,6 @@ import cc.imorning.chat.model.RecentMessage
 import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.chat.utils.StatusHelper
-import cc.imorning.common.utils.NetworkUtils
 import cc.imorning.database.dao.RecentDatabaseDao
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,9 +55,7 @@ class MessageViewModel(
     @Synchronized
     fun updateStatus() {
         MainScope().launch {
-            if (ConnectionManager.isConnectionAvailable(connection = connection) &&
-                NetworkUtils.isNetworkConnected()
-            ) {
+            if (ConnectionManager.isConnectionAvailable(connection = connection)) {
                 MainScope().launch(Dispatchers.IO) {
                     AvatarUtils.instance.saveAvatar(connection.user.asEntityBareJidString())
                 }

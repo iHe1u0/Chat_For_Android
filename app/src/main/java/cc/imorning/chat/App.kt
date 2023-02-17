@@ -10,7 +10,6 @@ import cc.imorning.common.CommonApp
 import cc.imorning.common.utils.FileUtils
 import coil.ImageLoader
 import coil.ImageLoaderFactory
-import coil.request.CachePolicy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -58,13 +57,14 @@ class App : CommonApp(), ImageLoaderFactory {
          * return tcp connection
          */
         fun getTCPConnection(): XMPPTCPConnection {
+            xmppTcpConnection.replyTimeout = 10 * 1000
             return xmppTcpConnection
         }
     }
 
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
-            .diskCachePolicy(CachePolicy.DISABLED)
+            .error(R.drawable.ic_default_avatar)
             .build()
     }
 

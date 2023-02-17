@@ -33,8 +33,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import cc.imorning.chat.App
 import cc.imorning.chat.R
-import cc.imorning.chat.action.RosterAction
-import cc.imorning.chat.compontens.Avatar
+import cc.imorning.chat.compontens.GlideAvatar
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.ui.view.ComposeDialogUtils
 import cc.imorning.chat.ui.view.ToastUtils
@@ -167,7 +166,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
         if (showSetPhoneNumberDialog) {
             ComposeDialogUtils.EditorDialog(
                 title = stringResource(R.string.change_phone_number),
-                hint = RosterAction.getNickName(phoneNumber.value),
+                hint = phoneNumber.value,
                 positiveButton = stringResource(id = R.string.ok),
                 negativeButton = stringResource(id = R.string.cancel),
                 onConfirm = {
@@ -198,7 +197,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                     )
                 }
             )
-            Avatar(avatarPath = avatarPath) {
+            GlideAvatar(avatarPath = avatarPath) {
                 singlePhotoPickerLauncher.launch(
                     PickVisualMediaRequest(
                         ActivityResultContracts.PickVisualMedia.ImageOnly

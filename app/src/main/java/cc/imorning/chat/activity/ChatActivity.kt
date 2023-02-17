@@ -66,10 +66,7 @@ class ChatActivity : ComponentActivity() {
                         chatUid = jidString.value,
                         uiState = uiState,
                         navigateToProfile = { uid ->
-                            viewModel.startDetailsActivity(
-                                this@ChatActivity,
-                                uid
-                            )
+                            viewModel.startDetailsActivity(this@ChatActivity, uid)
                         },
                         onNavIconPressed = {
                             this@ChatActivity.finish()

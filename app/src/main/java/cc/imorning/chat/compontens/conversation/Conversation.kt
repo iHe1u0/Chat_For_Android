@@ -18,9 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.LastBaseline
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -28,6 +26,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import cc.imorning.chat.App
 import cc.imorning.chat.R
 import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.action.message.MessageManager
@@ -41,7 +40,8 @@ import cc.imorning.common.utils.TimeUtils
 import cc.imorning.database.entity.MessageBody
 import cc.imorning.database.entity.MessageEntity
 import coil.compose.AsyncImage
-import com.example.compose.jetchat.conversation.JumpToBottom
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import org.jivesoftware.smack.packet.Presence
@@ -230,51 +230,6 @@ fun MessagesUI(
 ) {
     val scope = rememberCoroutineScope()
     Box(modifier = modifier) {
-
-        LazyColumn(
-            reverseLayout = true,
-            state = scrollState,
-            // Add content padding so that the content can be scrolled (y-axis)
-            // below the status bar + app bar
-            contentPadding = WindowInsets.statusBars.add(WindowInsets(top = 90.dp))
-                .asPaddingValues(),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            for (index in messages.indices) {
-                val prevAuthor = messages.getOrNull(index - 1)?.sender
-                val nextAuthor = messages.getOrNull(index + 1)?.sender
-                val content = messages[index]
-                val isFirstMessageByAuthor = prevAuthor != content.sender
-                val isLastMessageByAuthor = nextAuthor != content.sender
-
-                item {
-                    MessageItemUI(
-                        onAuthorClick = { uid ->
-                            navigateToProfile(uid)
-                        },
-                        msg = content,
-                        isUserMe = content.sender == CommonApp.xmppTcpConnection.user?.asEntityBareJidString(),
-                        isFirstMessageByAuthor = isFirstMessageByAuthor,
-                        isLastMessageByAuthor = isLastMessageByAuthor,
-                    )
-                }
-
-
-                // Hardcode day dividers for simplicity
-                // if (index == messages.size - 1) {
-                //     item {
-                //         DayHeader(
-                //             DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
-                //                 .parseDateTime("2018-09-27 11:11:11")
-                //         )
-                //     }
-                // } else if (index == 2) {
-                //     item {
-                //         DayHeader(DateTime.now())
-                //     }
-                // }
-            }
-        }
         // Jump to bottom button shows up when user scrolls past a threshold.
         // Convert to pixels:
         val jumpThreshold = with(LocalDensity.current) {
@@ -289,7 +244,45 @@ fun MessagesUI(
                         scrollState.firstVisibleItemScrollOffset > jumpThreshold
             }
         }
-
+        LazyColumn(
+            reverseLayout = true,
+            state = scrollState,
+            // Add content padding so that the content can be scrolled (y-axis)
+            // below the status bar + app bar
+            contentPadding = WindowInsets.statusBars.add(WindowInsets(top = 90.dp))
+                .asPaddingValues(),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(count = messages.size) { index ->
+                val prevAuthor = messages.getOrNull(index - 1)?.sender
+                val nextAuthor = messages.getOrNull(index + 1)?.sender
+                val content = messages[index]
+                val isFirstMessageByAuthor = prevAuthor != content.sender
+                val isLastMessageByAuthor = nextAuthor != content.sender
+                MessageItemUI(
+                    onAuthorClick = { uid ->
+                        navigateToProfile(uid)
+                    },
+                    msg = content,
+                    isUserMe = content.sender == App.user,
+                    isFirstMessageByAuthor = isFirstMessageByAuthor,
+                    isLastMessageByAuthor = isLastMessageByAuthor,
+                )
+            }
+            // if (index == messages.size - 1) {
+            //     item {
+            //         DayHeader(
+            //             DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
+            //                 .parseDateTime("2018-09-27 11:11:11")
+            //         )
+            //     }
+            // } else if (index == 2) {
+            //     item {
+            //         DayHeader(DateTime.now())
+            //     }
+            // }
+            // for (index in messages.indices) { item {} }
+        }
         JumpToBottom(
             // Only show if the scroller is not at the bottom
             enabled = jumpToBottomButtonEnabled,
@@ -303,6 +296,7 @@ fun MessagesUI(
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MessageItemUI(
     onAuthorClick: (String) -> Unit,
@@ -318,10 +312,11 @@ fun MessageItemUI(
     }
 
     val spaceBetweenAuthors = if (isLastMessageByAuthor) Modifier.padding(top = 8.dp) else Modifier
+
     Row(modifier = spaceBetweenAuthors) {
         if (isLastMessageByAuthor) {
-            // Avatar
-            Image(
+            GlideImage(
+                model = AvatarUtils.instance.getAvatarPath(msg.sender),
                 modifier = Modifier
                     .clickable(onClick = { onAuthorClick(msg.sender) })
                     .padding(horizontal = 16.dp)
@@ -330,9 +325,7 @@ fun MessageItemUI(
                     .border(3.dp, MaterialTheme.colorScheme.surface, CircleShape)
                     .clip(CircleShape)
                     .align(Alignment.Top),
-                bitmap = AvatarUtils.instance.getUserBitmap(msg.sender).asImageBitmap(),
-                contentScale = ContentScale.Crop,
-                contentDescription = null,
+                contentDescription = null
             )
         } else {
             // Space under avatar
@@ -362,9 +355,14 @@ fun AuthorAndTextMessage(
 ) {
     Column(modifier = modifier) {
         if (isLastMessageByAuthor) {
-            AuthorNameTimestamp(msg)
+            AuthorNameTimestamp(sendTime = msg.sendTime, sender = msg.sender)
         }
-        ChatItemBubble(msg, isUserMe, authorClicked = authorClicked)
+        ChatItemBubble(
+            message = msg.messageBody,
+            messageId = msg.sendTime,
+            isUserMe = isUserMe,
+            authorClicked = authorClicked
+        )
         if (isFirstMessageByAuthor) {
             // Last bubble before next author
             Spacer(modifier = Modifier.height(8.dp))
@@ -379,24 +377,26 @@ fun AuthorAndTextMessage(
  * avatar and timestamp
  */
 @Composable
-private fun AuthorNameTimestamp(msg: MessageEntity) {
+private fun AuthorNameTimestamp(sendTime: Long, sender: String) {
     // Combine author and timestamp for a11y.
-    val format = if (TimeUtils.isToday(msg.sendTime)) {
+    val format = if (TimeUtils.isToday(sendTime)) {
         "HH:mm:ss"
     } else {
         "yyyy-MM-dd HH:mm:ss"
     }
     Row(modifier = Modifier.semantics(mergeDescendants = true) {}) {
         Text(
-            text = RosterAction.getNickName(msg.sender),
+            text = RosterAction.getNickName(sender),
             style = MaterialTheme.typography.titleMedium,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1,
             modifier = Modifier
                 .alignBy(LastBaseline)
                 .paddingFrom(LastBaseline, after = 8.dp) // Space to 1st bubble
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            text = DateTime(msg.sendTime).toString(format),
+            text = DateTime(sendTime).toString(format),
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.alignBy(LastBaseline),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -447,11 +447,11 @@ private fun RowScope.DayHeaderLine() {
  */
 @Composable
 fun ChatItemBubble(
-    messageEntity: MessageEntity,
+    message: MessageBody,
+    messageId: Long,
     isUserMe: Boolean,
     authorClicked: (String) -> Unit
 ) {
-    val message = messageEntity.messageBody
     val backgroundBubbleColor = if (isUserMe) {
         MaterialTheme.colorScheme.primary
     } else {
@@ -467,17 +467,16 @@ fun ChatItemBubble(
                     message = message.text,
                     isUserMe = isUserMe,
                     authorClicked = authorClicked,
-                    messageId = messageEntity.sendTime
+                    messageId = messageId
                 )
             }
-        }
-        if (!message.image.isNullOrEmpty()) {
-            Spacer(modifier = Modifier.height(4.dp))
-            Surface(
-                color = backgroundBubbleColor,
-                shape = ChatBubbleShape
-            ) {
-                AsyncImage(model = message.image, contentDescription = null)
+            if (!message.image.isNullOrEmpty()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                AsyncImage(
+                    model = message.image,
+                    modifier = Modifier.background(backgroundBubbleColor),
+                    contentDescription = null
+                )
             }
         }
     }

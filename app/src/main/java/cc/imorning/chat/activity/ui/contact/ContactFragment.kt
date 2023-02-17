@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import cc.imorning.chat.App
 import cc.imorning.chat.R
 import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.activity.SearchActivity
@@ -41,10 +42,7 @@ private const val TAG = "ContactFragment"
 class ContactFragment : Fragment() {
 
     private val viewModel: ContactViewModel by activityViewModels {
-        val db = DataDB.getInstance(
-            CommonApp.getContext(),
-            CommonApp.xmppTcpConnection!!.user.asEntityBareJidString()
-        )
+        val db = DataDB.getInstance(CommonApp.getContext(), App.user)
         ContactViewModelFactory(db.databaseDao())
     }
 

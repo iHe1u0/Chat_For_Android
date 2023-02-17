@@ -62,7 +62,7 @@ class AvatarUtils private constructor() {
     fun getAvatarPath(jidString: String? = null): String {
         if (ConnectionManager.isConnectionAvailable(connection)) {
             if (jidString == null) {
-                return FileUtils.instance.getAvatarCachePath(connection.user.asEntityBareJidString()).absolutePath
+                return FileUtils.instance.getAvatarCachePath(App.user).absolutePath
             }
             if (!hasAvatarCache(jidString)) {
                 saveAvatar(jidString)

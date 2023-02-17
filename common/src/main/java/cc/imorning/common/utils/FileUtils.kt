@@ -180,6 +180,12 @@ class FileUtils private constructor() {
         return "UNKNOWN"
     }
 
+    /**
+     * compress image
+     * @param srcFile source file
+     *
+     * @return compressed file
+     */
     fun compressImage(srcFile: File): File {
         assert(srcFile.exists())
         val srcFileLength = srcFile.length() / 1024
