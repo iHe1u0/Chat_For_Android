@@ -2,9 +2,7 @@ package cc.imorning.chat.action.message
 
 import android.util.Log
 import cc.imorning.chat.App
-import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.action.RosterAction
-import cc.imorning.chat.file.SendProgress
 import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.ServerConfig
@@ -17,7 +15,6 @@ import cc.imorning.database.entity.MessageTable
 import cc.imorning.database.entity.RecentMessageEntity
 import cc.imorning.database.utils.MessageDatabaseHelper
 import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
@@ -27,19 +24,18 @@ import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Message.Type
 import org.jivesoftware.smackx.filetransfer.FileTransfer
 import org.jivesoftware.smackx.filetransfer.FileTransferManager
+import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer
 import org.jxmpp.jid.impl.JidCreate
 import org.jxmpp.jid.parts.Resourcepart
 import java.io.File
+import java.io.OutputStream
 
 private const val TAG = "MessageHelper"
 
 object MessageHelper {
 
     private val recentDatabaseDao =
-        RecentDB.getInstance(
-            CommonApp.getContext(),
-            App.getTCPConnection().user.asEntityBareJidString()
-        ).recentDatabaseDao()
+        RecentDB.getInstance(CommonApp.getContext(), App.user).recentDatabaseDao()
 
     private val connection = App.getTCPConnection()
 
@@ -114,17 +110,7 @@ object MessageHelper {
      */
     fun decodeMsg(msg: String): MessageEntity? {
         val sourceString = Base64Utils.decodeString(msg)
-        return try {
-            Gson().fromJson(sourceString, MessageEntity::class.java)
-        } catch (e: JsonSyntaxException) {
-            if (BuildConfig.DEBUG) {
-                Log.e(
-                    TAG,
-                    "decode msg failed cause: ${e.localizedMessage}"
-                )
-            }
-            null
-        }
+        return Gson().fromJson(sourceString, MessageEntity::class.java)
     }
 
     fun sendFile(file: File, receiver: String) {
@@ -140,8 +126,23 @@ object MessageHelper {
             val fileTransfer = FileTransferManager
                 .getInstanceFor(connection)
                 .createOutgoingFileTransfer(receiverUid)
-            val negotiationProgress = SendProgress()
-            Log.d(TAG, "sendFile: ${file.length()}")
+            fileTransfer.setCallback(object : OutgoingFileTransfer.NegotiationProgress {
+                override fun statusUpdated(
+                    oldStatus: FileTransfer.Status?,
+                    newStatus: FileTransfer.Status?
+                ) {
+                    Log.d(TAG, "statusUpdated: [$oldStatus]>[$newStatus]")
+                }
+
+                override fun outputStreamEstablished(stream: OutputStream?) {
+
+                }
+
+                override fun errorEstablishingStream(e: Exception?) {
+                    Log.e(TAG, "errorEstablishingStream: ${e?.message}", e)
+                }
+
+            })
             fileTransfer.sendFile(file, "file")
             MainScope().launch(Dispatchers.IO) {
                 while (!fileTransfer.isDone) {

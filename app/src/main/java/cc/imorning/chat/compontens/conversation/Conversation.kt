@@ -43,6 +43,7 @@ import cc.imorning.database.entity.MessageEntity
 import coil.compose.AsyncImage
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import org.jivesoftware.smack.packet.Presence
@@ -329,7 +330,10 @@ fun MessageItemUI(
                     .border(3.dp, MaterialTheme.colorScheme.surface, CircleShape)
                     .clip(CircleShape)
                     .align(Alignment.Top),
-                contentDescription = null
+                contentDescription = null,
+                requestBuilderTransform = {
+                    it.diskCacheStrategy(DiskCacheStrategy.NONE)
+                }
             )
         } else {
             // Space under avatar

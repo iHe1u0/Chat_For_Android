@@ -29,11 +29,14 @@ open class CommonApp : Application() {
         super.onCreate()
         application = this
 
+        // Security.addProvider(BouncyCastleProvider())
+        // KeyStore.getInstance("BKS")
+
         AppCenter.start(
             application, "28fb209f-c852-48b1-b691-9fa2b06c1762",
             Crashes::class.java
         )
-        AppCenter.setLogLevel(Log.WARN)
+        AppCenter.setLogLevel(Log.ERROR)
         AppCenter.setEnabled(!BuildConfig.DEBUG)
 
         val formatStrategy = PrettyFormatStrategy.newBuilder()

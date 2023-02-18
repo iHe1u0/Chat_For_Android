@@ -26,7 +26,9 @@ class ChatFileTransferListener : FileTransferListener {
         try {
             MainScope().launch(Dispatchers.IO) {
                 incomingFileTransfer.receiveFile(file)
-                Log.d(TAG, "fileTransferRequest: Success")
+                if (BuildConfig.DEBUG) {
+                    Log.i(TAG, "file [${file.absolutePath}] has been saved")
+                }
             }
         } catch (e: SmackException) {
             Log.e(TAG, "fileTransferRequest: ${e.message}", e)

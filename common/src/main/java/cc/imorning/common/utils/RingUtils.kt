@@ -16,12 +16,12 @@ private const val TAG = "RingUtils"
 
 object RingUtils {
 
-    fun playNewMessage(
-        context: Context,
-        type: Message.Type  = Message.Type.chat
-    ) {
+    fun playNewMessage(context: Context, type: Message.Type? = Message.Type.chat) {
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "playNewMessage: ${type.name}")
+            Log.d(TAG, "playNewMessage: ${type?.name}")
+        }
+        if (type == null) {
+            return
         }
         var audioAttributes =
             AudioAttributes.Builder().setLegacyStreamType(AudioManager.STREAM_RING)

@@ -1,36 +1,37 @@
--keep class org.xmlpull.** { *; }
--keep class org.jivesoftware.** { *; }
 -keep class org.joda.** { *; }
 -keep class org.jxmpp.** { *; }
 
--keepnames class org.jxmpp.** { *; }
--keepnames class org.joda.** { *; }
--keepnames class org.jivesoftware.** { *; }
--keepnames class org.xmlpull.** { *; }
+-keep class org.kobjects.** { *; }
+-keep class org.ksoap2.** { *; }
+-keep class org.kxml2.** { *; }
 
--dontwarn javax.naming.NamingEnumeration
--dontwarn javax.naming.NamingException
--dontwarn javax.naming.directory.Attribute
--dontwarn javax.naming.directory.Attributes
--dontwarn javax.naming.directory.DirContext
--dontwarn javax.naming.directory.InitialDirContext
--dontwarn javax.naming.directory.SearchControls
--dontwarn javax.naming.directory.SearchResult
--dontwarn org.bouncycastle.jsse.BCSSLParameters
--dontwarn org.bouncycastle.jsse.BCSSLSocket
--dontwarn org.bouncycastle.jsse.provider.BouncyCastleJsseProvider
--dontwarn org.conscrypt.Conscrypt$Version
--dontwarn org.conscrypt.Conscrypt
--dontwarn org.conscrypt.ConscryptHostnameVerifier
--dontwarn org.openjsse.javax.net.ssl.SSLParameters
--dontwarn org.openjsse.javax.net.ssl.SSLSocket
--dontwarn org.openjsse.net.ssl.OpenJSSE
--dontwarn org.xmlpull.mxp1.MXParser
--dontwarn org.xmlpull.mxp1_serializer.MXSerializer
--dontwarn org.xmlpull.mxp1.MXParser,org.xmlpull.mxp1_serializer.MXSerializer
+-keep class org.bouncycastle.jsse.BCSSLParameters
+-keep class org.bouncycastle.jsse.BCSSLSocket
+-keep class org.bouncycastle.jsse.provider.BouncyCastleJsseProvider
+-keep class org.conscrypt.Conscrypt$Version
+-keep class org.conscrypt.Conscrypt
+-keep class org.conscrypt.ConscryptHostnameVerifier
+-keep class org.joda.convert.FromString
+-keep class org.joda.convert.ToString
+-keep class org.openjsse.javax.net.ssl.SSLParameters
+-keep class org.openjsse.javax.net.ssl.SSLSocket
+-keep class org.openjsse.net.ssl.OpenJSSE
 
--dontwarn org.joda.convert.FromString
--dontwarn org.joda.convert.ToString
+-dontwarn org.kobjects.**
+-dontwarn org.ksoap2.**
+-dontwarn org.kxml2.**
+-dontwarn org.xmlpull.v1.**
 
--keep class cc.imorning.silk.** { *; }
--keepnames class cc.imorning.silk.** { *; }
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+-dontwarn org.jivesoftware.**
+-keep class org.igniterealtime.jbosh.**{*;}
+-keep class org.jivesoftware.**{*;}
+-keep interface org.jivesoftware.** {*;}
+-keepclasseswithmembers class de.measite.smack.** {*;}
+
+-keepclasseswithmembers class * extends org.jivesoftware.smack.sasl.SASLMechanism {
+	public <init>(org.jivesoftware.smack.SASLAuthentication);
+}
