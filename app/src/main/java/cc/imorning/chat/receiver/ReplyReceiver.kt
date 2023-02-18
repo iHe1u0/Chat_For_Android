@@ -12,6 +12,9 @@ import cc.imorning.common.constant.Config
 import cc.imorning.database.entity.MessageBody
 import cc.imorning.database.entity.MessageEntity
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 class ReplyReceiver : BroadcastReceiver() {
 
@@ -25,17 +28,19 @@ class ReplyReceiver : BroadcastReceiver() {
         val toJidString = intent.getStringExtra(Config.Intent.Action.QUICK_REPLY_TO)
         val replyMessage = getMessageText(intent)
         if (null != replyMessage && toJidString != null) {
-            val gson = Gson()
-            MessageManager.sendMessage(
-                receiver = toJidString, message = gson.toJson(
-                    MessageEntity(
-                        sender = App.getTCPConnection().user.asEntityBareJidString(),
-                        receiver = toJidString,
-                        messageBody = MessageBody(text = replyMessage.toString())
+            MainScope().launch(Dispatchers.IO) {
+                val gson = Gson()
+                MessageManager.sendMessage(
+                    receiver = toJidString, message = gson.toJson(
+                        MessageEntity(
+                            sender = App.getTCPConnection().user.asEntityBareJidString(),
+                            receiver = toJidString,
+                            messageBody = MessageBody(text = replyMessage.toString())
 
+                        )
                     )
                 )
-            )
+            }
         }
         notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

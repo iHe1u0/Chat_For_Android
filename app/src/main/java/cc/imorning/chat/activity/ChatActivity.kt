@@ -23,6 +23,9 @@ import cc.imorning.chat.viewmodel.ChatViewModel
 import cc.imorning.chat.viewmodel.ChatViewModelFactory
 import cc.imorning.common.constant.ChatType
 import cc.imorning.common.constant.Config
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 private const val TAG = "ChatActivity"
 
@@ -43,8 +46,10 @@ class ChatActivity : ComponentActivity() {
         handleIntent(intent)
         viewModel.initStatusListener()
         viewModel.init()
-        viewModel.getHistoryMessages()
-        viewModel.initMessageListener()
+        MainScope().launch(Dispatchers.IO) {
+            viewModel.getHistoryMessages()
+            viewModel.initMessageListener()
+        }
         setContent {
             CompositionLocalProvider(
                 LocalBackPressedDispatcher provides this@ChatActivity.onBackPressedDispatcher

@@ -40,11 +40,12 @@ import cc.imorning.common.CommonApp
 import cc.imorning.common.utils.TimeUtils
 import cc.imorning.database.entity.MessageBody
 import cc.imorning.database.entity.MessageEntity
-import coil.compose.AsyncImage
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.jivesoftware.smack.packet.Presence
 import org.joda.time.DateTime
@@ -113,8 +114,10 @@ fun ConversationContent(
                                 image = picList.toString()
                             )
                         )
-                        val gson = Gson()
-                        MessageManager.sendMessage(chatUid, message = gson.toJson(message))
+                        MainScope().launch(Dispatchers.IO) {
+                            val gson = Gson()
+                            MessageManager.sendMessage(chatUid, message = gson.toJson(message))
+                        }
                         // Add message in UI
                         uiState.addMessageUI(
                             MessageEntity(
@@ -478,14 +481,14 @@ fun ChatItemBubble(
                     messageId = messageId
                 )
             }
-            if (!message.image.isNullOrEmpty()) {
-                Spacer(modifier = Modifier.height(4.dp))
-                AsyncImage(
-                    model = message.image,
-                    modifier = Modifier.background(backgroundBubbleColor),
-                    contentDescription = null
-                )
-            }
+            // if (!message.image.isNullOrEmpty()) {
+            //     Spacer(modifier = Modifier.height(4.dp))
+            //     AsyncImage(
+            //         model = message.image,
+            //         modifier = Modifier.background(backgroundBubbleColor),
+            //         contentDescription = null
+            //     )
+            // }
         }
     }
 }
