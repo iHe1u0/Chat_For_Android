@@ -16,9 +16,11 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jivesoftware.smack.ConnectionConfiguration
+import org.jivesoftware.smack.android.AndroidSmackInitializer
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration
 import org.jivesoftware.smackx.vcardtemp.packet.VCard
+import org.minidns.dnsserverlookup.android21.AndroidUsingLinkProperties
 import java.util.*
 import kotlin.system.exitProcess
 
@@ -28,6 +30,9 @@ open class CommonApp : Application() {
     override fun onCreate() {
         super.onCreate()
         application = this
+
+        AndroidUsingLinkProperties.setup(this)
+        AndroidSmackInitializer.initialize(this)
 
         // Security.addProvider(BouncyCastleProvider())
         // KeyStore.getInstance("BKS")

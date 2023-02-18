@@ -21,7 +21,6 @@ class App : CommonApp(), ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
-
         // Setup notification
         ChatNotificationManager.manager.setUpNewMessageNotificationChannels()
 
