@@ -10,8 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,6 +22,7 @@ import cc.imorning.chat.compontens.Avatar
 import cc.imorning.chat.compontens.ProfileProperty
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.ui.theme.ChatTypography
+import cc.imorning.chat.ui.view.ComposeDialogUtils
 import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.chat.utils.StatusHelper
 import cc.imorning.chat.viewmodel.DetailsViewModel
@@ -102,6 +102,21 @@ fun DetailsScreen(viewModel: DetailsViewModel) {
             }
         ) { contentPadding ->
             val scrollState = rememberScrollState()
+
+            var showRemoveDialog by remember { mutableStateOf(false) }
+            if (showRemoveDialog) {
+                ComposeDialogUtils.InfoAlertDialog(
+                    message = stringResource(R.string.message_delete_roster),
+                    confirmTitle = stringResource(id = R.string.ok),
+                    dismissTitle = stringResource(id = R.string.cancel),
+                    onConfirm = {
+                        viewModel.delete()
+                        (context as Activity).finish()
+                    },
+                    onDismiss = { showRemoveDialog = false }
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .padding(contentPadding)
@@ -160,10 +175,7 @@ fun DetailsScreen(viewModel: DetailsViewModel) {
 
                 if (!uiState.value.isMe()) {
                     OutlinedIconButton(
-                        onClick = {
-                            viewModel.delete()
-                            (context as Activity).finish()
-                        },
+                        onClick = { showRemoveDialog = true },
                         modifier = Modifier.fillMaxWidth(),
                         colors = IconButtonDefaults.filledIconButtonColors(
                             containerColor = Color.Red

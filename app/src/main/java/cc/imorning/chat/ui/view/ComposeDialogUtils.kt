@@ -75,9 +75,12 @@ object ComposeDialogUtils {
 
     @Composable
     fun InfoAlertDialog(
-        title: String = "提示",
-        message: String,
-        onDismiss: () -> Unit
+        title: String = stringResource(id = R.string.information),
+        message: String = "",
+        confirmTitle: String = "",
+        dismissTitle: String = "",
+        onDismiss: () -> Unit = {},
+        onConfirm: () -> Unit = {},
     ) {
         AlertDialog(
             onDismissRequest = onDismiss,
@@ -88,11 +91,16 @@ object ComposeDialogUtils {
                 Text(text = message)
             },
             confirmButton = {
-                TextButton(onClick = onDismiss)
+                TextButton(onClick = onConfirm)
                 {
-                    Text(text = "确定")
+                    Text(text = confirmTitle)
                 }
             },
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text(text = dismissTitle)
+                }
+            }
         )
     }
 

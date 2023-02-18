@@ -21,6 +21,7 @@ import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 
 private const val TAG = "Avatar"
 
@@ -70,6 +71,9 @@ fun GlideAvatar(avatarPath: String, onClick: () -> Unit) {
             .combinedClickable(
                 onClick = onClick
             ),
-        alignment = Alignment.Center
+        alignment = Alignment.Center,
+        requestBuilderTransform = {
+            it.diskCacheStrategy(DiskCacheStrategy.NONE)
+        }
     )
 }

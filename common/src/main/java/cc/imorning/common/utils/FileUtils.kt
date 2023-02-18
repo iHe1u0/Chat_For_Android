@@ -251,6 +251,27 @@ class FileUtils private constructor() {
         return picMessage.toString()
     }
 
+    fun createTempFile(tempFileName: String?): File {
+        var fileName = tempFileName
+        if (fileName.isNullOrEmpty()) {
+            fileName = "temp${System.currentTimeMillis()}"
+        }
+        val file = File(getCacheDir(), fileName)
+        if (file.exists()) {
+            file.delete()
+        }
+        file.deleteOnExit()
+        return file
+    }
+
+    fun copy(inputStream: InputStream, outputStream: FileOutputStream) {
+        val buf = ByteArray(8192)
+        var length: Int
+        while (inputStream.read(buf).also { length = it } != -1) {
+            outputStream.write(buf, 0, length)
+        }
+    }
+
     companion object {
         private const val TAG = "FileUtils"
 

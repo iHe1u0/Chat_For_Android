@@ -102,9 +102,11 @@ fun ContentScreen(viewModel: LoginViewModel) {
         ComposeDialogUtils.ShowWaitingDialog(title = stringResource(R.string.logging_in))
     }
     if (shouldShowErrorDialog.value == true) {
-        ComposeDialogUtils.InfoAlertDialog(message = message.value!!) {
-            viewModel.closeDialog()
-        }
+        ComposeDialogUtils.InfoAlertDialog(
+            message = message.value!!,
+            confirmTitle = stringResource(id = R.string.ok),
+            onConfirm = { viewModel.closeDialog() },
+        )
     }
     if (needStartActivity.value == true) {
         val intent = Intent(context, MainActivity::class.java)

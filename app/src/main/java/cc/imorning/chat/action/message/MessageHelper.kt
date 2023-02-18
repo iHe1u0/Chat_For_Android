@@ -7,6 +7,7 @@ import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.file.SendProgress
 import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.common.CommonApp
+import cc.imorning.common.constant.ServerConfig
 import cc.imorning.common.utils.Base64Utils
 import cc.imorning.common.utils.RingUtils
 import cc.imorning.database.db.RecentDB
@@ -19,11 +20,15 @@ import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jivesoftware.smack.chat2.Chat
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Message.Type
+import org.jivesoftware.smackx.filetransfer.FileTransfer
 import org.jivesoftware.smackx.filetransfer.FileTransferManager
+import org.jxmpp.jid.impl.JidCreate
+import org.jxmpp.jid.parts.Resourcepart
 import java.io.File
 
 private const val TAG = "MessageHelper"
@@ -127,16 +132,26 @@ object MessageHelper {
             return
         }
         if (ConnectionManager.isConnectionAvailable(connection)) {
-            val fileTransferManager = FileTransferManager.getInstanceFor(connection)
-            val outgoingFileTransfer =
-                fileTransferManager.createOutgoingFileTransfer(connection.user)
-            val negotiationProgress = SendProgress()
-            outgoingFileTransfer.sendFile(
-                file.absolutePath,
-                file.length(),
-                file.absolutePath.toString(),
-                negotiationProgress
+            val receiverUid = JidCreate.entityFullFrom(
+                JidCreate.entityBareFrom(receiver),
+                Resourcepart.from(ServerConfig.RESOURCE)
             )
+
+            val fileTransfer = FileTransferManager
+                .getInstanceFor(connection)
+                .createOutgoingFileTransfer(receiverUid)
+            val negotiationProgress = SendProgress()
+            Log.d(TAG, "sendFile: ${file.length()}")
+            fileTransfer.sendFile(file, "file")
+            MainScope().launch(Dispatchers.IO) {
+                while (!fileTransfer.isDone) {
+                    Log.w(TAG, "sendFile: [${fileTransfer.status}]:${fileTransfer.progress}")
+                    delay(1000)
+                }
+                if (fileTransfer.status == FileTransfer.Status.error) {
+                    Log.e(TAG, "send failed: ${fileTransfer.error}", fileTransfer.exception)
+                }
+            }
         }
 
     }

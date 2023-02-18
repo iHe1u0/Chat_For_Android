@@ -3,6 +3,9 @@ package cc.imorning.chat.file
 import android.util.Log
 import cc.imorning.chat.BuildConfig
 import cc.imorning.common.utils.FileUtils.Companion.instance
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import org.jivesoftware.smack.SmackException
 import org.jivesoftware.smackx.filetransfer.FileTransferListener
 import org.jivesoftware.smackx.filetransfer.FileTransferRequest
@@ -13,16 +16,18 @@ class ChatFileTransferListener : FileTransferListener {
 
     override fun fileTransferRequest(request: FileTransferRequest) {
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "sender: ${request.requestor}")
-            Log.d(TAG, "received file:  ${request.fileName}(${request.fileSize})")
+            Log.d(TAG, "file:  ${request.fileName}(${request.fileSize}KB)")
         }
         val incomingFileTransfer = request.accept()
-        val file = File(
-            instance.getFileDir(),
-            incomingFileTransfer.fileName
-        )
+        val file = File(instance.getFileDir(), File(incomingFileTransfer.fileName).name)
+        if (file.exists()) {
+            file.delete()
+        }
         try {
-            incomingFileTransfer.receiveFile(file)
+            MainScope().launch(Dispatchers.IO) {
+                incomingFileTransfer.receiveFile(file)
+                Log.d(TAG, "fileTransferRequest: Success")
+            }
         } catch (e: SmackException) {
             Log.e(TAG, "fileTransferRequest: ${e.message}", e)
         } catch (e: IOException) {

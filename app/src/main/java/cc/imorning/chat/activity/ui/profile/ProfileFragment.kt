@@ -134,6 +134,17 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
             ComposeDialogUtils.AboutDialog { showAboutDialog = false }
         }
 
+        var showExitDialog by remember { mutableStateOf(false) }
+        if (showExitDialog) {
+            ComposeDialogUtils.InfoAlertDialog(
+                message = stringResource(R.string.exit_message),
+                confirmTitle = stringResource(id = R.string.ok),
+                dismissTitle = stringResource(id = R.string.cancel),
+                onConfirm = { App.exitApp(0) },
+                onDismiss = { showExitDialog = false }
+            )
+        }
+
         var showSetNickNameDialog by remember { mutableStateOf(false) }
         var showSetPhoneNumberDialog by remember { mutableStateOf(false) }
         if (showSetNickNameDialog) {
@@ -197,6 +208,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                     )
                 }
             )
+
             GlideAvatar(avatarPath = avatarPath) {
                 singlePhotoPickerLauncher.launch(
                     PickVisualMediaRequest(
@@ -273,9 +285,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
         MenuItem(
             icon = R.drawable.ic_exit_to_app,
             title = stringResource(id = R.string.close),
-            action = {
-                App.exitApp(0)
-            }
+            action = { showExitDialog = true }
         )
     }
 }

@@ -14,6 +14,7 @@ class SendProgress : NegotiationProgress {
     }
 
     override fun outputStreamEstablished(stream: OutputStream) {
+        Log.d(TAG, "outputStreamEstablished: $stream")
     }
 
     override fun errorEstablishingStream(e: Exception) {

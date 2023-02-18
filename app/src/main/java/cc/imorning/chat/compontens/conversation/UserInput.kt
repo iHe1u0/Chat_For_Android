@@ -1,22 +1,10 @@
-/*
- * Copyright 2020 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package cc.imorning.chat.compontens.conversation
 
+import android.annotation.SuppressLint
 import android.os.Environment
+import android.provider.OpenableColumns
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.*
@@ -27,10 +15,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.outlined.AlternateEmail
-import androidx.compose.material.icons.outlined.InsertPhoto
-import androidx.compose.material.icons.outlined.Mood
-import androidx.compose.material.icons.outlined.RecordVoiceOver
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -46,6 +31,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.FirstBaseline
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.SemanticsPropertyKey
@@ -62,8 +48,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cc.imorning.chat.R
 import cc.imorning.chat.ui.view.ComposeDialogUtils.FunctionalityNotAvailablePopup
+import cc.imorning.common.utils.FileUtils
 import coil.compose.AsyncImage
-import java.io.File
+import java.io.*
 
 private const val TAG = "UserInput"
 
@@ -73,6 +60,7 @@ enum class InputSelector {
     EMOJI,
     RECORD,
     PICTURE,
+    FILE
 }
 
 enum class EmojiStickerSelector {
@@ -83,7 +71,7 @@ enum class EmojiStickerSelector {
 @Preview
 @Composable
 fun UserInputPreview() {
-    UserInput(onMessageSent = {}, onPictureSelected = {})
+    UserInput(onMessageSent = {}, onPictureSelected = {}, onSentFile = {})
 }
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
@@ -91,6 +79,7 @@ fun UserInputPreview() {
 fun UserInput(
     onMessageSent: (String) -> Unit,
     onPictureSelected: (MutableList<File>) -> Unit,
+    onSentFile: (File) -> Unit,
     modifier: Modifier = Modifier,
     resetScroll: () -> Unit = {},
 ) {
@@ -152,6 +141,12 @@ fun UserInput(
                 onPictureSelected = {
                     onPictureSelected(it)
                     sendButtonEnabled = it.size != 0
+                },
+                onFileSelected = {
+                    dismissKeyboard()
+                    if (it != null) {
+                        onSentFile(it)
+                    }
                 }
             )
         }
@@ -177,7 +172,8 @@ private fun SelectorExpanded(
     currentSelector: InputSelector,
     onCloseRequested: () -> Unit,
     onTextAdded: (String) -> Unit,
-    onPictureSelected: (MutableList<File>) -> Unit
+    onPictureSelected: (MutableList<File>) -> Unit,
+    onFileSelected: (File?) -> Unit
 ) {
     if (currentSelector == InputSelector.NONE) return
 
@@ -196,6 +192,7 @@ private fun SelectorExpanded(
             InputSelector.DM -> NotAvailablePopup(onCloseRequested)
             InputSelector.PICTURE -> PictureSelector(onPictureSelected)
             InputSelector.RECORD -> FunctionalityNotAvailablePanel()
+            InputSelector.FILE -> FileSelector(onFileSelected)
             else -> {
                 throw NotImplementedError()
             }
@@ -250,7 +247,7 @@ private fun UserInputSelector(
             onClick = { onSelectorChange(InputSelector.EMOJI) },
             icon = Icons.Outlined.Mood,
             selected = currentInputSelector == InputSelector.EMOJI,
-            description = "emoji表情"
+            description = "emoji"
         )
         InputSelectorButton(
             onClick = { onSelectorChange(InputSelector.DM) },
@@ -269,6 +266,12 @@ private fun UserInputSelector(
             icon = Icons.Outlined.InsertPhoto,
             selected = currentInputSelector == InputSelector.PICTURE,
             description = "图片消息"
+        )
+        InputSelectorButton(
+            onClick = { onSelectorChange(InputSelector.FILE) },
+            icon = Icons.Outlined.UploadFile,
+            selected = currentInputSelector == InputSelector.FILE,
+            description = "文件"
         )
 
         val border = if (!sendMessageEnabled) {
@@ -514,6 +517,36 @@ fun PictureSelector(pictures: (MutableList<File>) -> Unit) {
                 modifier = Modifier.width(2.dp)
             )
         }
+    }
+}
+
+@SuppressLint("Range")
+@Composable
+fun FileSelector(onFileSelected: (File?) -> Unit) {
+
+    val context = LocalContext.current
+    val contentResolver = context.contentResolver
+
+    val chooser =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
+            if (uri != null) {
+                val cursor = contentResolver.query(uri, null, null, null, null, null)
+                if (cursor != null && cursor.moveToFirst()) {
+                    val fileName =
+                        cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                    val tempFile = FileUtils.instance.createTempFile(fileName)
+                    contentResolver.openInputStream(uri)?.use { inputStream: InputStream ->
+                        tempFile.writeBytes(inputStream.readBytes())
+                        onFileSelected(tempFile)
+                    }
+                    cursor.close()
+                }
+            } else {
+                onFileSelected(null)
+            }
+        }
+    SideEffect {
+        chooser.launch("*/*")
     }
 }
 

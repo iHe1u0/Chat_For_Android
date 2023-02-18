@@ -58,6 +58,7 @@ class ChatConnectionListener : ConnectionListener {
         super.connectionClosed()
         reconnectionManager.abortPossiblyRunningReconnection()
         context.stopService(messageMonitor)
+        App.user = ""
     }
 
     /**
@@ -68,6 +69,7 @@ class ChatConnectionListener : ConnectionListener {
         super.connectionClosedOnError(e)
         context.stopService(messageMonitor)
         messageMonitor = null
+        App.user = ""
         if (e is XMPPException.StreamErrorException) {
             val loginActivity = Intent(context, LoginActivity::class.java)
             loginActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

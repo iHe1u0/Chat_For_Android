@@ -1,6 +1,7 @@
 package cc.imorning.database.utils
 
 import android.content.Context
+import cc.imorning.common.CommonApp
 import java.io.File
 
 /**
@@ -47,7 +48,11 @@ object DatabaseHelper {
      * /data/user/0/cc.imorning.chat/databases/md5.encode(jid)/
      */
     fun getDatabaseRootDir(context: Context, jid: String): String {
-        val userDir = jid.replace("@", "_")
+        var user = jid
+        if (user.isEmpty()) {
+            user = CommonApp.xmppTcpConnection.user.asEntityBareJidString()
+        }
+        val userDir = user.replace("@", "_")
         return context.getDatabasePath(userDir).path.plus(File.separator)
     }
 

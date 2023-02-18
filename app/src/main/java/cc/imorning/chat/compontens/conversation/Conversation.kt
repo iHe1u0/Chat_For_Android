@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import cc.imorning.chat.App
 import cc.imorning.chat.R
 import cc.imorning.chat.action.RosterAction
+import cc.imorning.chat.action.message.MessageHelper
 import cc.imorning.chat.action.message.MessageManager
 import cc.imorning.chat.activity.DetailsActivity
 import cc.imorning.chat.network.ConnectionManager
@@ -132,6 +133,9 @@ fun ConversationContent(
                     },
                     onPictureSelected = { picFiles ->
                         picList = picFiles
+                    },
+                    onSentFile = { file ->
+                        MessageHelper.sendFile(file, chatUid)
                     },
                     resetScroll = {
                         scope.launch {

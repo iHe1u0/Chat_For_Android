@@ -46,4 +46,6 @@
     <string name="email">Email</string>
     <string name="phone_number">Phone</string>
     <string name="no_pic">There are nothing.</string>
+    <string name="exit_message">Exit app?</string>
+    <string name="message_delete_roster">Do you really want to delete this roster?</string>
 </resources>
