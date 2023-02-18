@@ -18,7 +18,6 @@ import cc.imorning.database.dao.MessageDatabaseDao
 import cc.imorning.database.entity.MessageBody
 import cc.imorning.database.entity.MessageEntity
 import cc.imorning.database.utils.MessageDatabaseHelper
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -149,14 +148,9 @@ class ChatViewModel : ViewModel() {
 
     fun initMessageListener() {
         chatManager = ChatManager.getInstanceFor(connection)
-        incomingChatMessageListener = IncomingChatMessageListener { from, message, _ ->
+        incomingChatMessageListener = IncomingChatMessageListener { from, _, _ ->
             if (from.toString() == chatUserId.value) {
-                val messageEntity = Gson().fromJson(message.body, MessageEntity::class.java)
-                val newMessages = _historyMessages.value.toMutableList()
-                newMessages.add(index = 0, element = messageEntity)
-                viewModelScope.launch(Dispatchers.IO) {
-                    _historyMessages.emit(newMessages)
-                }
+                viewModelScope.launch(Dispatchers.IO) { getHistoryMessages() }
             }
         }
         chatManager.addIncomingListener(incomingChatMessageListener)
