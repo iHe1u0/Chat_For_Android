@@ -478,7 +478,6 @@ fun ChatItemBubble(
                     message = message.text,
                     isUserMe = isUserMe,
                     authorClicked = authorClicked,
-                    messageId = messageId
                 )
             }
             // if (!message.image.isNullOrEmpty()) {
@@ -498,7 +497,6 @@ fun ClickableMessage(
     message: String,
     isUserMe: Boolean,
     authorClicked: (String) -> Unit,
-    messageId: Long = 0L
 ) {
     val uriHandler = LocalUriHandler.current
 
