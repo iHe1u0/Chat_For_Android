@@ -8,6 +8,9 @@ import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.Config
 import cc.imorning.common.exception.OfflineException
 import cc.imorning.common.utils.NetworkUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.packet.Presence.Mode
 import org.jivesoftware.smack.packet.PresenceBuilder
@@ -352,7 +355,11 @@ object RosterAction {
             .buildPresence()
             .setMode(mode)
             .build()
-        connection.sendStanza(presence)
+        if (ConnectionManager.isConnectionAvailable(connection)) {
+            MainScope().launch(Dispatchers.IO) {
+                connection.sendStanza(presence)
+            }
+        }
     }
 
     /**
