@@ -54,11 +54,11 @@ class ProfileViewModel : ViewModel() {
             _nickName.value = name
         }
         if (currentUser.avatar != null) {
-            AvatarUtils.instance.saveAvatar()
+            AvatarUtils.saveAvatar()
             _avatarPath.value =
-                AvatarUtils.instance.getAvatarPath()
+                AvatarUtils.getAvatarPath()
         } else {
-            _avatarPath.value = AvatarUtils.instance.getOnlineAvatar(jid.toString())
+            _avatarPath.value = AvatarUtils.getOnlineAvatar(jid.toString())
         }
         // jid
         _jidString.value = jid.toString()

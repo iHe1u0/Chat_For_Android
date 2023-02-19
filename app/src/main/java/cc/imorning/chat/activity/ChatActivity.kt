@@ -45,8 +45,8 @@ class ChatActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, true)
         handleIntent(intent)
         viewModel.initStatusListener()
+        viewModel.init(this@ChatActivity)
         MainScope().launch(Dispatchers.IO) {
-            viewModel.init(this@ChatActivity)
             viewModel.getHistoryMessages()
             viewModel.initMessageListener()
         }

@@ -41,7 +41,7 @@ class FileUtils private constructor() {
      * get roster avatar file path with jidString
      */
     fun getAvatarCachePath(jid: String): File {
-        return File(getAvatarImagesDir(), MD5Utils.digest(jid)!!)
+        return File(getAvatarImagesDir(), jid)
     }
 
     /**

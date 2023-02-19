@@ -50,8 +50,9 @@ dependencies {
     // Zxing
     api 'com.google.zxing:core:3.5.1'
     // App center
-    api "com.microsoft.appcenter:appcenter-analytics:5.0.0"
+    // api "com.microsoft.appcenter:appcenter-analytics:5.0.0"
     api "com.microsoft.appcenter:appcenter-crashes:5.0.0"
+
     api 'androidx.core:core-ktx:1.9.0'
     api 'androidx.appcompat:appcompat:1.6.1'
     api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"

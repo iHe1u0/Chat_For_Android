@@ -99,7 +99,7 @@ class ContactViewModel(
                             )
                         )
                         // save avatar
-                        AvatarUtils.instance.saveAvatar(jidString)
+                        AvatarUtils.saveAvatar(jidString)
                     }
                     if (isNeedUpdateView) {
                         with(Dispatchers.Main) {

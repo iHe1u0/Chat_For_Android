@@ -33,7 +33,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import cc.imorning.chat.App
 import cc.imorning.chat.R
-import cc.imorning.chat.compontens.GlideAvatar
+import cc.imorning.chat.compontens.Avatar
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.ui.view.ComposeDialogUtils
 import cc.imorning.chat.ui.view.ToastUtils
@@ -209,7 +209,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                 }
             )
 
-            GlideAvatar(avatarPath = avatarPath) {
+            Avatar(avatarPath = avatarPath) {
                 singlePhotoPickerLauncher.launch(
                     PickVisualMediaRequest(
                         ActivityResultContracts.PickVisualMedia.ImageOnly

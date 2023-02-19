@@ -22,7 +22,7 @@ private const val TAG = "RecentMessageItem"
 @Composable
 fun RecentMessageItem(message: RecentMessage) {
     val context = LocalContext.current
-    val avatarPath = AvatarUtils.instance.getAvatarPath(message.user)
+    val avatarPath = AvatarUtils.getAvatarPath(message.user)
     Row(
         modifier = Modifier
             .fillMaxWidth()

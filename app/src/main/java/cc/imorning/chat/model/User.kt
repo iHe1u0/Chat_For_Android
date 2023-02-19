@@ -55,7 +55,7 @@ class User(private val jidString: String) {
         if (isConnectionAvailable(connection)) {
             try {
                 val vCard = VCardManager.getInstanceFor(connection).loadVCard(jid)
-                MainScope().launch(Dispatchers.IO) { AvatarUtils.instance.saveAvatar(jidString) }
+                MainScope().launch(Dispatchers.IO) { AvatarUtils.saveAvatar(jidString) }
                 nickName = vCard.nickName
                 email = vCard.emailHome
                 phoneNumber = vCard.getPhoneHome("VOICE")

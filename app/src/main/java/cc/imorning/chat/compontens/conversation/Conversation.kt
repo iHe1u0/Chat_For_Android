@@ -37,9 +37,7 @@ import cc.imorning.common.CommonApp
 import cc.imorning.common.utils.TimeUtils
 import cc.imorning.database.entity.MessageBody
 import cc.imorning.database.entity.MessageEntity
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.load.engine.DiskCacheStrategy
+import coil.compose.AsyncImage
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -266,6 +264,15 @@ fun MessagesUI(
                     isLastMessageByAuthor = isLastMessageByAuthor,
                 )
             }
+            // items(items = messages, key = { it.sendTime }) { message ->
+            //     MessageItemUI(
+            //         onAuthorClick = { uid -> navigateToProfile(uid) },
+            //         msg = message,
+            //         isUserMe = message.sender == App.user,
+            //          isFirstMessageByAuthor = true,
+            //          isLastMessageByAuthor = true
+            //     )
+            // }
         }
         JumpToBottom(
             // Only show if the scroller is not at the bottom
@@ -280,7 +287,6 @@ fun MessagesUI(
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MessageItemUI(
     onAuthorClick: (String) -> Unit,
@@ -299,8 +305,8 @@ fun MessageItemUI(
 
     Row(modifier = spaceBetweenAuthors) {
         if (isLastMessageByAuthor) {
-            GlideImage(
-                model = AvatarUtils.instance.getAvatarPath(msg.sender),
+            AsyncImage(
+                model = AvatarUtils.getAvatarPath(msg.sender),
                 modifier = Modifier
                     .clickable(onClick = { onAuthorClick(msg.sender) })
                     .padding(horizontal = 16.dp)
@@ -310,9 +316,9 @@ fun MessageItemUI(
                     .clip(CircleShape)
                     .align(Alignment.Top),
                 contentDescription = null,
-                requestBuilderTransform = {
-                    it.diskCacheStrategy(DiskCacheStrategy.NONE)
-                }
+                // requestBuilderTransform = {
+                //     it.diskCacheStrategy(DiskCacheStrategy.NONE)
+                // }
             )
         } else {
             // Space under avatar

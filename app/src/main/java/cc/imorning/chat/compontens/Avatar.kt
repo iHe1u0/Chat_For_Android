@@ -19,9 +19,6 @@ import cc.imorning.chat.R
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 
 private const val TAG = "Avatar"
 
@@ -57,23 +54,4 @@ fun Avatar(avatarPath: String, onClick: () -> Unit = {}) {
             }
         }
     }
-}
-
-@OptIn(ExperimentalFoundationApi::class, ExperimentalGlideComposeApi::class)
-@Composable
-fun GlideAvatar(avatarPath: String, onClick: () -> Unit) {
-    GlideImage(
-        model = avatarPath,
-        contentDescription = stringResource(id = R.string.desc_contact_item_avatar),
-        modifier = Modifier
-            .size(64.dp)
-            .clip(CircleShape)
-            .combinedClickable(
-                onClick = onClick
-            ),
-        alignment = Alignment.Center,
-        requestBuilderTransform = {
-            it.diskCacheStrategy(DiskCacheStrategy.NONE)
-        }
-    )
 }

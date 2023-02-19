@@ -2,13 +2,11 @@ package cc.imorning.chat.utils
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import cc.imorning.chat.App
 import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.network.ConnectionManager
-import cc.imorning.common.BuildConfig
 import cc.imorning.common.CommonApp
 import cc.imorning.common.R
 import cc.imorning.common.utils.FileUtils
@@ -20,7 +18,11 @@ import org.jivesoftware.smackx.vcardtemp.VCardManager
 import org.jxmpp.jid.impl.JidCreate
 import java.io.IOException
 
-class AvatarUtils private constructor() {
+private const val TAG = "AvatarUtils"
+
+private val connection = App.getTCPConnection()
+
+object AvatarUtils {
 
     private val connection: XMPPConnection = App.getTCPConnection()
 
@@ -36,6 +38,7 @@ class AvatarUtils private constructor() {
     /**
      * try to get and save avatar for user @param jid
      */
+    @Synchronized
     fun saveAvatar(user: String? = null) {
         if (!ConnectionManager.isConnectionAvailable(connection)) {
             return
@@ -46,12 +49,9 @@ class AvatarUtils private constructor() {
             if (avatarByte != null) {
                 if (user != null) {
                     saveRosterAvatar(user = user, avatarByte = avatarByte)
+                    return
                 }
-                saveRosterAvatar(connection.user.asEntityBareJidString(), avatarByte)
-            }
-        } else {
-            if (BuildConfig.DEBUG) {
-                Log.w(TAG, "avatar is null for $user")
+                saveRosterAvatar(App.user, avatarByte)
             }
         }
     }
@@ -66,7 +66,7 @@ class AvatarUtils private constructor() {
             }
             return FileUtils.instance.getAvatarCachePath(jidString).absolutePath
         }
-        return getOnlineAvatar("$jidString")
+        return getOnlineAvatar(jidString.orEmpty())
     }
 
     /**
@@ -92,12 +92,12 @@ class AvatarUtils private constructor() {
         // return BitmapFactory.decodeResource(Resources.getSystem(), R.drawable.ic_avatar)
     }
 
-    fun update(jid: String) {
+    fun update(jid: String? = null) {
         saveAvatar(user = jid)
     }
 
     @Throws(IOException::class)
-    private fun saveRosterAvatar(user: String, avatarByte: ByteArray) {
+    private fun saveRosterAvatar(user: String, avatarByte: ByteArray, test: Long = 0L) {
         val localCache = FileUtils.instance.getAvatarCachePath(user)
         MainScope().launch(Dispatchers.IO) {
             if (localCache.exists()) {
@@ -105,14 +105,5 @@ class AvatarUtils private constructor() {
             }
             localCache.writeBytes(avatarByte)
         }
-    }
-
-    companion object {
-        private const val TAG = "AvatarUtils"
-
-        val instance by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
-            AvatarUtils()
-        }
-
     }
 }

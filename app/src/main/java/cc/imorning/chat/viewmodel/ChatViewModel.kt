@@ -81,7 +81,7 @@ class ChatViewModel : ViewModel() {
     )
     val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
 
-    suspend fun init(context: Context) {
+    fun init(context: Context) {
         if (chatUserId.value.isNotEmpty()) {
             messageDatabaseDao = MessageDatabaseHelper.instance.getMessageDB(
                 context,
@@ -89,11 +89,11 @@ class ChatViewModel : ViewModel() {
                 App.user
             )!!.databaseDao()
             if (ConnectionManager.isConnectionAvailable()) {
+                AvatarUtils.update(App.user)
+                AvatarUtils.update(chatUserId.value)
                 viewModelScope.launch {
                     _userOrGroupName.value = RosterAction.getNickName(jidString = chatUserId.value)
                     _status.value = RosterAction.getRosterStatus(jidString = chatUserId.value)
-                    AvatarUtils.instance.update(App.user)
-                    AvatarUtils.instance.update(chatUserId.value)
                 }
             }
         }

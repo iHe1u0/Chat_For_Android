@@ -157,7 +157,7 @@ fun ContentScreen(viewModel: SearchViewModel) {
                             }
                         ) {
                             Avatar(
-                                avatarPath = AvatarUtils.instance.getAvatarPath(user.jid)
+                                avatarPath = AvatarUtils.getAvatarPath(user.jid)
                             ) {
 
                             }

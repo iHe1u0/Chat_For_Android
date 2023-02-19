@@ -24,7 +24,7 @@ fun VCardDialog(jidString: String) {
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Avatar(avatarPath = AvatarUtils.instance.getAvatarPath(jidString)) {
+        Avatar(avatarPath = AvatarUtils.getAvatarPath(jidString)) {
 
         }
         Column(

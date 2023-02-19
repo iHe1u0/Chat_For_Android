@@ -128,7 +128,7 @@ fun DetailsScreen(viewModel: DetailsViewModel) {
                         .padding(vertical = 8.dp, horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Avatar(avatarPath = AvatarUtils.instance.getAvatarPath(jidString = jid.value)) {}
+                    Avatar(avatarPath = AvatarUtils.getAvatarPath(jidString = jid.value)) {}
                     Column(modifier = Modifier.padding(start = 8.dp)) {
                         Text(
                             text = uiState.value.nickName(),
