@@ -8,7 +8,7 @@ private const val TAG = "RecentDatabaseDao"
 @Dao
 interface RecentDatabaseDao {
 
-    @Query("select * from ${DatabaseHelper.TABLE_RECENT_MESSAGE}")
+    @Query("select * from ${DatabaseHelper.TABLE_RECENT_MESSAGE} order by time desc")
     fun queryRecentMessage(): List<RecentMessageEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

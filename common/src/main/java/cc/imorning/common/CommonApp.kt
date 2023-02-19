@@ -24,7 +24,6 @@ import org.minidns.dnsserverlookup.android21.AndroidUsingLinkProperties
 import java.util.*
 import kotlin.system.exitProcess
 
-
 open class CommonApp : Application() {
 
     override fun onCreate() {
@@ -92,6 +91,8 @@ open class CommonApp : Application() {
             }
         }
     }
+
+
 }
 
 object ActivityCollector {

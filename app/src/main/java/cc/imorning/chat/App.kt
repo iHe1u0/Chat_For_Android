@@ -64,6 +64,7 @@ class App : CommonApp(), ImageLoaderFactory {
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
             .error(R.drawable.ic_default_avatar)
+            .bitmapFactoryMaxParallelism(6)
             .build()
     }
 
