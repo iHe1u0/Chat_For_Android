@@ -38,7 +38,7 @@ class MessageDatabaseHelper private constructor() {
         // use HashMap to cache MessageDB instance
         private lateinit var messageDBMap: MutableMap<String, MessageDB>
 
-        val instance: MessageDatabaseHelper?
+        val instance: MessageDatabaseHelper
             get() {
                 if (messageDatabaseHelper == null) {
                     synchronized(MessageDatabaseHelper::class.java) {
@@ -47,7 +47,7 @@ class MessageDatabaseHelper private constructor() {
                         }
                     }
                 }
-                return messageDatabaseHelper
+                return messageDatabaseHelper!!
             }
     }
 }

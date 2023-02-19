@@ -47,7 +47,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cc.imorning.chat.R
+import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.chat.ui.view.ComposeDialogUtils.FunctionalityNotAvailablePopup
+import cc.imorning.chat.ui.view.ToastUtils
 import cc.imorning.common.utils.FileUtils
 import coil.compose.AsyncImage
 import java.io.*
@@ -83,6 +85,7 @@ fun UserInput(
     modifier: Modifier = Modifier,
     resetScroll: () -> Unit = {},
 ) {
+    val context = LocalContext.current
     var currentInputSelector by rememberSaveable { mutableStateOf(InputSelector.NONE) }
     val dismissKeyboard = { currentInputSelector = InputSelector.NONE }
 
@@ -125,12 +128,19 @@ fun UserInput(
                 },
                 sendMessageEnabled = textState.text.isNotBlank() || sendButtonEnabled,
                 onMessageSent = {
-                    onMessageSent(textState.text)
-                    // Reset text field and close keyboard
-                    textState = TextFieldValue()
-                    // Move scroll to bottom
-                    resetScroll()
-                    dismissKeyboard()
+                    if (ConnectionManager.isConnectionAvailable()) {
+                        onMessageSent(textState.text)
+                        // Reset text field and close keyboard
+                        textState = TextFieldValue()
+                        // Move scroll to bottom
+                        resetScroll()
+                        dismissKeyboard()
+                    } else {
+                        ToastUtils.showMessage(
+                            context,
+                            context.getString(R.string.network_is_unavailable)
+                        )
+                    }
                 },
                 currentInputSelector = currentInputSelector
             )

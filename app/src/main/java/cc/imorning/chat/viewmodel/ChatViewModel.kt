@@ -12,7 +12,8 @@ import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.activity.DetailsActivity
 import cc.imorning.chat.network.ConnectionManager
-import cc.imorning.common.CommonApp
+import cc.imorning.chat.ui.state.ChatUiState
+import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.common.constant.ChatType
 import cc.imorning.database.dao.MessageDatabaseDao
 import cc.imorning.database.entity.MessageBody
@@ -69,17 +70,32 @@ class ChatViewModel : ViewModel() {
     val historyMessages: StateFlow<List<MessageEntity>>
         get() = _historyMessages.asStateFlow()
 
-    fun init() {
+    private val _uiState = MutableStateFlow(
+        ChatUiState(
+            nickName = "",
+            mode = Mode.xa,
+            avatarPath = "",
+            chatJid = chatUserId.value,
+            messageEntity = emptyList()
+        )
+    )
+    val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
+
+    suspend fun init(context: Context) {
         if (chatUserId.value.isNotEmpty()) {
-            messageDatabaseDao = MessageDatabaseHelper.instance!!.getMessageDB(
-                CommonApp.getContext(),
+            messageDatabaseDao = MessageDatabaseHelper.instance.getMessageDB(
+                context,
                 chatUserId.value,
                 App.user
             )!!.databaseDao()
-        }
-        if (ConnectionManager.isConnectionAvailable()) {
-            _userOrGroupName.value = RosterAction.getNickName(jidString = chatUserId.value)
-            _status.value = RosterAction.getRosterStatus(jidString = chatUserId.value)
+            if (ConnectionManager.isConnectionAvailable()) {
+                viewModelScope.launch {
+                    _userOrGroupName.value = RosterAction.getNickName(jidString = chatUserId.value)
+                    _status.value = RosterAction.getRosterStatus(jidString = chatUserId.value)
+                    AvatarUtils.instance.update(App.user)
+                    AvatarUtils.instance.update(chatUserId.value)
+                }
+            }
         }
     }
 

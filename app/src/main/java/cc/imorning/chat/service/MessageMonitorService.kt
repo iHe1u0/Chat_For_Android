@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import cc.imorning.chat.App
 import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.R
@@ -116,6 +117,11 @@ class MessageMonitorService : Service() {
             for (message in offlineMessages) {
                 if (message.type == Message.Type.chat) {
                     val messageEntity = gson.fromJson(message.body, MessageEntity::class.java)
+                    if (messageEntity == null) {
+                        if (BuildConfig.DEBUG) {
+                            Log.w(TAG, "NPE:$message")
+                        }
+                    }
                     MessageHelper.processMessage(messageEntity = messageEntity)
                 } else {
                     if (BuildConfig.DEBUG) {

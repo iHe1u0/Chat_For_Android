@@ -36,25 +36,22 @@ class AvatarUtils private constructor() {
     /**
      * try to get and save avatar for user @param jid
      */
-    fun saveAvatar(jidString: String? = null) {
+    fun saveAvatar(user: String? = null) {
         if (!ConnectionManager.isConnectionAvailable(connection)) {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "connection is not authenticated")
-            }
             return
         }
-        val vCard = RosterAction.getContactVCard(jidString)
+        val vCard = RosterAction.getContactVCard(user)
         if (vCard != null) {
             val avatarByte = vCard.avatar
             if (avatarByte != null) {
-                if (jidString != null) {
-                    saveContactAvatar(jidString = jidString, avatarByte = avatarByte)
+                if (user != null) {
+                    saveRosterAvatar(user = user, avatarByte = avatarByte)
                 }
-                saveContactAvatar(connection.user.asEntityBareJidString(), avatarByte)
+                saveRosterAvatar(connection.user.asEntityBareJidString(), avatarByte)
             }
         } else {
             if (BuildConfig.DEBUG) {
-                Log.w(TAG, "avatar is null for $jidString")
+                Log.w(TAG, "avatar is null for $user")
             }
         }
     }
@@ -70,20 +67,6 @@ class AvatarUtils private constructor() {
             return FileUtils.instance.getAvatarCachePath(jidString).absolutePath
         }
         return getOnlineAvatar("$jidString")
-    }
-
-    private fun saveContactAvatar(jidString: String, avatarByte: ByteArray) {
-        val localCache = FileUtils.instance.getAvatarCachePath(jidString)
-        MainScope().launch(Dispatchers.IO) {
-            if (localCache.exists()) {
-                localCache.delete()
-            }
-            try {
-                localCache.writeBytes(avatarByte)
-            } catch (e: IOException) {
-                Log.e(TAG, "saveContactAvatar failed", e)
-            }
-        }
     }
 
     /**
@@ -107,6 +90,21 @@ class AvatarUtils private constructor() {
         val drawable = ContextCompat.getDrawable(CommonApp.getContext(), R.drawable.ic_avatar)
         return drawable!!.toBitmap()
         // return BitmapFactory.decodeResource(Resources.getSystem(), R.drawable.ic_avatar)
+    }
+
+    fun update(jid: String) {
+        saveAvatar(user = jid)
+    }
+
+    @Throws(IOException::class)
+    private fun saveRosterAvatar(user: String, avatarByte: ByteArray) {
+        val localCache = FileUtils.instance.getAvatarCachePath(user)
+        MainScope().launch(Dispatchers.IO) {
+            if (localCache.exists()) {
+                localCache.delete()
+            }
+            localCache.writeBytes(avatarByte)
+        }
     }
 
     companion object {

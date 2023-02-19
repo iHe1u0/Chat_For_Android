@@ -1,7 +1,6 @@
 package cc.imorning.chat.compontens.conversation
 
 import android.content.Intent
-import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,12 +26,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cc.imorning.chat.App
-import cc.imorning.chat.R
 import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.action.message.MessageHelper
 import cc.imorning.chat.action.message.MessageManager
 import cc.imorning.chat.activity.DetailsActivity
-import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.chat.ui.view.ComposeDialogUtils.FunctionalityNotAvailablePopup
 import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.chat.utils.StatusHelper
@@ -97,14 +94,6 @@ fun ConversationContent(
                 )
                 UserInput(
                     onMessageSent = { content ->
-                        if (!ConnectionManager.isConnectionAvailable(connection)) {
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.network_is_unavailable),
-                                Toast.LENGTH_LONG
-                            ).show()
-                            return@UserInput
-                        }
                         // Send message
                         val message = MessageEntity(
                             sender = connection.user.asEntityBareJidString(),
@@ -277,19 +266,6 @@ fun MessagesUI(
                     isLastMessageByAuthor = isLastMessageByAuthor,
                 )
             }
-            // if (index == messages.size - 1) {
-            //     item {
-            //         DayHeader(
-            //             DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
-            //                 .parseDateTime("2018-09-27 11:11:11")
-            //         )
-            //     }
-            // } else if (index == 2) {
-            //     item {
-            //         DayHeader(DateTime.now())
-            //     }
-            // }
-            // for (index in messages.indices) { item {} }
         }
         JumpToBottom(
             // Only show if the scroller is not at the bottom

@@ -392,7 +392,11 @@ object RosterAction {
         if (ConnectionManager.isConnectionAvailable()) {
             val vCard =
                 VCardManager.getInstanceFor(connection).loadVCard(JidCreate.entityBareFrom(jid))
-            return vCard.emailHome.orEmpty()
+            var email = vCard.emailHome
+            if (email.isNullOrEmpty()) {
+                email = vCard.emailHome
+            }
+            return email.orEmpty()
         }
         return ""
     }
