@@ -95,6 +95,11 @@ class MessageFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        messageViewModel.updateView(false)
+    }
+
     override fun onDestroy() {
         messageViewModel.removeListener()
         super.onDestroy()
@@ -106,7 +111,7 @@ fun MessageScreen(viewModel: MessageViewModel) {
 
     val context = LocalContext.current
 
-    val messages = viewModel.messages.observeAsState()
+    val messages = viewModel.messages.collectAsState()
     val isRefreshing = viewModel.isRefreshing.collectAsState()
 
     val connectionStatus = ConnectionLiveData(context).observeAsState().value
@@ -148,9 +153,9 @@ fun MessageScreen(viewModel: MessageViewModel) {
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 // if recent messages is not null, then show them.
-                if (messages.value != null && messages.value!!.size > 0) {
+                if (messages.value != null && messages.value.size > 0) {
                     val lastMessage: MutableSet<String> = mutableSetOf()
-                    items(messages.value!!) { message ->
+                    items(messages.value) { message ->
                         // sort by same message.sender
                         if (!lastMessage.contains(message.user)) {
                             RecentMessageItem(message)

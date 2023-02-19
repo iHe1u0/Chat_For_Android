@@ -40,8 +40,8 @@ class MessageViewModel(
     private val _status = MutableStateFlow("ONLINE")
     val status: StateFlow<String> = _status
 
-    private val _messages = MutableLiveData<MutableList<RecentMessage>>()
-    val messages: MutableLiveData<MutableList<RecentMessage>> = _messages
+    private val _messages = MutableStateFlow(emptyList<RecentMessage>())
+    val messages: StateFlow<List<RecentMessage>> = _messages.asStateFlow()
 
     private var chatManager: ChatManager? = null
     private var incomingChatMessageListener: IncomingChatMessageListener? = null

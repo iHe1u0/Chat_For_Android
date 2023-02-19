@@ -10,7 +10,9 @@ object TimeUtils {
 
     private const val TAG = "TimeUtils"
 
-    private const val DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss"
+    const val DEFAULT_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss"
+    const val DEFAULT_DATE_FORMAT = "yyyy-MM-dd"
+    const val DEFAULT_TIME_FORMAT = "HH:mm:ss"
 
     /**
      * get format time
@@ -25,7 +27,7 @@ object TimeUtils {
      */
     fun getFormatDateTime(
         dateTime: DateTime,
-        format: String = DEFAULT_FORMAT,
+        format: String = DEFAULT_DATETIME_FORMAT,
         hoursOffset: Int = +8
     ): String {
         return DateTimeFormat.forPattern(format)
