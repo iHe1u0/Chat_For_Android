@@ -55,10 +55,12 @@ class LoginActivity : BaseActivity() {
         super.onResume()
         val permissions = mutableListOf<String>()
         permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+        permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         permissions.add(Manifest.permission.RECORD_AUDIO)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
             permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
+            permissions.add(Manifest.permission.READ_MEDIA_AUDIO)
         }
         if (permissions.isNotEmpty()) {
             PermissionUtils.requestPermission(this, permissions.toTypedArray())
