@@ -1,5 +1,6 @@
 package cc.imorning.chat.viewmodel
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -18,7 +19,7 @@ import org.jivesoftware.smack.sasl.SASLErrorException
 class LoginViewModel : ViewModel() {
 
     private val connection = App.getTCPConnection()
-    private val sessionManager = SessionManager(Config.LOGIN_INFO)
+    private lateinit var sessionManager: SessionManager
     private val account: MutableLiveData<String> by lazy {
         MutableLiveData("")
     }
@@ -41,15 +42,12 @@ class LoginViewModel : ViewModel() {
         MutableLiveData<Boolean>(false)
     }
 
-    private fun loadUser() {
+    fun loadUser(context: Context) {
+        sessionManager = SessionManager(context = context, sessionType = Config.LOGIN_INFO)
         if (sessionManager.fetchAccount() != null && sessionManager.fetchAuthToken() != null) {
             account.value = sessionManager.fetchAccount()
             token.value = sessionManager.fetchAuthToken()
         }
-    }
-
-    init {
-        loadUser()
     }
 
     fun setAccount(value: String) {

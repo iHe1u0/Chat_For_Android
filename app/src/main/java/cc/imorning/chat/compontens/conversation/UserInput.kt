@@ -1,7 +1,8 @@
 package cc.imorning.chat.compontens.conversation
 
 import android.annotation.SuppressLint
-import android.os.Environment
+import android.os.Build
+import android.provider.MediaStore
 import android.provider.OpenableColumns
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -47,6 +48,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cc.imorning.chat.R
+import cc.imorning.chat.file.Image
 import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.chat.ui.view.ComposeDialogUtils.FunctionalityNotAvailablePopup
 import cc.imorning.chat.ui.view.ToastUtils
@@ -474,59 +476,100 @@ fun EmojiSelector(
 @Composable
 fun PictureSelector(pictures: (MutableList<File>) -> Unit) {
 
-    val fileList =
-        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).listFiles()
-    if (fileList == null || fileList.isEmpty()) {
-        Box(
-            modifier = Modifier
-                .height(128.dp)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = stringResource(R.string.no_pic))
+    val context = LocalContext.current
+    val imageList = mutableListOf<Image>()
+    val collection =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+        } else {
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         }
-        return
+    val projection = arrayOf(
+        MediaStore.Images.Media._ID,
+        MediaStore.Images.Media.DISPLAY_NAME,
+        MediaStore.Images.Media.DATE_ADDED,
+        MediaStore.Images.Media.SIZE,
+        MediaStore.Images.Media.DATA
+    )
+    val sortOrder = "${MediaStore.Images.Media.DATE_ADDED} desc"
+    val query = context.contentResolver.query(
+        collection,
+        projection,
+        null,
+        null,
+        sortOrder
+    )
+    query?.also { cursor ->
+        val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
+        val nameColumn =
+            cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME)
+        val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.SIZE)
+        val uriColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+        while (cursor.moveToNext()) {
+            val id = cursor.getLong(idColumn)
+            val name = cursor.getString(nameColumn)
+            val size = cursor.getInt(sizeColumn)
+            val uri = cursor.getString(uriColumn)
+            imageList += Image(id, uri, name, size)
+        }
+        cursor.close()
+        query.close()
     }
-    val selectList = mutableListOf<File>()
-    var selectCount by remember { mutableStateOf(0) }
-
-    LazyRow {
-        items(count = fileList.size) {
-            Box {
-                var isSelected by rememberSaveable { mutableStateOf(false) }
-                AsyncImage(
-                    model = fileList[it],
-                    contentDescription = null,
-                    modifier = Modifier
-                        .height(128.dp)
-                        .combinedClickable(
-                            onClick = {
-                                isSelected = !isSelected
-                                if (isSelected) {
-                                    selectList.add(fileList[it])
-                                    selectCount++
-                                } else {
-                                    selectList.remove(fileList[it])
-                                    selectCount--
-                                }
-                                pictures(selectList)
-                            }
-                        ),
-                    contentScale = ContentScale.Crop
-                )
-                if (isSelected) {
-                    Icon(
-                        imageVector = Icons.Filled.CheckCircle,
+    if (imageList.isEmpty()) {
+        NoMediaScreen()
+    } else {
+        val selectList = mutableListOf<File>()
+        var selectCount by remember { mutableStateOf(0) }
+        LazyRow {
+            items(count = imageList.size) { index ->
+                Box {
+                    var isSelected by rememberSaveable { mutableStateOf(false) }
+                    AsyncImage(
+                        model = imageList[index].uri,
                         contentDescription = null,
-                        tint = Color.Magenta
+                        modifier = Modifier
+                            .height(128.dp)
+                            .combinedClickable(
+                                onClick = {
+                                    isSelected = !isSelected
+                                    if (isSelected) {
+                                        selectList.add(File(imageList[index].uri))
+                                        selectCount++
+                                    } else {
+                                        selectList.remove(File(imageList[index].uri))
+                                        selectCount--
+                                    }
+                                    pictures(selectList)
+                                }
+                            ),
+                        contentScale = ContentScale.Crop
                     )
+                    if (isSelected) {
+                        Icon(
+                            imageVector = Icons.Filled.CheckCircle,
+                            contentDescription = null,
+                            tint = Color.Magenta
+                        )
+                    }
                 }
+                Divider(
+                    color = Color.Blue,
+                    modifier = Modifier.width(2.dp)
+                )
             }
-            Divider(
-                color = Color.Blue,
-                modifier = Modifier.width(2.dp)
-            )
         }
+    }
+}
+
+@Composable
+fun NoMediaScreen() {
+    Box(
+        modifier = Modifier
+            .height(128.dp)
+            .fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text = stringResource(R.string.no_pic))
     }
 }
 

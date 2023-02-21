@@ -46,6 +46,7 @@ class LoginActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel.loadUser(this)
         setContent {
             LoginScreen(viewModel)
         }

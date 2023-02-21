@@ -2,17 +2,16 @@ package cc.imorning.common.utils
 
 import android.content.Context
 import android.content.SharedPreferences
-import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.Config
 
 class SessionManager(
+    context: Context,
     sessionType: String? = Config.DEFAULT_CONFIG
 ) {
 
-    private var preferences: SharedPreferences = CommonApp.getContext().getSharedPreferences(
+    private var preferences: SharedPreferences = context.getSharedPreferences(
         sessionType, Context.MODE_PRIVATE
     )
-
 
     companion object {
         private const val USER_NAME = "user_name"

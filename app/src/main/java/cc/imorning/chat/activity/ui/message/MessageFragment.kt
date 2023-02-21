@@ -56,7 +56,7 @@ private const val TAG = "MessageFragment"
 class MessageFragment : Fragment() {
 
     private val messageViewModel: MessageViewModel by activityViewModels {
-        val db = RecentDB.getInstance(CommonApp.getContext(), App.user)
+        val db = RecentDB.getInstance(requireContext(), App.user)
         MessageViewModelFactory(db.recentDatabaseDao())
     }
 
