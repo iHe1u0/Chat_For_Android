@@ -13,7 +13,7 @@ import cc.imorning.database.utils.DatabaseHelper
 
 @Database(
     entities = [RecentMessageEntity::class],
-    version = 5,
+    version = 6,
     exportSchema = true
 )
 @TypeConverters(CommonConverter::class)

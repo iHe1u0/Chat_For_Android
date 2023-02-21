@@ -1,7 +1,7 @@
 package cc.imorning.chat.compontens
 
-import android.content.Intent
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -11,32 +11,34 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import cc.imorning.chat.activity.ChatActivity
 import cc.imorning.chat.model.RecentMessage
 import cc.imorning.chat.utils.AvatarUtils
-import cc.imorning.common.constant.ChatType
-import cc.imorning.common.constant.Config
 import cc.imorning.common.utils.TimeUtils
 
 private const val TAG = "RecentMessageItem"
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun RecentMessageItem(message: RecentMessage) {
+fun RecentMessageItem(
+    message: RecentMessage,
+    onItemClick: (String) -> Unit,
+    onItemLongClick: (String) -> Unit
+) {
 
-    val context = LocalContext.current
     val avatarPath = AvatarUtils.getAvatarPath(message.user)
 
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .combinedClickable(
+            onClick = {
+                onItemClick(message.user)
+            },
+            onLongClick = {
+                onItemLongClick(message.user)
+            }
+        )) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    val chatActivity = Intent(context, ChatActivity::class.java)
-                    chatActivity.action = Config.Intent.Action.START_CHAT_FROM_APP
-                    chatActivity.putExtra(Config.Intent.Key.START_CHAT_JID, message.user)
-                    chatActivity.putExtra(Config.Intent.Key.START_CHAT_TYPE, ChatType.Type.Single)
-                    context.startActivity(chatActivity)
-                },
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -63,10 +65,10 @@ fun RecentMessageItem(message: RecentMessage) {
             val timeFormat = if (TimeUtils.isToday(time)) {
                 TimeUtils.DEFAULT_TIME_FORMAT
             } else {
-                TimeUtils.DEFAULT_DATETIME_FORMAT
+                TimeUtils.DEFAULT_DATE_FORMAT
             }
             Text(
-                text = TimeUtils.millisToDateTime(time).toLocalTime().toString(timeFormat),
+                text = TimeUtils.millisToDateTime(time).toLocalDateTime().toString(timeFormat),
                 maxLines = 1,
                 modifier = Modifier.padding(end = 2.dp)
             )
