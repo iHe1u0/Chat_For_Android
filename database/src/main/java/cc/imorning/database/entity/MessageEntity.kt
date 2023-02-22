@@ -41,7 +41,7 @@ data class MessageEntity(
 ) {
 
     override fun toString(): String {
-        return "[$sender]>[$receiver]:${messageBody.toString()}"
+        return "[$sender]>[$receiver]:$messageBody"
     }
 }
 

@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import cc.imorning.chat.App
 import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.R
@@ -18,6 +17,7 @@ import cc.imorning.chat.monitor.OutMessageListener
 import cc.imorning.chat.monitor.RosterListener
 import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.chat.utils.ChatNotificationManager
+import cc.imorning.database.entity.MessageBody
 import cc.imorning.database.entity.MessageEntity
 import com.google.gson.Gson
 import com.orhanobut.logger.Logger
@@ -116,11 +116,13 @@ class MessageMonitorService : Service() {
             val gson = Gson()
             for (message in offlineMessages) {
                 if (message.type == Message.Type.chat) {
-                    val messageEntity = gson.fromJson(message.body, MessageEntity::class.java)
+                    var messageEntity = gson.fromJson(message.body, MessageEntity::class.java)
                     if (messageEntity == null) {
-                        if (BuildConfig.DEBUG) {
-                            Log.w(TAG, "NPE:$message")
-                        }
+                        messageEntity = MessageEntity(
+                            sender = message.from.toString(),
+                            receiver = connection.user.asEntityBareJidString(),
+                            messageBody = MessageBody(text = message.body)
+                        )
                     }
                     MessageHelper.processMessage(messageEntity = messageEntity)
                 } else {

@@ -2,6 +2,7 @@ package cc.imorning.chat.action.message
 
 import android.util.Log
 import cc.imorning.chat.App
+import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.common.CommonApp
@@ -162,12 +163,16 @@ object MessageHelper {
      */
     private fun processChatMessage(messageEntity: MessageEntity, chat: Chat?) {
         with(messageEntity) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, this.toString())
+            }
             val nickName = RosterAction.getNickName(sender)
             val messageText = StringBuffer()
-            if (messageBody.text.isNotEmpty()) {
-                messageText.append(messageBody.text)
-            }
             if (messageBody.image.isNullOrEmpty()) {
+                if (messageBody.text.isNotEmpty()) {
+                    messageText.append(messageBody.text)
+                }
+            } else {
                 messageText.append("[图片]")
             }
             insertRecentMessage(
@@ -209,38 +214,48 @@ object MessageHelper {
         if (connection.isConnected && connection.isAuthenticated) {
             val sender = messageEntity.sender
             val receiver = messageEntity.receiver
-            val sendIsMe = sender == App.user
-            val messageDatabaseDao = MessageDatabaseHelper.instance!!.getMessageDB(
+            // if sender is me, we need to process something different with the other
+            val sendIsMe = sender == connection.user.asEntityBareJidString()
+            val messageDatabaseDao = MessageDatabaseHelper.instance.getMessageDB(
                 CommonApp.getContext(),
                 sender,
                 receiver
             )!!.databaseDao()
             with(messageEntity) {
                 MainScope().launch(Dispatchers.IO) {
-                    var imagePath = ""
-                    if (messageBody.image != null && messageBody.image!!.isNotEmpty()) {
-                        // TODO: save image and get file path
-                        messageBody.image!!.let {
-                            val firstPic = it.split(",")[0].replaceFirst("[", "")
-                            imagePath = firstPic.substring(0, firstPic.length - 1)
-                        }
-                    }
-                    messageDatabaseDao.insertMessage(
-                        MessageTable(
-                            sender = sender,
-                            receiver = receiver,
-                            message_type = messageType,
-                            send_time = sendTime,
-                            is_show = isShow,
-                            is_recall = isRecall,
-                            text = messageBody.text,
-                            image = imagePath,
-                            audio = messageBody.audio,
-                            video = messageBody.video,
-                            file = messageBody.file,
-                            action = messageBody.action
+                    // if image is empty,then only send text message
+                    if (messageBody.image.isNullOrEmpty()) {
+                        messageDatabaseDao.insertMessage(
+                            MessageTable(
+                                sender = sender,
+                                receiver = receiver,
+                                message_type = messageType,
+                                send_time = sendTime,
+                                is_show = isShow,
+                                is_recall = isRecall,
+                                text = messageBody.text
+                            )
                         )
-                    )
+                    } else {
+                        // if image is not empty,then the text is local path,and the image is sender path
+                        val imagePath = if (sendIsMe) {
+                            messageBody.text
+                        } else {
+                            messageBody.image
+                        }
+                        messageDatabaseDao.insertMessage(
+                            MessageTable(
+                                sender = sender,
+                                receiver = receiver,
+                                message_type = messageType,
+                                send_time = sendTime,
+                                is_show = isShow,
+                                is_recall = isRecall,
+                                text = "",
+                                image = imagePath
+                            )
+                        )
+                    }
                 }
             }
         }

@@ -29,7 +29,7 @@ object FileUtils {
         }
     }
 
-    fun getChatFolder(context: Context): File? {
+    fun getChatFileFolder(context: Context): File? {
         return context.getExternalFilesDir("chatFile")
 
     }

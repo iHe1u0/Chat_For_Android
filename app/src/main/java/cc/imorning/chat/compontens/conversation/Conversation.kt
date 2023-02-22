@@ -27,13 +27,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cc.imorning.chat.App
 import cc.imorning.chat.action.RosterAction
-import cc.imorning.chat.action.message.MessageHelper
 import cc.imorning.chat.action.message.MessageManager
 import cc.imorning.chat.activity.DetailsActivity
+import cc.imorning.chat.file.FileTransferUtils
 import cc.imorning.chat.ui.view.ComposeDialogUtils.FunctionalityNotAvailablePopup
 import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.chat.utils.StatusHelper
 import cc.imorning.common.CommonApp
+import cc.imorning.common.utils.FileUtils
 import cc.imorning.common.utils.TimeUtils
 import cc.imorning.database.entity.MessageBody
 import cc.imorning.database.entity.MessageEntity
@@ -41,6 +42,7 @@ import coil.compose.AsyncImage
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jivesoftware.smack.packet.Presence
 import org.joda.time.DateTime
@@ -91,42 +93,75 @@ fun ConversationContent(
                     scrollState = scrollState
                 )
                 UserInput(
-                    onMessageSent = { content ->
+                    onMessageSent = { textMessage ->
                         // Send message
-                        val message = MessageEntity(
-                            sender = connection.user.asEntityBareJidString(),
-                            receiver = chatUid,
-                            messageBody = MessageBody(
-                                text = content,
-                                image = picList.toString()
-                            )
-                        )
-                        MainScope().launch(Dispatchers.IO) {
-                            val gson = Gson()
-                            MessageManager.sendMessage(chatUid, message = gson.toJson(message))
-                        }
-                        // Add message in UI
-                        uiState.addMessageUI(
-                            MessageEntity(
-                                sender = authorMe.toString(),
+                        if (textMessage.isNotEmpty()) {
+                            val message = MessageEntity(
+                                sender = connection.user.asEntityBareJidString(),
                                 receiver = chatUid,
-                                messageBody = MessageBody(
-                                    text = content,
-                                    image = if (picList.isEmpty()) {
-                                        null
-                                    } else {
-                                        picList[0].absolutePath
-                                    }
+                                messageBody = MessageBody(text = textMessage)
+                            )
+                            uiState.addMessageUI(
+                                MessageEntity(
+                                    sender = authorMe.toString(),
+                                    receiver = chatUid,
+                                    messageBody = MessageBody(text = textMessage)
                                 )
                             )
-                        )
+                            MainScope().launch(Dispatchers.IO) {
+                                val gson = Gson()
+                                MessageManager.sendMessage(chatUid, message = gson.toJson(message))
+                            }
+                        }
+                        if (picList.isNotEmpty()) {
+                            picList.forEach { image ->
+                                uiState.addMessageUI(
+                                    MessageEntity(
+                                        sender = authorMe.toString(),
+                                        receiver = chatUid,
+                                        messageBody = MessageBody(
+                                            image = image.absolutePath
+                                        )
+                                    )
+                                )
+                                val fileRec = File(FileUtils.getChatFileFolder(context), image.name)
+                                val message =
+                                    MessageEntity(
+                                        sender = connection.user.asEntityBareJidString(),
+                                        receiver = chatUid,
+                                        messageBody = MessageBody(
+                                            text = image.absolutePath,
+                                            image = fileRec.absolutePath
+                                        )
+                                    )
+                                MainScope().launch(Dispatchers.IO) {
+                                    FileTransferUtils.sendFile(
+                                        connection,
+                                        chatUid,
+                                        image,
+                                        FileTransferUtils.FileType.STICKER.name
+                                    )
+                                    delay(1500)
+                                    val gson = Gson()
+                                    MessageManager.sendMessage(
+                                        chatUid,
+                                        message = gson.toJson(message)
+                                    )
+                                }
+                            }
+                        }
                         picList.removeAll(picList)
                     },
-                    onPictureSelected = { picFiles ->
-                        picList = picFiles
+                    onPictureSelected = {
+                        picList = it
                     },
                     onSentFile = { file ->
-                        MessageHelper.sendFile(file, chatUid)
+                        FileTransferUtils.sendFile(
+                            connection,
+                            chatUid,
+                            file = file,
+                            FileTransferUtils.FileType.FILE.name
+                        )
                     },
                     resetScroll = {
                         scope.launch {
@@ -264,15 +299,6 @@ fun MessagesUI(
                     isLastMessageByAuthor = isLastMessageByAuthor,
                 )
             }
-            // items(items = messages, key = { it.sendTime }) { message ->
-            //     MessageItemUI(
-            //         onAuthorClick = { uid -> navigateToProfile(uid) },
-            //         msg = message,
-            //         isUserMe = message.sender == App.user,
-            //          isFirstMessageByAuthor = true,
-            //          isLastMessageByAuthor = true
-            //     )
-            // }
         }
         JumpToBottom(
             // Only show if the scroller is not at the bottom
@@ -316,9 +342,6 @@ fun MessageItemUI(
                     .clip(CircleShape)
                     .align(Alignment.Top),
                 contentDescription = null,
-                // requestBuilderTransform = {
-                //     it.diskCacheStrategy(DiskCacheStrategy.NONE)
-                // }
             )
         } else {
             // Space under avatar
@@ -352,7 +375,6 @@ fun AuthorAndTextMessage(
         }
         ChatItemBubble(
             message = msg.messageBody,
-            messageId = msg.sendTime,
             isUserMe = isUserMe,
             authorClicked = authorClicked
         )
@@ -441,7 +463,6 @@ private fun RowScope.DayHeaderLine() {
 @Composable
 fun ChatItemBubble(
     message: MessageBody,
-    messageId: Long,
     isUserMe: Boolean,
     authorClicked: (String) -> Unit
 ) {
@@ -462,14 +483,14 @@ fun ChatItemBubble(
                     authorClicked = authorClicked,
                 )
             }
-            // if (!message.image.isNullOrEmpty()) {
-            //     Spacer(modifier = Modifier.height(4.dp))
-            //     AsyncImage(
-            //         model = message.image,
-            //         modifier = Modifier.background(backgroundBubbleColor),
-            //         contentDescription = null
-            //     )
-            // }
+            if (!message.image.isNullOrEmpty()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                AsyncImage(
+                    model = message.image,
+                    modifier = Modifier.background(backgroundBubbleColor),
+                    contentDescription = null
+                )
+            }
         }
     }
 }

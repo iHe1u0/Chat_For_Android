@@ -2,6 +2,7 @@ package cc.imorning.chat.file
 
 import android.util.Log
 import cc.imorning.chat.BuildConfig
+import cc.imorning.chat.ui.view.ToastUtils
 import cc.imorning.common.CommonApp
 import cc.imorning.common.utils.FileUtils
 import kotlinx.coroutines.Dispatchers
@@ -16,23 +17,14 @@ import java.io.IOException
 class ChatFileTransferListener : FileTransferListener {
 
     override fun fileTransferRequest(request: FileTransferRequest) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "file:  ${request.fileName}(${request.fileSize}KB)")
-        }
         val incomingFileTransfer = request.accept()
         val file = File(
-            FileUtils.getChatFolder(CommonApp.getContext()),
+            FileUtils.getChatFileFolder(CommonApp.getContext()),
             File(incomingFileTransfer.fileName).name
         )
-        if (file.exists()) {
-            file.delete()
-        }
         try {
             MainScope().launch(Dispatchers.IO) {
                 incomingFileTransfer.receiveFile(file)
-                if (BuildConfig.DEBUG) {
-                    Log.i(TAG, "file [${file.absolutePath}] has been saved")
-                }
             }
         } catch (e: SmackException) {
             Log.e(TAG, "fileTransferRequest: ${e.message}", e)

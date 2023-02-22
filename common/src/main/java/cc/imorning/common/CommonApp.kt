@@ -17,6 +17,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jivesoftware.smack.ConnectionConfiguration
+import org.jivesoftware.smack.ReconnectionManager
 import org.jivesoftware.smack.android.AndroidSmackInitializer
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration
@@ -66,6 +67,9 @@ open class CommonApp : Application() {
         configurationBuilder.setKeyManager(null)
         configurationBuilder.setConnectTimeout(10 * 1000)
         xmppTcpConnection = XMPPTCPConnection(configurationBuilder.build())
+        // xmppTcpConnection.setUseStreamManagement(true)
+        // xmppTcpConnection.setUseStreamManagementResumption(true)
+        ReconnectionManager.setDefaultReconnectionPolicy(ReconnectionManager.ReconnectionPolicy.FIXED_DELAY);
 
     }
 
