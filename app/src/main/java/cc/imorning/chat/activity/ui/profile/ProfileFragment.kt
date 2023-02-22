@@ -55,7 +55,7 @@ class ProfileFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         MainScope().launch(Dispatchers.IO) {
-            viewModel.updateUserConfigure()
+            viewModel.updateUserConfigure(context)
         }
     }
 
@@ -168,7 +168,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                         )
                     } else {
                         showSetNickNameDialog = false
-                        profileViewModel.updateNickName(newName)
+                        profileViewModel.updateNickName(context, newName)
                     }
                 },
                 onCancel = { showSetNickNameDialog = false }
@@ -182,7 +182,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                 negativeButton = stringResource(id = R.string.cancel),
                 onConfirm = {
                     showSetPhoneNumberDialog = false
-                    profileViewModel.updatePhoneNumber(it)
+                    profileViewModel.updatePhoneNumber(context, it)
                 },
                 onCancel = { showSetPhoneNumberDialog = false }
             )

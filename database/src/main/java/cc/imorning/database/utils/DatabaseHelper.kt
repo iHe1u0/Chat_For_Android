@@ -52,9 +52,10 @@ object DatabaseHelper {
         if (user.isEmpty()) {
             if (CommonApp.xmppTcpConnection.user != null) {
                 user = CommonApp.xmppTcpConnection.user.asEntityBareJidString()
-            } else {
-                CommonApp.exitApp(-1)
             }
+        }
+        if (user.isEmpty()){
+            CommonApp.exitApp(-1)
         }
         val userDir = user.replace("@", "_")
         return context.getDatabasePath(userDir).path.plus(File.separator)

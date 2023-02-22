@@ -1,5 +1,6 @@
 package cc.imorning.common.utils
 
+import android.content.Context
 import android.util.Base64
 import android.util.Log
 import cc.imorning.common.BuildConfig
@@ -65,11 +66,11 @@ object Base64Utils {
      *
      * @return file or null if failed or fileString is null
      */
-    fun decodeStringToFile(fileString: String): File? {
+    fun decodeStringToFile(context: Context, fileString: String): File? {
         if (fileString.isEmpty() || fileString.isBlank()) {
             return null
         }
-        val file = FileUtils.instance.getChatMessageCache(MD5Utils.digest(fileString))
+        val file = FileUtils.getChatMessageCache(context, MD5Utils.digest(fileString))
         if (file.exists()) {
             file.delete()
         }

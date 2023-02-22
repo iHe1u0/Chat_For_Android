@@ -32,8 +32,8 @@ fun RosterItem(
     val context = LocalContext.current
     val jidString = roster.jid
     val nickname = roster.nick
-    var avatarPath = AvatarUtils.getAvatarPath(jidString)
-    if (!AvatarUtils.hasAvatarCache(jidString)) {
+    var avatarPath = AvatarUtils.getAvatarPath(user = jidString)
+    if (!AvatarUtils.hasAvatarCache(user = jidString)) {
         avatarPath = AvatarUtils.getOnlineAvatar(jidString)
     }
     TextButton(

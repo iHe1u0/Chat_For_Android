@@ -8,11 +8,11 @@ import cc.imorning.chat.App
 import cc.imorning.chat.BuildConfig
 import cc.imorning.chat.R
 import cc.imorning.chat.action.RosterAction
+import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.chat.ui.view.ToastUtils
 import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.chat.utils.StatusHelper
 import cc.imorning.common.utils.FileUtils
-import cc.imorning.common.utils.NetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,28 +37,29 @@ class ProfileViewModel : ViewModel() {
     val jidString: StateFlow<String> = _jidString
     val status: StateFlow<String> = _status
 
-    suspend fun updateUserConfigure() {
-        if (!connection.isConnected || !connection.isAuthenticated || NetworkUtils.isNetworkNotConnected()) {
+    fun updateUserConfigure(context: Context) {
+        if (!ConnectionManager.isConnectionAvailable(connection = connection)) {
             if (BuildConfig.DEBUG) {
                 Log.w(TAG, "get user info failed cause connection in error status")
             }
             return
         }
-        val vCard = VCardManager.getInstanceFor(connection)
         val jid = connection.user.asBareJid()
-        val currentUser = vCard.loadVCard()
+        val currentUser = RosterAction.getVCard()
         val name = RosterAction.getNickName()
         if (name.isEmpty()) {
             _nickName.value = jid.toString()
         } else {
             _nickName.value = name
         }
-        if (currentUser.avatar != null) {
-            AvatarUtils.saveAvatar()
-            _avatarPath.value =
-                AvatarUtils.getAvatarPath()
-        } else {
-            _avatarPath.value = AvatarUtils.getOnlineAvatar(jid.toString())
+        if (currentUser != null) {
+            if (currentUser.avatar != null) {
+                AvatarUtils.saveAvatar(context)
+                _avatarPath.value =
+                    AvatarUtils.getAvatarPath(context)
+            } else {
+                _avatarPath.value = AvatarUtils.getOnlineAvatar(jid.toString())
+            }
         }
         // jid
         _jidString.value = jid.toString()
@@ -76,7 +77,7 @@ class ProfileViewModel : ViewModel() {
     fun updateAvatar(context: Context, path: String) {
         val file = File(path)
         if (file.exists() && connection.isAuthenticated) {
-            val avatarFile: File = FileUtils.instance.compressImage(file)
+            val avatarFile: File = FileUtils.compressImage(context, file)
             if (avatarFile.length() / 1024 > 1024) {
                 ToastUtils.showMessage(context, context.getString(R.string.file_too_large))
                 return
@@ -84,7 +85,7 @@ class ProfileViewModel : ViewModel() {
             viewModelScope.launch(Dispatchers.IO) {
                 val vCardManager = VCardManager.getInstanceFor(connection)
                 val vCard = vCardManager.loadVCard()
-                vCard.avatar = FileUtils.instance.getFileBytes(avatarFile)
+                vCard.avatar = FileUtils.getFileBytes(avatarFile)
                 try {
                     vCardManager.saveVCard(vCard)
                 } catch (e: Exception) {
@@ -92,22 +93,22 @@ class ProfileViewModel : ViewModel() {
                         Log.e(TAG, "updateAvatar: ${e.message}", e)
                     }
                 }
-                updateUserConfigure()
+                updateUserConfigure(context)
             }
         }
     }
 
-    fun updateNickName(newName: String) {
+    fun updateNickName(context: Context, newName: String) {
         RosterAction.updateNickName(newName)
         viewModelScope.launch(Dispatchers.IO) {
-            updateUserConfigure()
+            updateUserConfigure(context)
         }
     }
 
-    fun updatePhoneNumber(newPhoneNum: String) {
+    fun updatePhoneNumber(context: Context,newPhoneNum: String) {
         RosterAction.updatePhoneNumber(newPhoneNum)
         viewModelScope.launch(Dispatchers.IO) {
-            updateUserConfigure()
+            updateUserConfigure(context)
         }
     }
 

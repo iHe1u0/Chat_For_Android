@@ -2,7 +2,8 @@ package cc.imorning.chat.file
 
 import android.util.Log
 import cc.imorning.chat.BuildConfig
-import cc.imorning.common.utils.FileUtils.Companion.instance
+import cc.imorning.common.CommonApp
+import cc.imorning.common.utils.FileUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -19,7 +20,10 @@ class ChatFileTransferListener : FileTransferListener {
             Log.d(TAG, "file:  ${request.fileName}(${request.fileSize}KB)")
         }
         val incomingFileTransfer = request.accept()
-        val file = File(instance.getFileDir(), File(incomingFileTransfer.fileName).name)
+        val file = File(
+            FileUtils.getChatFolder(CommonApp.getContext()),
+            File(incomingFileTransfer.fileName).name
+        )
         if (file.exists()) {
             file.delete()
         }

@@ -26,7 +26,6 @@ abstract class RecentDB : RoomDatabase() {
         private lateinit var recentDB: RecentDB
         fun getInstance(context: Context, jid: String): RecentDB {
             if (!this::recentDB.isInitialized) {
-                //创建的数据库的实例
                 recentDB = Room.databaseBuilder(
                     CommonApp.getContext(),
                     RecentDB::class.java,

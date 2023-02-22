@@ -587,7 +587,8 @@ fun FileSelector(onFileSelected: (File?) -> Unit) {
                 if (cursor != null && cursor.moveToFirst()) {
                     val fileName =
                         cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-                    val tempFile = FileUtils.instance.createTempFile(fileName)
+                    val tempFile =
+                        FileUtils.createTempFile(context = context, tempFileName = fileName)
                     contentResolver.openInputStream(uri)?.use { inputStream: InputStream ->
                         tempFile.writeBytes(inputStream.readBytes())
                         onFileSelected(tempFile)

@@ -23,7 +23,7 @@
     <string name="app_is_running">App is running</string>
     <string name="network_is_unavailable">Network has been disconnected</string>
     <string name="logging_in">Logging in</string>
-    <string name="register">register</string>
+    <string name="register">Register</string>
     <string name="forget_password">Forget password?</string>
     <string name="change_mode">Change mode</string>
     <string name="add_roster_nick">Add nick name for friend</string>
@@ -48,4 +48,5 @@
     <string name="no_pic">There are nothing.</string>
     <string name="exit_message">Exit app?</string>
     <string name="message_delete_roster">Do you really want to delete this roster?</string>
+    <string name="confirm_password">Repeat password</string>
 </resources>

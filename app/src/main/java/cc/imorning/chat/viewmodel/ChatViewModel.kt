@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jivesoftware.smack.chat2.ChatManager
 import org.jivesoftware.smack.chat2.IncomingChatMessageListener
 import org.jivesoftware.smack.chat2.OutgoingChatMessageListener
@@ -89,8 +90,8 @@ class ChatViewModel : ViewModel() {
                 App.user
             )!!.databaseDao()
             if (ConnectionManager.isConnectionAvailable()) {
-                AvatarUtils.update(App.user)
-                AvatarUtils.update(chatUserId.value)
+                AvatarUtils.update(context, App.user)
+                AvatarUtils.update(context, chatUserId.value)
                 viewModelScope.launch {
                     _userOrGroupName.value = RosterAction.getNickName(jidString = chatUserId.value)
                     _status.value = RosterAction.getRosterStatus(jidString = chatUserId.value)
@@ -121,7 +122,7 @@ class ChatViewModel : ViewModel() {
                     )
                 }
             }
-            with(Dispatchers.Main) {
+            withContext(Dispatchers.Main) {
                 _historyMessages.emit(historyMsg)
             }
         }

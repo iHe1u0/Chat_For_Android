@@ -41,7 +41,7 @@ class App : CommonApp(), ImageLoaderFactory {
         private const val TAG = "App"
         var user: String = ""
         fun exitApp(status: Int = 0) {
-            FileUtils.instance.cleanCache()
+            FileUtils.cleanCache(getContext())
             getContext().stopService(
                 Intent(
                     getContext(),
@@ -56,7 +56,6 @@ class App : CommonApp(), ImageLoaderFactory {
          * return tcp connection
          */
         fun getTCPConnection(): XMPPTCPConnection {
-            xmppTcpConnection.replyTimeout = 10 * 1000
             return xmppTcpConnection
         }
     }

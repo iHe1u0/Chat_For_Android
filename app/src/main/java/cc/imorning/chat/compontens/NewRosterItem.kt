@@ -28,7 +28,7 @@ fun NewRosterItem(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Avatar(avatarPath = AvatarUtils.getAvatarPath(roster.jid)) {
+            Avatar(avatarPath = AvatarUtils.getAvatarPath(user =roster.jid)) {
 
             }
             Text(

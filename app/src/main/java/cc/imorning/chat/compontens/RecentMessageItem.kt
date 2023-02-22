@@ -25,7 +25,7 @@ fun RecentMessageItem(
     onItemLongClick: (String) -> Unit
 ) {
 
-    val avatarPath = AvatarUtils.getAvatarPath(message.user)
+    val avatarPath = AvatarUtils.getAvatarPath(user =message.user)
 
     Box(modifier = Modifier
         .fillMaxWidth()

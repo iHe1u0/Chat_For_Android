@@ -18,7 +18,7 @@ data class RecentMessage(
     init {
         if (ConnectionManager.isConnectionAvailable(App.getTCPConnection())) {
             MainScope().launch(Dispatchers.IO) {
-                AvatarUtils.saveAvatar(user)
+                AvatarUtils.saveAvatar(user = user)
             }
         }
     }

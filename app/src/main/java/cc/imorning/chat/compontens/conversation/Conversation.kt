@@ -306,7 +306,7 @@ fun MessageItemUI(
     Row(modifier = spaceBetweenAuthors) {
         if (isLastMessageByAuthor) {
             AsyncImage(
-                model = AvatarUtils.getAvatarPath(msg.sender),
+                model = AvatarUtils.getAvatarPath(user = msg.sender),
                 modifier = Modifier
                     .clickable(onClick = { onAuthorClick(msg.sender) })
                     .padding(horizontal = 16.dp)

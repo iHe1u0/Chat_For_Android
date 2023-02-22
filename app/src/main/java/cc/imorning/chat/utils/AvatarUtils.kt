@@ -1,5 +1,6 @@
 package cc.imorning.chat.utils
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.core.content.ContextCompat
@@ -31,42 +32,46 @@ object AvatarUtils {
      *
      * @return true if cached or false for any other case.
      */
-    fun hasAvatarCache(jid: String): Boolean {
-        return FileUtils.instance.isFileExist(FileUtils.instance.getAvatarCachePath(jid).absolutePath)
+    fun hasAvatarCache(context: Context = CommonApp.getContext(), user: String): Boolean {
+        return FileUtils.isFileExist(FileUtils.getAvatarCachePath(context, user).absolutePath)
     }
 
     /**
      * try to get and save avatar for user @param jid
      */
     @Synchronized
-    fun saveAvatar(user: String? = null) {
+    fun saveAvatar(context: Context = CommonApp.getContext(), user: String? = null) {
         if (!ConnectionManager.isConnectionAvailable(connection)) {
             return
         }
-        val vCard = RosterAction.getContactVCard(user)
+        val vCard = RosterAction.getVCard(user)
         if (vCard != null) {
             val avatarByte = vCard.avatar
             if (avatarByte != null) {
                 if (user != null) {
-                    saveRosterAvatar(user = user, avatarByte = avatarByte)
+                    saveRosterAvatar(context, user, avatarByte)
                     return
                 }
-                saveRosterAvatar(App.user, avatarByte)
+                saveRosterAvatar(context, App.user, avatarByte)
             }
         }
     }
 
-    fun getAvatarPath(jidString: String? = null): String {
+    fun getAvatarPath(context: Context = CommonApp.getContext(), user: String? = null): String {
         if (ConnectionManager.isConnectionAvailable(connection)) {
-            if (jidString == null) {
-                return FileUtils.instance.getAvatarCachePath(App.user).absolutePath
+            if (user == null) {
+                return FileUtils.getAvatarCachePath(context, App.user).absolutePath
             }
-            if (!hasAvatarCache(jidString)) {
-                saveAvatar(jidString)
+            if (!hasAvatarCache(context, user)) {
+                saveAvatar(context, user)
             }
-            return FileUtils.instance.getAvatarCachePath(jidString).absolutePath
+            return FileUtils.getAvatarCachePath(context, user).absolutePath
+        } else {
+            if (!user.isNullOrEmpty() && hasAvatarCache(context, user)) {
+                return FileUtils.getAvatarCachePath(context, user).absolutePath
+            }
         }
-        return getOnlineAvatar(jidString.orEmpty())
+        return getOnlineAvatar(user.orEmpty())
     }
 
     /**
@@ -92,13 +97,17 @@ object AvatarUtils {
         // return BitmapFactory.decodeResource(Resources.getSystem(), R.drawable.ic_avatar)
     }
 
-    fun update(jid: String? = null) {
-        saveAvatar(user = jid)
+    fun update(context: Context, user: String? = null) {
+        saveAvatar(context, user)
     }
 
     @Throws(IOException::class)
-    private fun saveRosterAvatar(user: String, avatarByte: ByteArray, test: Long = 0L) {
-        val localCache = FileUtils.instance.getAvatarCachePath(user)
+    private fun saveRosterAvatar(
+        context: Context,
+        user: String,
+        avatarByte: ByteArray,
+    ) {
+        val localCache = FileUtils.getAvatarCachePath(context, user)
         MainScope().launch(Dispatchers.IO) {
             if (localCache.exists()) {
                 localCache.delete()

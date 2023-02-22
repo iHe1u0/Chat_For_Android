@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import cc.imorning.chat.App
 import cc.imorning.chat.BuildConfig
@@ -66,7 +67,7 @@ class ChatConnectionListener : ConnectionListener {
      * org.jivesoftware.smack.XMPPException$StreamErrorException  >>> Close cause sign in elsewhere
      */
     override fun connectionClosedOnError(e: Exception?) {
-        super.connectionClosedOnError(e)
+        Log.e(TAG, "connectionClosedOnError: ${e?.message}", e)
         context.stopService(messageMonitor)
         messageMonitor = null
         App.user = ""
@@ -79,6 +80,7 @@ class ChatConnectionListener : ConnectionListener {
             }
             reconnectionManager.abortPossiblyRunningReconnection()
         }
+        super.connectionClosedOnError(e)
     }
 
     companion object {

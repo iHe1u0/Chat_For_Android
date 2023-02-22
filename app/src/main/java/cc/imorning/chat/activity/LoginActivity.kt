@@ -191,6 +191,7 @@ fun ContentScreen(viewModel: LoginViewModel) {
                 Text(text = stringResource(id = R.string.login))
             }
         }
+        // BottomSheetContent()
     }
 }
 
@@ -238,6 +239,7 @@ fun BottomSheetContent() {
 }
 
 @Composable
+@Preview
 fun BottomSheetContentPreview() {
     BottomSheetContent()
 }

@@ -58,12 +58,12 @@ class MessageViewModel(
         MainScope().launch {
             if (ConnectionManager.isConnectionAvailable(connection = connection)) {
                 MainScope().launch(Dispatchers.IO) {
-                    AvatarUtils.saveAvatar(connection.user.asEntityBareJidString())
+                    AvatarUtils.saveAvatar(user = connection.user.asEntityBareJidString())
                 }
                 val roster = Roster.getInstanceFor(connection)
                 val availability = roster.getPresence(connection.user.asBareJid())
                 _avatarPath.value =
-                    AvatarUtils.getAvatarPath(connection.user.asEntityBareJidString())
+                    AvatarUtils.getAvatarPath(user = connection.user.asEntityBareJidString())
                 _status.value = StatusHelper(availability.mode).toString()
             } else {
                 _status.value = StatusHelper(Presence.Mode.xa).toString()

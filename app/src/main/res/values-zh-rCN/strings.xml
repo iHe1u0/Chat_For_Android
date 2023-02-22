@@ -48,4 +48,5 @@
     <string name="no_pic">暂无图片</string>
     <string name="exit_message">确定退出？</string>
     <string name="message_delete_roster">确定删除？</string>
+    <string name="confirm_password">确认密码</string>
 </resources>

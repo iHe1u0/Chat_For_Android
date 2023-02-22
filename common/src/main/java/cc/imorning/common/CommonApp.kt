@@ -5,6 +5,7 @@ import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import cc.imorning.common.constant.ServerConfig
 import com.microsoft.appcenter.AppCenter
 import com.microsoft.appcenter.crashes.Crashes
@@ -63,6 +64,7 @@ open class CommonApp : Application() {
         configurationBuilder.setDnssecMode(ConnectionConfiguration.DnssecMode.disabled)
         configurationBuilder.setSendPresence(false)
         configurationBuilder.setKeyManager(null)
+        configurationBuilder.setConnectTimeout(10 * 1000)
         xmppTcpConnection = XMPPTCPConnection(configurationBuilder.build())
 
     }
@@ -80,6 +82,9 @@ open class CommonApp : Application() {
         }
 
         fun exitApp(status: Int = 0) {
+            if (status != 0) {
+                Toast.makeText(getContext(), "Error:{$status}", Toast.LENGTH_LONG).show()
+            }
             val notificationManager =
                 getContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.cancelAll()
