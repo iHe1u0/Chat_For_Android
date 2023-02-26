@@ -67,10 +67,14 @@ open class CommonApp : Application() {
         configurationBuilder.setKeyManager(null)
         configurationBuilder.setConnectTimeout(10 * 1000)
         xmppTcpConnection = XMPPTCPConnection(configurationBuilder.build())
-        // xmppTcpConnection.setUseStreamManagement(true)
-        // xmppTcpConnection.setUseStreamManagementResumption(true)
-        ReconnectionManager.setDefaultReconnectionPolicy(ReconnectionManager.ReconnectionPolicy.FIXED_DELAY);
-
+        ReconnectionManager.getInstanceFor(xmppTcpConnection).enableAutomaticReconnection()
+        ReconnectionManager.getInstanceFor(xmppTcpConnection)
+            .setReconnectionPolicy(ReconnectionManager.ReconnectionPolicy.FIXED_DELAY)
+        MainScope().launch(Dispatchers.IO) {
+            if (!xmppTcpConnection.isConnected) {
+                xmppTcpConnection.connect()
+            }
+        }
     }
 
     companion object {

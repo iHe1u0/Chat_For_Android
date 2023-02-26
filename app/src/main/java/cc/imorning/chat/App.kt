@@ -12,6 +12,7 @@ import coil.ImageLoader
 import coil.ImageLoaderFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 
@@ -32,7 +33,6 @@ class App : CommonApp(), ImageLoaderFactory {
             connectionListener = ChatConnectionListener()
             getTCPConnection().addConnectionListener(connectionListener)
         }
-
         // Register activity monitor
         registerActivityLifecycleCallbacks(ActivityMonitor.monitor)
     }
@@ -57,6 +57,20 @@ class App : CommonApp(), ImageLoaderFactory {
          */
         fun getTCPConnection(): XMPPTCPConnection {
             return xmppTcpConnection
+        }
+
+        fun reconnect(connection: XMPPTCPConnection) {
+            MainScope().launch(Dispatchers.IO) {
+                while (!connection.isAuthenticated) {
+                    if (!connection.isAuthenticated) {
+                        if (!connection.isConnected) {
+                            connection.connect()
+                        }
+                        connection.login()
+                    }
+                    delay(60 * 1000)
+                }
+            }
         }
     }
 

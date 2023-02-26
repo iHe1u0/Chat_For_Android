@@ -11,7 +11,7 @@ This is IM app for Android based on [Openfire](https://www.igniterealtime.org/pr
 * [x] Contact's avatar will not refresh util reboot the app.
 * [x] Notification has a wrong action maybe cause its id.
 * [x] App may crash if network changed.
-* [ ] ChatActivity UI is NOT fluent(cases by bug of Lazy Columm). 
+* [ ] ChatActivity UI is NOT fluent(cases by bug of Lazy Layout). 
 
 ## TODO List
 -----------
@@ -34,7 +34,7 @@ This is IM app for Android based on [Openfire](https://www.igniterealtime.org/pr
 * [ ] Send pictures.
 * [ ] Send audio messages.
 * [ ] Send videos.
-* [ ] Send files.
+* [x] Send files.
 
 ## License
 -----------

@@ -41,7 +41,6 @@ import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.ui.view.ComposeDialogUtils
 import cc.imorning.chat.utils.IntentUtils
 import cc.imorning.chat.utils.StatusHelper
-import cc.imorning.common.CommonApp
 import cc.imorning.database.db.RecentDB
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
@@ -119,7 +118,6 @@ fun MessageScreen(viewModel: MessageViewModel) {
 
     Column {
         if ((connectionStatus != null) && (!connectionStatus)) {
-            viewModel.removeListener()
             Text(
                 text = stringResource(id = R.string.network_is_unavailable),
                 modifier = Modifier
@@ -128,8 +126,9 @@ fun MessageScreen(viewModel: MessageViewModel) {
                 textAlign = TextAlign.Center,
                 color = Color.White
             )
+            App.getTCPConnection().disconnect()
         } else if ((connectionStatus != null) && connectionStatus) {
-            viewModel.addListener()
+            App.reconnect(App.getTCPConnection())
         }
         SwipeRefresh(
             state = rememberSwipeRefreshState(isRefreshing = isRefreshing.value),
