@@ -1,6 +1,9 @@
 package cc.imorning.chat
 
 import android.content.Intent
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BrokenImage
+import androidx.compose.material3.Icon
 import cc.imorning.chat.monitor.ActivityMonitor
 import cc.imorning.chat.monitor.ChatConnectionListener
 import cc.imorning.chat.network.ConnectionManager
@@ -76,8 +79,7 @@ class App : CommonApp(), ImageLoaderFactory {
 
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
-            .error(R.drawable.ic_default_avatar)
-            .bitmapFactoryMaxParallelism(6)
+            .error(R.drawable.ic_broken_image)
             .build()
     }
 
