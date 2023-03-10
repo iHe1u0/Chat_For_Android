@@ -5,6 +5,7 @@ import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import cc.imorning.common.constant.ServerConfig
 import com.microsoft.appcenter.AppCenter
 import com.microsoft.appcenter.crashes.Crashes
@@ -16,6 +17,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jivesoftware.smack.ConnectionConfiguration
+import org.jivesoftware.smack.ReconnectionManager
 import org.jivesoftware.smack.android.AndroidSmackInitializer
 import org.jivesoftware.smack.tcp.XMPPTCPConnection
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration
@@ -63,8 +65,16 @@ open class CommonApp : Application() {
         configurationBuilder.setDnssecMode(ConnectionConfiguration.DnssecMode.disabled)
         configurationBuilder.setSendPresence(false)
         configurationBuilder.setKeyManager(null)
+        configurationBuilder.setConnectTimeout(10 * 1000)
         xmppTcpConnection = XMPPTCPConnection(configurationBuilder.build())
-
+        ReconnectionManager.getInstanceFor(xmppTcpConnection).enableAutomaticReconnection()
+        ReconnectionManager.getInstanceFor(xmppTcpConnection)
+            .setReconnectionPolicy(ReconnectionManager.ReconnectionPolicy.FIXED_DELAY)
+        MainScope().launch(Dispatchers.IO) {
+            if (!xmppTcpConnection.isConnected) {
+                xmppTcpConnection.connect()
+            }
+        }
     }
 
     companion object {
@@ -80,6 +90,9 @@ open class CommonApp : Application() {
         }
 
         fun exitApp(status: Int = 0) {
+            if (status != 0) {
+                Toast.makeText(getContext(), "Error:{$status}", Toast.LENGTH_LONG).show()
+            }
             val notificationManager =
                 getContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.cancelAll()

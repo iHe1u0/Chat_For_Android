@@ -9,15 +9,17 @@ import androidx.compose.material.icons.filled.Password
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
+import cc.imorning.chat.R
 import cc.imorning.chat.action.account.RegisterAction
-import cc.imorning.chat.ui.view.ToastUtils
-import cc.imorning.common.CommonApp
+import cc.imorning.chat.ui.view.ComposeDialogUtils
 import cc.imorning.common.constant.ResultCode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,56 +30,67 @@ fun RegisterDialog(onDismiss: () -> Unit) {
     var password by remember { mutableStateOf("") }
     var rePassword by remember { mutableStateOf("") }
 
+    var regMessage by remember { mutableStateOf("") }
+    var showDialog by remember { mutableStateOf(false) }
+    if (showDialog) {
+        ComposeDialogUtils.InfoAlertDialog(
+            title = stringResource(id = R.string.information),
+            message = regMessage,
+            confirmTitle = stringResource(id = R.string.ok),
+            onConfirm = { showDialog = false }
+        )
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         icon = {
-            Text(text = "注册新用户")
+            Text(text = stringResource(id = R.string.register))
         },
         text = {
             Column {
                 OutlinedTextField(
                     value = account,
                     onValueChange = { account = it },
-                    label = { Text(text = "账号") },
+                    label = { Text(text = stringResource(id = R.string.account)) },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Filled.AccountCircle,
-                            contentDescription = "账号"
+                            contentDescription = stringResource(id = R.string.account)
                         )
                     },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Search
+                        imeAction = ImeAction.Next
                     ),
                 )
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text(text = "密码") },
+                    label = { Text(text = stringResource(id = R.string.password)) },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Filled.Password,
-                            contentDescription = "密码"
+                            contentDescription = stringResource(id = R.string.password)
                         )
                     },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Search
+                        imeAction = ImeAction.Next
                     ),
                 )
                 OutlinedTextField(
                     value = rePassword,
                     onValueChange = { rePassword = it },
-                    label = { Text(text = "确认密码") },
+                    label = { Text(text = stringResource(R.string.confirm_password)) },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Filled.Password,
-                            contentDescription = "确认密码"
+                            contentDescription = stringResource(id = R.string.confirm_password)
                         )
                     },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Search
+                        imeAction = ImeAction.Done
                     ),
                 )
             }
@@ -97,37 +110,42 @@ fun RegisterDialog(onDismiss: () -> Unit) {
                     return@TextButton
                 }
                 MainScope().launch(Dispatchers.IO) {
-                    doRegistration(account, password)
+                    doRegistration(account, password) { result ->
+                        regMessage = result
+                        showDialog = true
+                    }
                 }
             }) {
-                Text(text = "注册")
+                Text(text = stringResource(id = R.string.register))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(text = "取消")
+                Text(text = stringResource(id = R.string.cancel))
             }
         })
 }
 
-fun doRegistration(account: String, password: String) {
-
-    val context = CommonApp.getContext()
+fun doRegistration(
+    account: String,
+    password: String,
+    onResult: (String) -> Unit
+) {
     when (RegisterAction.run(account, password)) {
         ResultCode.OK -> {
-            ToastUtils.showMessage(context, "账号[$account]注册成功，请返回登录")
+            onResult("账号[${account.lowercase(Locale.getDefault())}]注册成功，请返回登录")
         }
         ResultCode.ERROR_NOT_SUPPORT_OPERATION -> {
-            ToastUtils.showMessage(context, "当前禁止新用户注册")
+            onResult("当前禁止新用户注册")
         }
         ResultCode.ERROR_NETWORK -> {
-            ToastUtils.showMessage(context, "网络连接失败，请检查网络")
+            onResult("网络连接失败，请检查网络")
         }
         ResultCode.ERROR_NO_RESPONSE -> {
-            ToastUtils.showMessage(context, "服务器未响应，请重启App后尝试")
+            onResult("服务器未响应，请重启App后尝试")
         }
         ResultCode.ERROR -> {
-            ToastUtils.showMessage(context, "未知错误")
+            onResult("未知错误")
         }
         else -> {}
     }

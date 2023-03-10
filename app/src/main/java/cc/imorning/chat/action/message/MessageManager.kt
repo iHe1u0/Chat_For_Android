@@ -60,7 +60,7 @@ object MessageManager {
      *
      * @return true if send success
      */
-    suspend fun sendMessage(
+    fun sendMessage(
         receiver: String,
         message: String
     ): Boolean {

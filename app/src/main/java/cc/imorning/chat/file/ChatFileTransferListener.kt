@@ -1,8 +1,10 @@
 package cc.imorning.chat.file
 
 import android.util.Log
-import cc.imorning.chat.BuildConfig
-import cc.imorning.common.utils.FileUtils.Companion.instance
+import cc.imorning.chat.R
+import cc.imorning.chat.ui.view.ToastUtils
+import cc.imorning.common.CommonApp
+import cc.imorning.common.utils.FileUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -15,19 +17,23 @@ import java.io.IOException
 class ChatFileTransferListener : FileTransferListener {
 
     override fun fileTransferRequest(request: FileTransferRequest) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "file:  ${request.fileName}(${request.fileSize}KB)")
-        }
         val incomingFileTransfer = request.accept()
-        val file = File(instance.getFileDir(), File(incomingFileTransfer.fileName).name)
-        if (file.exists()) {
-            file.delete()
-        }
+        val file = File(
+            FileUtils.getChatFileFolder(CommonApp.getContext()),
+            File(incomingFileTransfer.fileName).name
+        )
         try {
             MainScope().launch(Dispatchers.IO) {
                 incomingFileTransfer.receiveFile(file)
-                if (BuildConfig.DEBUG) {
-                    Log.i(TAG, "file [${file.absolutePath}] has been saved")
+                while (true) {
+                    if (incomingFileTransfer.isDone) {
+                        break
+                    }
+                    continue
+                }
+                val context = CommonApp.getContext()
+                if (context != null) {
+                    ToastUtils.showMessage(context, context.getString(R.string.receive_new_file))
                 }
             }
         } catch (e: SmackException) {

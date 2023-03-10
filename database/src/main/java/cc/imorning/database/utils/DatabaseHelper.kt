@@ -50,7 +50,12 @@ object DatabaseHelper {
     fun getDatabaseRootDir(context: Context, jid: String): String {
         var user = jid
         if (user.isEmpty()) {
-            user = CommonApp.xmppTcpConnection.user.asEntityBareJidString()
+            if (CommonApp.xmppTcpConnection.user != null) {
+                user = CommonApp.xmppTcpConnection.user.asEntityBareJidString()
+            }
+        }
+        if (user.isEmpty()){
+            CommonApp.exitApp(-1)
         }
         val userDir = user.replace("@", "_")
         return context.getDatabasePath(userDir).path.plus(File.separator)

@@ -10,7 +10,7 @@ import cc.imorning.chat.utils.AvatarUtils
 data class DetailsScreenUiState(val jid: String) {
     fun isMe() = jid == App.user
 
-    fun avatar() = AvatarUtils.getAvatarPath(jid)
+    fun avatar() = AvatarUtils.getAvatarPath(user =jid)
 
     fun nickName() = RosterAction.getNickName(jid)
 

@@ -39,8 +39,8 @@ import cc.imorning.chat.compontens.RecentMessageItem
 import cc.imorning.chat.network.ConnectionLiveData
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.ui.view.ComposeDialogUtils
+import cc.imorning.chat.utils.IntentUtils
 import cc.imorning.chat.utils.StatusHelper
-import cc.imorning.common.CommonApp
 import cc.imorning.database.db.RecentDB
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
@@ -55,7 +55,7 @@ private const val TAG = "MessageFragment"
 class MessageFragment : Fragment() {
 
     private val messageViewModel: MessageViewModel by activityViewModels {
-        val db = RecentDB.getInstance(CommonApp.getContext(), App.user)
+        val db = RecentDB.getInstance(requireContext(), App.user)
         MessageViewModelFactory(db.recentDatabaseDao())
     }
 
@@ -118,7 +118,6 @@ fun MessageScreen(viewModel: MessageViewModel) {
 
     Column {
         if ((connectionStatus != null) && (!connectionStatus)) {
-            viewModel.removeListener()
             Text(
                 text = stringResource(id = R.string.network_is_unavailable),
                 modifier = Modifier
@@ -127,8 +126,9 @@ fun MessageScreen(viewModel: MessageViewModel) {
                 textAlign = TextAlign.Center,
                 color = Color.White
             )
+            App.getTCPConnection().disconnect()
         } else if ((connectionStatus != null) && connectionStatus) {
-            viewModel.addListener()
+            App.reconnect(App.getTCPConnection())
         }
         SwipeRefresh(
             state = rememberSwipeRefreshState(isRefreshing = isRefreshing.value),
@@ -153,12 +153,18 @@ fun MessageScreen(viewModel: MessageViewModel) {
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 // if recent messages is not null, then show them.
-                if (messages.value != null && messages.value.size > 0) {
+                if (messages.value.isNotEmpty()) {
                     val lastMessage: MutableSet<String> = mutableSetOf()
                     items(messages.value) { message ->
                         // sort by same message.sender
                         if (!lastMessage.contains(message.user)) {
-                            RecentMessageItem(message)
+                            RecentMessageItem(message,
+                                onItemClick = {
+                                    IntentUtils.startChatActivity(context, it)
+                                },
+                                onItemLongClick = {
+                                    viewModel.hideMessageItem(it)
+                                })
                             lastMessage.add(message.user)
                         }
                     }

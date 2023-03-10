@@ -46,6 +46,7 @@ class LoginActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel.loadUser(this)
         setContent {
             LoginScreen(viewModel)
         }
@@ -190,6 +191,7 @@ fun ContentScreen(viewModel: LoginViewModel) {
                 Text(text = stringResource(id = R.string.login))
             }
         }
+        // BottomSheetContent()
     }
 }
 
@@ -237,6 +239,7 @@ fun BottomSheetContent() {
 }
 
 @Composable
+@Preview
 fun BottomSheetContentPreview() {
     BottomSheetContent()
 }

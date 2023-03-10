@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import cc.imorning.chat.App
 import cc.imorning.chat.BuildConfig
@@ -12,7 +13,9 @@ import cc.imorning.chat.activity.LoginActivity
 import cc.imorning.chat.service.MessageMonitorService
 import cc.imorning.common.CommonApp
 import cc.imorning.common.constant.ServerConfig
-import org.jivesoftware.smack.*
+import org.jivesoftware.smack.ConnectionListener
+import org.jivesoftware.smack.XMPPConnection
+import org.jivesoftware.smack.XMPPException
 import org.jivesoftware.smackx.iqversion.VersionManager
 import org.jivesoftware.smackx.vcardtemp.VCardManager
 
@@ -20,8 +23,6 @@ class ChatConnectionListener : ConnectionListener {
 
     private val context: Context = CommonApp.getContext()
     private var messageMonitor: Intent? = null
-
-    private lateinit var reconnectionManager: ReconnectionManager
 
     override fun connected(connection: XMPPConnection?) {
         super.connected(connection)
@@ -32,9 +33,6 @@ class ChatConnectionListener : ConnectionListener {
                     ServerConfig.RESOURCE, BuildConfig.VERSION_NAME,
                     "Android ${Build.VERSION.RELEASE}"
                 )
-        }
-        if (connection != null && connection.user != null) {
-            App.getTCPConnection().login()
         }
     }
 
@@ -48,15 +46,13 @@ class ChatConnectionListener : ConnectionListener {
             }
         }
         CommonApp.vCard = VCardManager.getInstanceFor(connection).loadVCard()
-        reconnectionManager =
-            ReconnectionManager.getInstanceFor(connection as AbstractXMPPConnection)
-        reconnectionManager.enableAutomaticReconnection()
-        App.user = connection.user.asEntityBareJidString()
+        if (connection != null) {
+            App.user = connection.user.asEntityBareJidString()
+        }
     }
 
     override fun connectionClosed() {
         super.connectionClosed()
-        reconnectionManager.abortPossiblyRunningReconnection()
         context.stopService(messageMonitor)
         App.user = ""
     }
@@ -66,7 +62,7 @@ class ChatConnectionListener : ConnectionListener {
      * org.jivesoftware.smack.XMPPException$StreamErrorException  >>> Close cause sign in elsewhere
      */
     override fun connectionClosedOnError(e: Exception?) {
-        super.connectionClosedOnError(e)
+        Log.e(TAG, "connectionClosedOnError: ${e?.message}", e)
         context.stopService(messageMonitor)
         messageMonitor = null
         App.user = ""
@@ -77,8 +73,8 @@ class ChatConnectionListener : ConnectionListener {
             Handler(Looper.getMainLooper()).post {
                 Toast.makeText(context, "登录过期，请重新登录", Toast.LENGTH_LONG).show()
             }
-            reconnectionManager.abortPossiblyRunningReconnection()
         }
+        super.connectionClosedOnError(e)
     }
 
     companion object {

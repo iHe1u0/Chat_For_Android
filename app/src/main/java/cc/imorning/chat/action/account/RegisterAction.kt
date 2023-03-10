@@ -31,11 +31,7 @@ object RegisterAction {
             val attributes = mutableMapOf<String, String>()
             attributes["name"] = "User"
             attributes["email"] = account.plus("@").plus(ServerConfig.HOST_NAME)
-            accountManager.createAccount(
-                Localpart.from(account),
-                password,
-                attributes
-            )
+            accountManager.createAccount(Localpart.from(account), password, attributes)
             return ResultCode.OK
         } catch (e: XMPPException.XMPPErrorException) {
             return ResultCode.ERROR_NOT_SUPPORT_OPERATION

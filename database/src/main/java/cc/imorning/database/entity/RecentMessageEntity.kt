@@ -15,17 +15,17 @@ data class RecentMessageEntity(
     val sender: String,
 
     @ColumnInfo(name = "nick_name")
-    val nickName: String? = "",
+    val nickName: String = "",
 
     @ColumnInfo(name = "type")
     val type: Type = Type.normal,
 
     @ColumnInfo(name = "message")
-    val message: String? = "",
+    val message: String = "",
 
     @ColumnInfo(name = "time")
     val time: Long = Instant.now().millis,
 
     @ColumnInfo(name = "isShow")
-    val isShow: Boolean
+    val isShow: Boolean = true
 )

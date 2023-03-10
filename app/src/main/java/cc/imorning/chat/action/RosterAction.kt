@@ -11,6 +11,7 @@ import cc.imorning.common.utils.NetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import org.jivesoftware.smack.SmackException.NoResponseException
 import org.jivesoftware.smack.packet.Presence
 import org.jivesoftware.smack.packet.Presence.Mode
 import org.jivesoftware.smack.packet.PresenceBuilder
@@ -152,16 +153,27 @@ object RosterAction {
      *
      * @param jidString a user jid without resource
      */
-    fun getContactVCard(jidString: String?): VCard? {
+    fun getVCard(jidString: String? = null): VCard? {
         if (ConnectionManager.isConnectionAvailable(connection)) {
+            val vCardManager = VCardManager.getInstanceFor(connection)
+            var vCard: VCard? = null
             if (jidString == null) {
-                val vCardManager = VCardManager.getInstanceFor(connection)
-                return vCardManager.loadVCard()
+                vCard = try {
+                    vCardManager.loadVCard()
+                } catch (e: NoResponseException) {
+                    null
+                }
+            } else {
+                if (jidString.isNotEmpty()) {
+                    val user = JidCreate.entityBareFrom(jidString)
+                    vCard = try {
+                        vCardManager.loadVCard(user)
+                    } catch (e: NoResponseException) {
+                        null
+                    }
+                }
             }
-            if (jidString.isNotEmpty()) {
-                val user = JidCreate.entityBareFrom(jidString)
-                return VCardManager.getInstanceFor(connection).loadVCard(user)
-            }
+            return vCard
         }
         return null
     }
@@ -218,18 +230,20 @@ object RosterAction {
      * get contact's nick name by jid like im@test.com
      */
     fun getNickName(jidString: String? = null): String {
-        if (!connection.isConnected || !connection.isAuthenticated) {
-            return ""
+        if (!ConnectionManager.isConnectionAvailable(connection)) {
+            return App.user
         }
         if (jidString == null) {
-            val vCardManager = VCardManager.getInstanceFor(connection)
-            val vCard = vCardManager.loadVCard()
-            return vCard.nickName.orEmpty()
+            val vCard = getVCard()
+            if (vCard != null) {
+                return vCard.nickName.orEmpty()
+            }
+            return App.user
         }
         if (jidString.isEmpty()) {
-            return ""
+            return App.user
         }
-        val vCard = getContactVCard(jidString)
+        val vCard = getVCard(jidString)
         if (vCard != null && !vCard.nickName.isNullOrEmpty()) {
             return vCard.nickName.orEmpty()
         }
@@ -388,11 +402,10 @@ object RosterAction {
 
     fun getPhone(jid: String): String {
         if (ConnectionManager.isConnectionAvailable()) {
-            val vCard =
-                VCardManager.getInstanceFor(connection).loadVCard(JidCreate.entityBareFrom(jid))
-            return vCard.getPhoneWork(Config.PHONE).orEmpty()
+            val vCard = getVCard(jid)
+            return vCard?.getPhoneWork(Config.PHONE).orEmpty()
         }
-        return ""
+        return "*** **** ****"
     }
 
     fun getEmail(jid: String): String {
@@ -405,7 +418,7 @@ object RosterAction {
             }
             return email.orEmpty()
         }
-        return ""
+        return "*****@******"
     }
 
 }

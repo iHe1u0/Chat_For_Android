@@ -1,30 +1,27 @@
 package cc.imorning.common.utils
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Environment
-import android.util.Log
 import android.webkit.MimeTypeMap
-import cc.imorning.common.CommonApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.io.*
 
-class FileUtils private constructor() {
-
-    private val context = CommonApp.getContext()
+object FileUtils {
 
     /**
      * Get external files root dir
      * @return /storage/emulated/0/Android/data/cc.imorning.chat/files
      */
-    fun getAndroidRoot(): File {
+    fun getAndroidRoot(context: Context): File {
         return context.getExternalFilesDir(null)!!
     }
 
-    fun getCacheDir(): File? {
+    fun getCacheDir(context: Context): File? {
         return if (Environment.isExternalStorageEmulated()) {
             context.externalCacheDir
         } else {
@@ -32,7 +29,7 @@ class FileUtils private constructor() {
         }
     }
 
-    fun getFileDir(): File? {
+    fun getChatFileFolder(context: Context): File? {
         return context.getExternalFilesDir("chatFile")
 
     }
@@ -40,8 +37,8 @@ class FileUtils private constructor() {
     /**
      * get roster avatar file path with jidString
      */
-    fun getAvatarCachePath(jid: String): File {
-        return File(getAvatarImagesDir(), jid)
+    fun getAvatarCachePath(context: Context, jid: String): File {
+        return File(getAvatarImagesDir(context), jid)
     }
 
     /**
@@ -61,8 +58,8 @@ class FileUtils private constructor() {
     /**
      * get a file for message file
      */
-    fun getChatMessageCache(fileName: String? = "file"): File {
-        val dir = getCacheDir()!!.absolutePath.plus("/messageCache")
+    fun getChatMessageCache(context: Context, fileName: String? = "file"): File {
+        val dir = getCacheDir(context)!!.absolutePath.plus("/messageCache")
         val fileDir = File(dir)
         if (!fileDir.exists()) {
             fileDir.mkdir()
@@ -70,8 +67,8 @@ class FileUtils private constructor() {
         return File(fileDir, fileName!!)
     }
 
-    fun getAudioMessagePath(fileName: String): File {
-        val audioFileDir = getChatMessageCache("audio")
+    fun getAudioMessagePath(context: Context, fileName: String): File {
+        val audioFileDir = getChatMessageCache(context, "audio")
         if (!audioFileDir.exists()) {
             audioFileDir.mkdir()
         }
@@ -82,8 +79,8 @@ class FileUtils private constructor() {
         return audioFile
     }
 
-    fun getAudioPCMCacheDir(): String {
-        val pcmFileDir = getChatMessageCache("pcm")
+    fun getAudioPCMCacheDir(context: Context): String {
+        val pcmFileDir = getChatMessageCache(context, "pcm")
         if (!pcmFileDir.exists()) {
             pcmFileDir.mkdir()
         }
@@ -93,7 +90,7 @@ class FileUtils private constructor() {
     /**
      * read string from assets
      */
-    fun readStringFromAssets(fileName: String): String {
+    fun readStringFromAssets(context: Context, fileName: String): String {
         if (fileName.isEmpty()) {
             return ""
         }
@@ -157,8 +154,8 @@ class FileUtils private constructor() {
     /**
      * get avatar cache dir
      */
-    private fun getAvatarImagesDir(): String {
-        val dir = getCacheDir()!!.absolutePath.plus("/avatarCache/")
+    private fun getAvatarImagesDir(context: Context): String {
+        val dir = getCacheDir(context)!!.absolutePath.plus("/avatarCache/")
         val file = File(dir)
         if (!file.exists()) {
             file.mkdir()
@@ -186,7 +183,7 @@ class FileUtils private constructor() {
      *
      * @return compressed file
      */
-    fun compressImage(srcFile: File): File {
+    fun compressImage(context: Context, srcFile: File): File {
         assert(srcFile.exists())
         val srcFileLength = srcFile.length() / 1024
         // if source file is less than 512KB,then do nothing
@@ -202,7 +199,7 @@ class FileUtils private constructor() {
             } else {
                 75
             }
-        val dir = getCacheDir()!!.absolutePath
+        val dir = getCacheDir(context = context)!!.absolutePath
         val file = File(dir, "tmp.jpg")
         if (file.exists()) {
             file.delete()
@@ -214,7 +211,6 @@ class FileUtils private constructor() {
         bitmap.compress(Bitmap.CompressFormat.JPEG, quality, fileOutputStream)
         fileOutputStream.flush()
         fileOutputStream.close()
-        Log.d(TAG, "compressImage: [${srcFile.length() / 1024}KB]>[${file.length() / 1024}KB]")
         if (srcFile.length() < file.length()) {
             return srcFile
         }
@@ -224,7 +220,7 @@ class FileUtils private constructor() {
     /**
      * Clean cache
      */
-    fun cleanCache() {
+    fun cleanCache(context: Context) {
         val avatarCacheFiles = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         if ((avatarCacheFiles != null) && avatarCacheFiles.exists()) {
             val fileList = avatarCacheFiles.listFiles() ?: return
@@ -251,12 +247,12 @@ class FileUtils private constructor() {
         return picMessage.toString()
     }
 
-    fun createTempFile(tempFileName: String?): File {
+    fun createTempFile(context: Context, tempFileName: String?): File {
         var fileName = tempFileName
         if (fileName.isNullOrEmpty()) {
             fileName = "temp${System.currentTimeMillis()}"
         }
-        val file = File(getCacheDir(), fileName)
+        val file = File(getCacheDir(context = context), fileName)
         if (file.exists()) {
             file.delete()
         }
@@ -272,11 +268,4 @@ class FileUtils private constructor() {
         }
     }
 
-    companion object {
-        private const val TAG = "FileUtils"
-
-        val instance by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
-            FileUtils()
-        }
-    }
 }

@@ -8,6 +8,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.annotation.WorkerThread
 import androidx.core.app.NotificationCompat
 import androidx.core.app.Person
@@ -67,7 +68,7 @@ class ChatNotificationManager private constructor(val context: Context) {
         notificationManager.createNotificationChannel(notificationChannel)
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     fun setUpAppRunningNotificationChannels() {
         if (notificationManager.getNotificationChannel(CHANNEL_APP_RUNNING) != null) {
             return
@@ -81,6 +82,9 @@ class ChatNotificationManager private constructor(val context: Context) {
             enableLights(false)
             enableVibration(false)
             setSound(null, null)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                setAllowBubbles(false)
+            }
         }
         notificationManager.createNotificationChannel(notificationChannel)
     }
@@ -112,7 +116,6 @@ class ChatNotificationManager private constructor(val context: Context) {
         )
 
         val messageStyle = NotificationCompat.MessagingStyle(user)
-        // val lastId = 0L
 
         val m = NotificationCompat.MessagingStyle.Message(
             message.messageBody.text,
@@ -199,7 +202,7 @@ class ChatNotificationManager private constructor(val context: Context) {
      * build an app running notification for Android O+
      */
     fun buildAppRunningNotification(): Notification {
-        return NotificationCompat.Builder(context, CHANNEL_NEW_MESSAGES)
+        return NotificationCompat.Builder(context, CHANNEL_APP_RUNNING)
             .setContentTitle(
                 context.getString(R.string.app_name)
                     .plus(context.getString(R.string.app_is_running))

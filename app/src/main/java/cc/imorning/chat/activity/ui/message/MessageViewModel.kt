@@ -11,6 +11,7 @@ import cc.imorning.chat.network.ConnectionManager
 import cc.imorning.chat.utils.AvatarUtils
 import cc.imorning.chat.utils.StatusHelper
 import cc.imorning.database.dao.RecentDatabaseDao
+import cc.imorning.database.entity.RecentMessageEntity
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -57,12 +58,12 @@ class MessageViewModel(
         MainScope().launch {
             if (ConnectionManager.isConnectionAvailable(connection = connection)) {
                 MainScope().launch(Dispatchers.IO) {
-                    AvatarUtils.saveAvatar(connection.user.asEntityBareJidString())
+                    AvatarUtils.saveAvatar(user = connection.user.asEntityBareJidString())
                 }
                 val roster = Roster.getInstanceFor(connection)
                 val availability = roster.getPresence(connection.user.asBareJid())
                 _avatarPath.value =
-                    AvatarUtils.getAvatarPath(connection.user.asEntityBareJidString())
+                    AvatarUtils.getAvatarPath(user = connection.user.asEntityBareJidString())
                 _status.value = StatusHelper(availability.mode).toString()
             } else {
                 _status.value = StatusHelper(Presence.Mode.xa).toString()
@@ -70,6 +71,11 @@ class MessageViewModel(
         }
     }
 
+    /**
+     * update list
+     *
+     * @param isFromUser whether invoked by user
+     */
     @Synchronized
     fun updateView(isFromUser: Boolean = false) {
         // return if isRefreshing
@@ -95,9 +101,13 @@ class MessageViewModel(
                     )
                 }
                 withContext(Dispatchers.Main) { _messages.value = list }
+            } else {
+                _messages.value = emptyList()
             }
-            delay(1000)
-            _isRefreshing.emit(false)
+            if (isFromUser) {
+                delay(1000)
+                _isRefreshing.emit(false)
+            }
         }
     }
 
@@ -136,6 +146,13 @@ class MessageViewModel(
             val jid = connection.user.asEntityBareJidString()
             _nickName.value = RosterAction.getNickName(jidString = jid)
             _status.value = StatusHelper(RosterAction.getRosterStatus(jidString = jid)).toString()
+        }
+    }
+
+    fun hideMessageItem(user: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            databaseDao.deleteMessage(RecentMessageEntity(sender = user))
+            updateView()
         }
     }
 
