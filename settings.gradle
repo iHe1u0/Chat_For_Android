@@ -11,7 +11,16 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
     }
+    versionCatalogs {
+        create("libs") {
+            library("androidx-core", "androidx.core:core:1.10.1")
+            library("androidx-core-ktx", "androidx.core:core-ktx:1.10.1")
+            library("androidx-appcompat", "androidx.appcompat:appcompat:1.6.1")
+            library("androidx-constraintlayout", "androidx.constraintlayout:constraintlayout:2.1.4")
+        }
+    }
 }
+
 rootProject.name = "Chat For Android"
 include ':app'
 include ':common'
