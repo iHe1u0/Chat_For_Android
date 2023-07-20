@@ -148,7 +148,6 @@ class MessageMonitorService : Service() {
 
     companion object {
         private const val TAG = "MessageMonitorService"
-        private const val Notification_New_Message = R.string.app_name
     }
 
     inner class MessageServiceBinder : Binder() {

@@ -32,7 +32,7 @@ android {
             zipAlignEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-        debug{
+        debug {
             debuggable true
         }
     }
@@ -52,11 +52,12 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
         compose = true
+        resValues = true
         // Disable unused AGP features
         aidl = false
         renderScript = false
-        resValues = true
         shaders = false
     }
     packagingOptions {
@@ -75,7 +76,7 @@ android {
         }
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.0"
+        kotlinCompilerExtensionVersion = "1.4.2"
     }
     namespace 'cc.imorning.chat'
 }
@@ -112,9 +113,9 @@ dependencies {
     // Coil
     implementation 'io.coil-kt:coil-compose:2.2.2'
 
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.core:core-ktx:1.9.0'
-    implementation "androidx.constraintlayout:constraintlayout:2.1.4"
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.constraintlayout
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"

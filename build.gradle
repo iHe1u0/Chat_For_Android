@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 buildscript {
     ext {
         navigation_compose_version = "2.5.0"
@@ -13,12 +15,14 @@ buildscript {
         gradlePluginPortal()
         google()
     }
-}// Top-level build file where you can add configuration options common to all sub-projects/modules.
+}
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id 'com.android.application' version '7.4.1' apply false
-    id 'com.android.library' version '7.4.1' apply false
+    id 'com.android.application' version '8.0.0' apply false
+    id 'com.android.library' version '8.0.0' apply false
     id 'org.jetbrains.kotlin.android' version '1.8.0' apply false
     id 'org.jetbrains.kotlin.jvm' version '1.8.0' apply false
+    id 'com.google.devtools.ksp' version '1.8.10-1.0.9' apply false
 }
 task clean(type: Delete) {
     delete rootProject.buildDir
@@ -29,7 +33,7 @@ tasks.withType(JavaCompile) {
     options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked']
 }
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
+tasks.withType(KotlinCompile) {
     kotlinOptions.allWarningsAsErrors = true
 }
 
@@ -37,6 +41,4 @@ static def gitVersion() {
     Process process = "git rev-list --count HEAD".execute()
     process.waitFor()
     return process.getText().toInteger()
-    // String today = new Date().format('yyMMdd', TimeZone.getTimeZone("UTC"))
-    // String time = new Date().format('HHmmss', TimeZone.getTimeZone("UTC"))
 }
