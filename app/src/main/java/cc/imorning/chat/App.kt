@@ -1,9 +1,6 @@
 package cc.imorning.chat
 
 import android.content.Intent
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BrokenImage
-import androidx.compose.material3.Icon
 import cc.imorning.chat.monitor.ActivityMonitor
 import cc.imorning.chat.monitor.ChatConnectionListener
 import cc.imorning.chat.network.ConnectionManager

@@ -1,9 +1,9 @@
 This application is a real-time message app,the server use openfire.The project url is:
 
 
-https://github.com/morningos/Chat_For_Android
+https://github.com/fkkt-55/Chat_For_Android
 
 
-Author:@iMorning
+Author:fkkt-55
 
-Version of about:2023.0210
+Version of about:2023.0721

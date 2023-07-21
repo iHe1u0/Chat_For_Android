@@ -84,21 +84,11 @@ android {
 dependencies {
     implementation(project(path: ":common"))
     implementation(project(path: ':database'))
-    // Compose
-    implementation "androidx.compose.ui:ui:1.3.3"
-    // UI工具包
-    implementation "androidx.compose.ui:ui-tooling:1.3.3"
-    // 基础（边框、背景、框、图片、滚动、形状、动画等）
-    implementation "androidx.compose.foundation:foundation:1.3.1"
-    // Material Design
-    // implementation 'androidx.compose.material:material:1.3.1'
-    // Material3 Design
-    implementation 'androidx.compose.material3:material3:1.0.1'
-    // Material Design 的图标
-    implementation "androidx.compose.material:material-icons-core:1.3.1"
-    implementation "androidx.compose.material:material-icons-extended:1.3.1"
-    // Google字体
-    implementation "androidx.compose.ui:ui-text-google-fonts:1.3.3"
+    implementation libs.compose.ui
+    implementation libs.compose.tooling
+    implementation libs.compose.foundation
+    implementation libs.compose.material3
+    implementation libs.compose.icons.extended
     // 与Activity结合使用
     implementation 'androidx.activity:activity-compose:1.6.1'
     // 与ViewModel结合使用

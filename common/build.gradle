@@ -10,8 +10,8 @@ android {
     defaultConfig {
         minSdk 24
         targetSdk 33
-        buildConfigField("String", "domain", '"im.imorning.cc"')
-        buildConfigField("String", "host_name", '"im.imorning.cc"')
+        buildConfigField("String", "domain", '"im.catcompany.cn"')
+        buildConfigField("String", "host_name", '"im.catcompany.cn"')
         buildConfigField("String", "resource", '"android"')
         buildConfigField("int", "port", "5222")
         buildConfigField("long", "build_time", System.currentTimeMillis().toString())

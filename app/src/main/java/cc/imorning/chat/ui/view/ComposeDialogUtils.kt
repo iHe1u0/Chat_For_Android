@@ -29,9 +29,11 @@ import cc.imorning.chat.R
 import cc.imorning.chat.action.RosterAction
 import cc.imorning.chat.compontens.VCardDialog
 import cc.imorning.chat.compontens.conversation.ClickableMessage
+import cc.imorning.common.BuildConfig
 import cc.imorning.common.constant.Config
 import cc.imorning.common.utils.FileUtils
 import cc.imorning.common.utils.QrUtils
+import cc.imorning.common.utils.TimeUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -138,11 +140,17 @@ object ComposeDialogUtils {
                 )
             },
             text = {
-                ClickableMessage(
-                    message = content,
-                    isUserMe = true,
-                    authorClicked = {},
-                )
+                Column(horizontalAlignment = Alignment.Start) {
+                    ClickableMessage(
+                        message = content,
+                        isUserMe = true,
+                        authorClicked = {},
+                    )
+                    Text(
+                        text = "Build time: ${TimeUtils.getFormatDateTime(BuildConfig.build_time)}",
+                        maxLines = 1
+                    )
+                }
             },
             confirmButton = {
                 TextButton(onClick = onDismiss) {
@@ -302,7 +310,10 @@ object ComposeDialogUtils {
                     Button(onClick = {
                         showQrCode = true
                     }) {
-                        Icon(imageVector = Icons.Default.QrCode2, contentDescription = "分享我的名片")
+                        Icon(
+                            imageVector = Icons.Default.QrCode2,
+                            contentDescription = "分享我的名片"
+                        )
                         Text(text = "分享")
                     }
                 } else {
