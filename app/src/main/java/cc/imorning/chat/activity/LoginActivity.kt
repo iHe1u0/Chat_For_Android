@@ -5,7 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -18,6 +18,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -29,8 +30,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import cc.imorning.chat.R
-import cc.imorning.chat.compontens.BottomSheetListItem
-import cc.imorning.chat.compontens.RegisterDialog
 import cc.imorning.chat.ui.theme.ChatTheme
 import cc.imorning.chat.ui.view.ComposeDialogUtils
 import cc.imorning.chat.utils.PermissionUtils
@@ -69,13 +68,12 @@ class LoginActivity : BaseActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {
     ChatTheme {
         Scaffold(
             topBar = {},
-            floatingActionButton = { FloatingActionButton() },
+            floatingActionButton = { FloatingActionButton(viewModel) },
             content = { padding ->
                 Surface(
                     modifier = Modifier
@@ -101,6 +99,7 @@ fun ContentScreen(viewModel: LoginViewModel) {
     val shouldShowErrorDialog = viewModel.shouldShowErrorDialog().observeAsState()
     val message = viewModel.getErrorMessage().observeAsState()
     val needStartActivity = viewModel.needStartActivity().observeAsState()
+    val showMoreMenu = viewModel.showMoreMenu.collectAsState()
     if (shouldShowWaitingDialog.value == true) {
         ComposeDialogUtils.ShowWaitingDialog(title = stringResource(R.string.logging_in))
     }
@@ -191,22 +190,19 @@ fun ContentScreen(viewModel: LoginViewModel) {
                 Text(text = stringResource(id = R.string.login))
             }
         }
-        // BottomSheetContent()
+        if (showMoreMenu.value) {
+            BottomSheetContent(viewModel)
+        }
+        Throwable().stackTrace[0].apply { Log.i("Fkt", "${className}@${lineNumber}") }
     }
 }
 
 @Preview
 @Composable
-fun FloatingActionButton() {
-    var showRegisterDialog by remember { mutableStateOf(false) }
-    if (showRegisterDialog) {
-        RegisterDialog(
-            onDismiss = { showRegisterDialog = false }
-        )
-    }
+fun FloatingActionButton(viewModel: LoginViewModel) {
     FloatingActionButton(
         onClick = {
-            showRegisterDialog = true
+            viewModel.updateBottomSheetStatus()
         },
         modifier = Modifier.padding(8.dp)
     ) {
@@ -217,29 +213,30 @@ fun FloatingActionButton() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomSheetContent() {
-    val context = LocalContext.current
-    Column {
-        BottomSheetListItem(
-            imageVector = Icons.Filled.Add,
-            title = stringResource(R.string.register),
-            onItemClick = { title ->
-                Toast.makeText(context, title, Toast.LENGTH_SHORT).show()
-            }
-        )
-        BottomSheetListItem(
-            imageVector = Icons.Filled.FindInPage,
-            title = stringResource(R.string.forget_password),
-            onItemClick = { title ->
-                Toast.makeText(context, title, Toast.LENGTH_SHORT).show()
-            }
-        )
+fun BottomSheetContent(viewModel: LoginViewModel) {
+    ModalBottomSheet(onDismissRequest = { viewModel.updateBottomSheetStatus() }) {
+        Button(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RectangleShape
+        ) {
+            Text(text = stringResource(id = R.string.create_account))
+        }
+        Button(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RectangleShape
+        ) {
+            Text(text = stringResource(id = R.string.forget_password))
+        }
+        Button(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RectangleShape
+        ) {
+            Text(text = stringResource(id = R.string.quit))
+        }
     }
-}
-
-@Composable
-@Preview
-fun BottomSheetContentPreview() {
-    BottomSheetContent()
 }

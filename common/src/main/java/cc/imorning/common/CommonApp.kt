@@ -31,7 +31,7 @@ open class CommonApp : Application() {
     override fun onCreate() {
         super.onCreate()
         application = this
-
+        Throwable().stackTrace[0].apply { Log.i("Fkt", "${className}@${lineNumber}") }
         AndroidUsingLinkProperties.setup(this)
         AndroidSmackInitializer.initialize(this)
 

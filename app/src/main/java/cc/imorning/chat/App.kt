@@ -1,6 +1,7 @@
 package cc.imorning.chat
 
 import android.content.Intent
+import android.util.Log
 import cc.imorning.chat.monitor.ActivityMonitor
 import cc.imorning.chat.monitor.ChatConnectionListener
 import cc.imorning.chat.network.ConnectionManager
@@ -22,16 +23,18 @@ class App : CommonApp(), ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
+        // Throwable().stackTrace[0].apply { Log.i("Fkt", "${className}@${lineNumber}") }
         // Setup notification
         ChatNotificationManager.manager.setUpNewMessageNotificationChannels()
 
         if (!ConnectionManager.isConnectionAvailable(getTCPConnection())) {
-            MainScope().launch(Dispatchers.IO) { getTCPConnection() }
-        }
-
-        if (connectionListener == null) {
-            connectionListener = ChatConnectionListener()
-            getTCPConnection().addConnectionListener(connectionListener)
+            MainScope().launch(Dispatchers.IO) {
+                getTCPConnection()
+                if (connectionListener == null) {
+                    connectionListener = ChatConnectionListener()
+                    getTCPConnection().addConnectionListener(connectionListener)
+                }
+            }
         }
         // Register activity monitor
         registerActivityLifecycleCallbacks(ActivityMonitor.monitor)

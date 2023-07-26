@@ -12,6 +12,7 @@ import cc.imorning.common.constant.Config
 import cc.imorning.common.utils.NetworkUtils
 import cc.imorning.common.utils.SessionManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.jivesoftware.smack.SmackException
 import org.jivesoftware.smack.sasl.SASLErrorException
@@ -41,6 +42,9 @@ class LoginViewModel : ViewModel() {
     private val needStartActivity: MutableLiveData<Boolean> by lazy {
         MutableLiveData<Boolean>(false)
     }
+    private val _showMoreMenu = MutableStateFlow(false)
+    val showMoreMenu: MutableStateFlow<Boolean>
+        get() = _showMoreMenu
 
     fun loadUser(context: Context) {
         sessionManager = SessionManager(context = context, sessionType = Config.LOGIN_INFO)
@@ -121,7 +125,11 @@ class LoginViewModel : ViewModel() {
                     }
                     updateLoginStatus(needWaiting = false, isError = false)
                 } catch (e: SASLErrorException) {
-                    updateLoginStatus(needWaiting = false, isError = true, message = "账号或密码错误")
+                    updateLoginStatus(
+                        needWaiting = false,
+                        isError = true,
+                        message = "账号或密码错误"
+                    )
                 } catch (e: SmackException.AlreadyLoggedInException) {
                     updateLoginStatus(needWaiting = false, isError = false)
                 } catch (throwable: Throwable) {
@@ -151,6 +159,12 @@ class LoginViewModel : ViewModel() {
             if (!needWaiting && !isError) {
                 needStartActivity.value = true
             }
+        }
+    }
+
+    fun updateBottomSheetStatus() {
+        viewModelScope.launch {
+            _showMoreMenu.emit(!_showMoreMenu.value)
         }
     }
 

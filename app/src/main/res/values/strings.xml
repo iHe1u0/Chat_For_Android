@@ -50,4 +50,6 @@
     <string name="message_delete_roster">Do you really want to delete this roster?</string>
     <string name="confirm_password">Repeat password</string>
     <string name="receive_new_file">Receive new file!</string>
+    <string name="create_account">Create account</string>
+    <string name="quit">Exit</string>
 </resources>
