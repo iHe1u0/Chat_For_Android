@@ -37,11 +37,15 @@ object AvatarUtils {
     }
 
     /**
-     * try to get and save avatar for user @param jid
+     * try to get and save avatar for user
+     *
+     * @param context Context for file operation
+     * @param user jid
+     *
      */
     @Synchronized
     fun saveAvatar(context: Context = CommonApp.getContext(), user: String? = null) {
-        if (!ConnectionManager.isConnectionAvailable(connection)) {
+        if (!ConnectionManager.isConnectionAvailable()) {
             return
         }
         val vCard = RosterAction.getVCard(user)
@@ -58,7 +62,7 @@ object AvatarUtils {
     }
 
     fun getAvatarPath(context: Context = CommonApp.getContext(), user: String? = null): String {
-        if (ConnectionManager.isConnectionAvailable(connection)) {
+        if (ConnectionManager.isConnectionAvailable()) {
             if (user == null) {
                 return FileUtils.getAvatarCachePath(context, App.user).absolutePath
             }
@@ -75,16 +79,17 @@ object AvatarUtils {
     }
 
     /**
-     * get a online avatar
+     * Generates an online avatar image URL using the ui-avatars.com API based on the given name.
      *
-     * @return address
+     * @param name The name for which the avatar will be generated.
+     * @return The URL of the generated avatar image.
      */
     fun getOnlineAvatar(name: String): String {
-        return "https://ui-avatars.com/api/?name=$name"
+        return "https://ui-avatars.com/api/?background=87cefa&color=0000ff&length=2&name=$name"
     }
 
     fun getUserBitmap(jidString: String): Bitmap {
-        if (ConnectionManager.isConnectionAvailable(connection)) {
+        if (ConnectionManager.isConnectionAvailable()) {
             val vCard = VCardManager.getInstanceFor(connection)
                 .loadVCard(JidCreate.entityBareFrom(jidString))
             val byteArray = vCard.avatar
@@ -94,7 +99,6 @@ object AvatarUtils {
         }
         val drawable = ContextCompat.getDrawable(CommonApp.getContext(), R.drawable.ic_avatar)
         return drawable!!.toBitmap()
-        // return BitmapFactory.decodeResource(Resources.getSystem(), R.drawable.ic_avatar)
     }
 
     fun update(context: Context, user: String? = null) {

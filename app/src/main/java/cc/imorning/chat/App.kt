@@ -23,7 +23,7 @@ class App : CommonApp(), ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
-        // Throwable().stackTrace[0].apply { Log.i("Fkt", "${className}@${lineNumber}") }
+        Throwable().stackTrace[0].apply { Log.i("Fkt", "${className}@${lineNumber}") }
         // Setup notification
         ChatNotificationManager.manager.setUpNewMessageNotificationChannels()
 
@@ -59,6 +59,8 @@ class App : CommonApp(), ImageLoaderFactory {
          * return tcp connection
          */
         fun getTCPConnection(): XMPPTCPConnection {
+            ConnectionManager.setConnection(xmppTcpConnection)
+            ConnectionManager.connect()
             return xmppTcpConnection
         }
 

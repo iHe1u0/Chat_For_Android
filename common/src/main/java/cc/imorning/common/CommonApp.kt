@@ -70,11 +70,6 @@ open class CommonApp : Application() {
         ReconnectionManager.getInstanceFor(xmppTcpConnection).enableAutomaticReconnection()
         ReconnectionManager.getInstanceFor(xmppTcpConnection)
             .setReconnectionPolicy(ReconnectionManager.ReconnectionPolicy.FIXED_DELAY)
-        MainScope().launch(Dispatchers.IO) {
-            if (!xmppTcpConnection.isConnected) {
-                xmppTcpConnection.connect()
-            }
-        }
     }
 
     companion object {
