@@ -113,7 +113,7 @@ class ChatViewModel : ViewModel() {
                         MessageEntity(
                             sender = sender,
                             receiver = receiver,
-                            messageType = message_type,
+                            messageType = messageType,
                             messageBody = MessageBody(text, image, audio, video, file, action),
                             sendTime = send_time,
                             isShow = is_show,

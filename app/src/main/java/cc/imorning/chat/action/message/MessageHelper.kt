@@ -229,7 +229,7 @@ object MessageHelper {
                             MessageTable(
                                 sender = sender,
                                 receiver = receiver,
-                                message_type = messageType,
+                                messageType = messageType,
                                 send_time = sendTime,
                                 is_show = isShow,
                                 is_recall = isRecall,
@@ -247,7 +247,7 @@ object MessageHelper {
                             MessageTable(
                                 sender = sender,
                                 receiver = receiver,
-                                message_type = messageType,
+                                messageType = messageType,
                                 send_time = sendTime,
                                 is_show = isShow,
                                 is_recall = isRecall,

@@ -21,7 +21,7 @@ data class MessageTable(
     val receiver: String,
 
     @ColumnInfo(name = "message_type")
-    val message_type: Message.Type = Message.Type.normal,
+    val messageType: Message.Type = Message.Type.normal,
 
     @ColumnInfo(name = "is_show")
     val is_show: Boolean = true,

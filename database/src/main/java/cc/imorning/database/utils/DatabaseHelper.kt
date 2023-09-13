@@ -8,6 +8,12 @@ import java.io.File
  * 用户数据库常量
  */
 object DatabaseHelper {
+
+    /**
+     * account database, record account, token and expired time.
+     */
+    const val ACCOUNT_DB = "account.db"
+
     /**
      * data database, include [TABLE_USER_INFO] and [TABLE_ROSTER]
      */
@@ -54,7 +60,7 @@ object DatabaseHelper {
                 user = CommonApp.xmppTcpConnection.user.asEntityBareJidString()
             }
         }
-        if (user.isEmpty()){
+        if (user.isEmpty()) {
             CommonApp.exitApp(-1)
         }
         val userDir = user.replace("@", "_")

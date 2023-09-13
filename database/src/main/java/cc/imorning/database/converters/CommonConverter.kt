@@ -29,4 +29,13 @@ class CommonConverter {
         }
     }
 
+    @TypeConverter
+    fun converterLong(value: Long): String {
+        return value.toString()
+    }
+
+    @TypeConverter
+    fun revertLong(value: String): Long {
+        return value.toLong()
+    }
 }
